@@ -26,9 +26,13 @@ The operator may change the licence OTWD is published under only to another free
 
 This permission passes to any successor operator, including the not-for-profit host, so that the dataset can move to a new owner without asking every contributor again.
 
+## What stays and what you can remove
+
+The permission above covers your contributions as data, and it cannot be withdrawn: CC BY 4.0 itself is irrevocable, and others may already have copied the data under it. What can be removed is anything that identifies you. You can ask the operator to erase your personal information and the links between you and your contributions, as set out in [the privacy policy draft](policies/privacy-draft.md). Your contributions then stay in OTWD with nothing that identifies you. The licence itself allows this: section 3(a)(3) of CC BY 4.0 lets a licensor ask for the attribution information to be removed where reasonably practicable ([the licence text](../LICENSES/CC-BY-4.0.txt)). A photo that shows you, your vehicle or your property can be taken down through [the takedown process](policies/takedown.md), whoever took it.
+
 ## Photos
 
-Photos you submit must be your own. You license each photo under CC BY 4.0 as its author, and you also give the operator the permission above. Location data embedded in photos is removed before publication.
+Photos you submit must be your own. You license each photo under CC BY 4.0 as its author, and you also give the operator the permission above. Location data embedded in photos is removed before publication. Avoid photographing people and readable number plates. A photo that shows them may be declined or taken down.
 
 ## Your promises
 
@@ -41,7 +45,7 @@ By submitting, you promise that:
 
 ## Attribution
 
-The operator credits contributors collectively as "Open Touring contributors". Each fact records the contributor's display name or pseudonymous ID, the partner app it came through and when it was submitted. You agree that collective credit satisfies any attribution you are owed.
+The operator credits contributors collectively as "Open Touring contributors". Published data records the partner app each fact came through and when it was recorded. It shows your display name only if you are a direct contributor and choose to show it, and it never shows your pseudonymous ID. You agree that collective credit satisfies any attribution you are owed.
 
 ## Moderation
 
@@ -61,7 +65,7 @@ The operator may update these terms for future contributions. Changes do not red
 
 ## Questions for the legal review
 
-- Whether "perpetual and irrevocable" and transfer to successors are enforceable as drafted under Australian law.
+- Whether "perpetual and irrevocable" and transfer to successors are enforceable as drafted under Australian law, and whether the split between the irrevocable licence to the data and the erasure of identifying information is drafted clearly enough.
 - How the member vote on relicensing should be defined while the host's membership rules are not yet known.
 - Whether a partner app's consent flow is enough for the user to be bound, and what record the partner app must keep.
 - How moral rights in photos and descriptions should be handled under the Copyright Act 1968.

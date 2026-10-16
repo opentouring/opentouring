@@ -28,6 +28,10 @@ _Avoid_: board, committee
 An organisation that funds Open Touring in return for acknowledgement, with no extra rights over the data.
 _Avoid_: investor, owner
 
+**Supported country**:
+A country, or a state or territory within one, where OTWD accepts and moderates records because every item of the onboarding checklist is done. The schema itself is global.
+_Avoid_: launch market, region, coverage area
+
 ### Records and what is known about them
 
 **Record**:

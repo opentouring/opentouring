@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/opentouring/opentouring/blob/main/SECURITY.md
+    about: Report vulnerabilities and leaked API keys privately by email, never in a public issue.
+  - name: Ask for a photo or text to be taken down
+    url: https://github.com/opentouring/opentouring/blob/main/docs/policies/takedown.md
+    about: Faces, number plates, private property and copyright notices go by email so they stay private.
+  - name: Report wrong data about a site or road
+    url: https://github.com/opentouring/opentouring/blob/main/SECURITY.md#wrong-data
+    about: Wrong facts go through moderation as a submission or by email, not as an issue.

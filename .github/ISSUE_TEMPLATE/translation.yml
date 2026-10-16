@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Translation
+description: Offer or request a translation of a governed list into another language.
+title: "Governed list: `<language>` translation of `<list>`"
+labels: ["governed-list", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Translations hold labels and descriptions only, never codes or safety flags. The steps are in docs/extending.md under "New translation". Unreviewed machine translation is not accepted.
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      description: The BCP 47 tag in canonical case.
+      placeholder: de, fr-CA, en-US
+    validations:
+      required: true
+  - type: dropdown
+    id: lists
+    attributes:
+      label: Governed lists
+      multiple: true
+      options:
+        - Site types
+        - Facilities
+        - Structures
+        - Surfaces
+        - Vehicle access classes
+        - Vehicle classes
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: What you can do
+      options:
+        - I will write the translation
+        - I can review a translation
+        - I am asking for one
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Regions the translation suits, terms that are hard to translate, or who travels in this language.

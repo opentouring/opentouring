@@ -10,7 +10,7 @@ Open Touring is an open, crowd-contributed database of places travellers stop at
 
 ## Decisions
 
-Before changing architecture, licensing, moderation or data handling, read the ADRs in `docs/adr/` that touch it. Work that contradicts an ADR needs a new ADR that supersedes it. `docs/architecture.md` describes how the components connect.
+Before changing architecture, licensing, moderation or data handling, read the ADRs in `docs/adr/` that touch it. Work that contradicts an ADR needs a new ADR that supersedes it. `docs/architecture.md` describes how the components connect. `docs/extending.md` lists, for each kind of change, the files to touch, the review, who approves and whether an ADR is needed. Moderation rules live in `docs/policies/moderation.md` and change only by the process it describes.
 
 ## Writing rules
 
