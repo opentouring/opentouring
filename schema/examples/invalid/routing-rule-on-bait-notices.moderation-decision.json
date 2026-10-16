@@ -1,0 +1,26 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:decision:01M3XF7K2N9R4T6V8W1Y3Z5QAB",
+  "submission_id": "otwd:submission:01M3XE5H8M2P4R6T9V1W3Y7ZCD",
+  "outcome": "approved",
+  "decided_by": {
+    "kind": "routing_rule",
+    "rule_id": "auto_approve.trusted_contributor",
+    "rule_version": "1"
+  },
+  "decided_at": "2026-10-13T00:40:00Z",
+  "routing": {
+    "route": "auto_approval",
+    "policy_version": "routing-1.0",
+    "submission_kind": "update_facts",
+    "record_type": "road_segment",
+    "fields": ["/facts/bait_notices"],
+    "always_human": false
+  },
+  "reasons": [
+    {
+      "code": "matches_authority_notice"
+    }
+  ],
+  "change_seqs": [31240]
+}

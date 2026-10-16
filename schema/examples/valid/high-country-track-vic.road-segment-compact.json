@@ -68,6 +68,33 @@
     "authority": "Parks Victoria",
     "info_url": "https://www.parks.vic.gov.au/get-into-nature/safety-in-nature/seasonal-road-closures"
   },
+  "pet_transit": {
+    "permitted": "in_vehicle_only",
+    "species": ["dog"],
+    "authority": "Parks Victoria",
+    "info_url": "https://www.example.org/parks-victoria/dogs-in-parks",
+    "notes": [
+      {
+        "text": "Dogs may stay in the vehicle while driving through the national park. They may not be walked or left at camp.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "bait_notices": [
+    {
+      "area": "Both sides of the track between the gate and the river crossing.",
+      "poison": "1080",
+      "authority": "Example Land Management Agency",
+      "info_url": "https://www.example.org/land/wild-dog-baiting",
+      "from": "2026-03-01",
+      "notes": [
+        {
+          "text": "Wild dog baiting runs all year on this section.",
+          "lang": "en-AU"
+        }
+      ]
+    }
+  ],
   "country_codes": ["AU"],
   "subdivision_codes": ["AU-VIC"],
   "localities": ["Licola"],

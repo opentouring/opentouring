@@ -1,0 +1,26 @@
+---
+status: accepted
+---
+
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+
+# Pet policies, pet transit and bait notices
+
+OTWD records pets in four places. A site's `pets` fact keeps its general rule (yes, on a leash, by arrangement or no) and adds a rule per species, from a new governed list (`pet-species.json`: dog, cat and horse to start), and conditions: the most pets allowed, a size or breed restriction note, a fee per pet in the shared money shape, the areas pets may stay in (the whole site, designated sites, campsites, cabins or the day use area) and the periods each year, as local month and day, when pets are not allowed. A ferry service's `pet_policy` says whether pets are carried and how: in the vehicle, in a kennel, in a pet-friendly cabin, on deck on a leash or in a carrier, each with the species it takes, whether booking is required and a fee. A road segment's `pet_transit` says whether pets may travel along it (yes, in the vehicle only, or no), with the authority that sets the rule and its information link, for roads through national parks. Sites and road segments carry `bait_notices`: notices that poison baits such as 1080 are laid nearby, with the area, the local dates, the poison, the authority and its link.
+
+Travellers with dogs plan around all four. A park that allows dogs but not cats, a ferry with kennels that must be booked, a national park road a dog may cross only inside the car, and a baited reserve beside a campground each decide where a traveller with a pet can stop. A species list rather than a dogs-only field keeps the schema global and lets the list grow by proposal. Horses are on it because horse camps in parks and state forests take horse floats. Assistance animals stay outside every one of these facts, because the law, not the site, decides where they may go.
+
+Bait notices follow the fire policy approach ([ADR 0026](0026-fire-policy-not-fire-bans.md)). OTWD records the notice as signed or published, with the authority's link, and never tries to follow a live baiting programme, which changes faster than moderation can and has its only reliable source in the authority. A bait can kill a dog that finds it, so `bait_notices` is a safety fact: routing sends every change to a moderator, and a routing rule can never decide one. A notice without an end date stays until the authority withdraws it, and the API's bait notice filter says that a missing notice is unknown, never proof that no baits are laid.
+
+The general `allowed` value stays the summary partner apps already read, and the validator rejects a site whose general rule is no while a species rule allows one. `pets_allowed` and `dog_off_leash` stay read from `pets` with the same rules. Pet transit and ferry pet policies are not safety facts: getting them wrong costs a traveller a detour or a fine, not their pet's life.
+
+## Considered options
+
+- **Dog-specific fields (`dogs_allowed`, `dog_fee`).** Rejected: cats and horses have their own rules at many sites, and fields per species would never stop growing. A governed species list keeps one shape.
+- **Pet rules as site facilities.** Rejected: conditions, fees and periods do not fit a facility's yes or no, and facilities exist only on sites.
+- **Store live baiting programmes from agency feeds.** Rejected for the same reason as declared fire bans: a stale "no baiting" would be dangerous.
+- **Bait notices as an ordinary fact.** Rejected: a wrong or removed notice can lead a traveller to walk a dog through a baited area, which is the kind of harm the always-human list exists to prevent.
+
+## Consequences
+
+The schema is a draft until v1.0.0 ([ADR 0030](0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md)), so the extended `pets` fact ships without a version bump. The site list gains `pets`, `pet_species`, `pets_known` and `has_bait_notice` filters, road segments gain `pet_transit`, `pet_transit_known` and `has_bait_notice`, ferry services gain `pet_arrangement` and `pet_policy_known`, and the species list is served at `/v1/pet-species`. `pets_allowed` maps to OSM `pets=yes`, and species map to `dog=*`, `cat=*` and (as related) `horse=*`. Bait notices have no OSM tag, so their mapping is empty. Apps that show a site's or road segment's pet rules should show its bait notices beside them, with the authority's link.

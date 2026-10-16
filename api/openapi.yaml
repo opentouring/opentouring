@@ -89,7 +89,7 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes and key schemes records are described with.
+    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species records are described with.
   - name: Bulk downloads
     description: The whole dataset, or the changes between two sequence numbers, as files.
   - name: Change feed
@@ -201,6 +201,39 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: pets
+          in: query
+          description: Values of pets.allowed to include, for example yes,on_leash to leave out sites that take pets only by arrangement or not at all.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 4
+            items:
+              type: string
+              enum: [yes, on_leash, by_arrangement, no]
+        - name: pet_species
+          in: query
+          description: Pet species codes that must all be allowed. A species is allowed when its rule in pets.species is anything but no, or, with no rule for it, when pets.allowed is. Use with `pets` to require yes or on_leash.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 10
+            items:
+              $ref: "../schema/common.schema.json#/$defs/PetSpeciesCode"
+          example: [dog]
+        - name: pets_known
+          in: query
+          description: When true, excludes sites with no recorded pet policy.
+          schema:
+            type: boolean
+            default: false
+        - name: has_bait_notice
+          in: query
+          description: When true, returns only sites with a recorded poison bait notice. When false, only sites without one. A missing notice is unknown, so false is not proof that no baits are laid.
+          schema:
+            type: boolean
         - $ref: "#/components/parameters/Status"
         - $ref: "#/components/parameters/Country"
         - $ref: "#/components/parameters/Subdivision"
@@ -526,6 +559,28 @@ paths:
           description: When true, returns only segments with a recorded seasonal closure. When false, only segments without one.
           schema:
             type: boolean
+        - name: pet_transit
+          in: query
+          description: Pet transit values to include, for example yes,in_vehicle_only to leave out roads where pets are not allowed even in a vehicle.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [yes, in_vehicle_only, no]
+        - name: pet_transit_known
+          in: query
+          description: When true, excludes segments with no recorded pet transit rule.
+          schema:
+            type: boolean
+            default: false
+        - name: has_bait_notice
+          in: query
+          description: When true, returns only segments with a recorded poison bait notice. When false, only segments without one. A missing notice is unknown, so false is not proof that no baits are laid.
+          schema:
+            type: boolean
         - $ref: "#/components/parameters/RigLengthM"
         - $ref: "#/components/parameters/RigWeightT"
         - $ref: "#/components/parameters/RigAxleLoadT"
@@ -660,6 +715,23 @@ paths:
         - name: accessibility_known
           in: query
           description: When true, excludes services with no recorded wheelchair access for boarding.
+          schema:
+            type: boolean
+            default: false
+        - name: pet_arrangement
+          in: query
+          description: Pet arrangements from pet_policy. Returns services that carry pets with at least one of them, for example in_vehicle,kennel.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 5
+            items:
+              type: string
+              enum: [in_vehicle, kennel, pet_friendly_cabin, on_deck_on_leash, in_carrier]
+        - name: pet_policy_known
+          in: query
+          description: When true, excludes services with no recorded pet policy.
           schema:
             type: boolean
             default: false
@@ -827,6 +899,24 @@ paths:
       operationId: listKeySchemes
       summary: List key schemes
       description: Returns the governed list of central key schemes that open accessible toilets, such as MLAK, with the countries each is used in and OSM centralkey mappings.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/pet-species:
+    get:
+      tags: [Governed lists]
+      operationId: listPetSpecies
+      summary: List pet species
+      description: Returns the governed list of pet species that pet policies name, with OSM mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
       responses:

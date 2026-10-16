@@ -96,7 +96,8 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `laundry`               | `washing_machine=yes`             | exact    |                                                                                                                  |
 | `wifi`                  | `internet_access=wlan`            | exact    |                                                                                                                  |
 | `mobile_coverage`       | none                              |          |                                                                                                                  |
-| `pets_allowed`          | `dog=yes`                         | narrower | Dogs only. dog=leashed when pets.allowed is on_leash.                                                            |
+| `pets_allowed`          | `pets=yes`                        | exact    | Documented on Key:pets as in use. pets=no when pets.allowed is no.                                               |
+| `pets_allowed`          | `dog=yes`                         | narrower | Dogs only. dog=leashed when the dog rule is on_leash. See pet-species.json for other species.                    |
 | `dog_off_leash`         | `leisure=dog_park`                | related  |                                                                                                                  |
 | `dog_off_leash`         | `dog=unleashed`                   | related  | Dogs may be off the lead. Documented on Key:dog.                                                                 |
 | `accessible_facilities` | `wheelchair=yes`                  | exact    | When the wheelchair attribute is yes.                                                                            |
@@ -189,6 +190,15 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `radar`   | `centralkey=nks`     | exact | OSM names the scheme nks (National Key Scheme). |
 | `eurokey` | `centralkey=eurokey` | exact |                                                 |
 
+## Pet species
+
+| Code    | OSM tags      | Match   | Note                                                                          |
+| ------- | ------------- | ------- | ----------------------------------------------------------------------------- |
+| `dog`   | `dog=yes`     | exact   |                                                                               |
+| `dog`   | `dog=leashed` | exact   | When the species is allowed on_leash.                                         |
+| `cat`   | `cat=yes`     | exact   | Documented on Key:cat as in use.                                              |
+| `horse` | `horse=yes`   | related | Key:horse is access for riders on a way or area, not whether horses may stay. |
+
 ## Record types and their facts
 
 Road restrictions, road segments and ferry services are not governed lists, so their mapping is given here only. OSM records most of these facts as tags on the road way or ferry route a limit applies to.
@@ -217,6 +227,10 @@ Road restrictions, road segments and ferry services are not governed lists, so t
 | `accessibility.toilets.ambulant_count`                       | none                                                                                       |         | No documented OSM key for ambulant toilets.                                                                                                 |
 | `accessibility.hearing_loop`                                 | `hearing_loop=yes`                                                                         | related | Used, but the hearing loop proposal is still a draft.                                                                                       |
 | `accessibility.step_free_access`                             | none                                                                                       |         | OSM records steps (`step_count=*`) and kerbs on ways and entrances, not for a whole site.                                                   |
+| `pet_transit` no                                             | `dog=no` on the road way                                                                   | related | Dogs only, and OSM dog access means walking a dog, not carrying one in a vehicle.                                                           |
+| `pet_transit` in_vehicle_only                                | none                                                                                       |         | OSM has no value for pets carried in a vehicle.                                                                                             |
+| `bait_notices`                                               | none                                                                                       |         | No documented tag. `hazard=poison` has 6 uses and no wiki page.                                                                             |
+| `pet_policy` on a ferry service                              | none                                                                                       |         | No documented tag for pets on a ferry.                                                                                                      |
 | Ferry terminal                                               | `amenity=ferry_terminal`                                                                   | exact   | A site with the `ferry_terminal` site type.                                                                                                 |
 | `vehicle_limits.max_length_m` and the like                   | `maxlength=*`, `maxheight=*`, `maxweight=*` on the ferry route                             | related | Per-class limits and vehicle bands have no OSM equivalent.                                                                                  |
 

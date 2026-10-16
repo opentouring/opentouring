@@ -68,6 +68,7 @@ SURFACES = "surfaces.json"
 ACCESS_CLASSES = "vehicle-access-classes.json"
 VEHICLE_CLASSES = "vehicle-classes.json"
 KEY_SCHEMES = "key-schemes.json"
+PET_SPECIES = "pet-species.json"
 
 # Every governed list file, with the name its codes go by in error messages.
 GOVERNED_LISTS = {
@@ -78,6 +79,7 @@ GOVERNED_LISTS = {
     ACCESS_CLASSES: "vehicle access class",
     VEHICLE_CLASSES: "vehicle class",
     KEY_SCHEMES: "key scheme",
+    PET_SPECIES: "pet species",
 }
 
 # Submission kinds on the always-human list for every record type, besides the
@@ -294,6 +296,10 @@ class SemanticChecker:
             "fares": self.fares,
             "terminals": self.terminals,
             "accessibility": self.accessibility,
+            "pets": self.pets,
+            "pet_policy": self.pet_policy,
+            "pet_transit": self.pet_transit,
+            "bait_notices": self.bait_notices,
         }
 
     def fail(self, where: str, message: str) -> None:
@@ -391,6 +397,43 @@ class SemanticChecker:
                 f"wheelchair toilets access is no but accessible_count is "
                 f"{toilets['accessible_count']}",
             )
+
+    def species_list(self, codes: list[str], where: str) -> None:
+        for index, code in enumerate(codes):
+            self.code(PET_SPECIES, code, f"{where}/{index}")
+
+    def pets(self, value: dict, where: str) -> None:
+        """Known species, each listed once, and no species allowed when pets are not."""
+        seen: set[str] = set()
+        for index, rule in enumerate(value.get("species", [])):
+            path = f"{where}/species/{index}"
+            self.code(PET_SPECIES, rule["species"], f"{path}/species")
+            if rule["species"] in seen:
+                self.fail(path, f"species {rule['species']} is listed twice")
+            seen.add(rule["species"])
+            if value["allowed"] == "no" and rule["allowed"] != "no":
+                self.fail(
+                    f"{path}/allowed",
+                    f"pets.allowed is no but species {rule['species']} is {rule['allowed']}",
+                )
+
+    def pet_policy(self, value: dict, where: str) -> None:
+        """Known species, and each arrangement listed once."""
+        seen: set[str] = set()
+        for index, item in enumerate(value.get("arrangements", [])):
+            path = f"{where}/arrangements/{index}"
+            self.species_list(item.get("species", []), f"{path}/species")
+            if item["arrangement"] in seen:
+                self.fail(path, f"arrangement {item['arrangement']} is listed twice")
+            seen.add(item["arrangement"])
+
+    def pet_transit(self, value: dict, where: str) -> None:
+        self.species_list(value.get("species", []), f"{where}/species")
+
+    def bait_notices(self, value: list, where: str) -> None:
+        for index, notice in enumerate(value):
+            if "to" in notice and notice["to"] < notice["from"]:
+                self.fail(f"{where}/{index}/to", "is before from")
 
     def key_scheme_country(self, values: dict, countries: list[str], where: str) -> None:
         """A key scheme is one used in the record's country."""

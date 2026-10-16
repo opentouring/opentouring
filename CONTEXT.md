@@ -63,7 +63,7 @@ A typed detail of a facility, defined with the facility in the governed list, su
 _Avoid_: property, option, sub-field
 
 **Governed list**:
-A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes and key schemes, which the community extends by proposal and the steering group approves.
+A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
 **Fact**:
@@ -71,7 +71,7 @@ One field value about a record, such as a facility, a price, opening hours, a ri
 _Avoid_: property, field (when the value is meant)
 
 **Safety fact**:
-A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans and day-to-day road closures are never facts: OTWD links to the authority instead.
+A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures and live baiting programmes are never facts: OTWD links to the authority instead.
 _Avoid_: critical field
 
 **Fire district**:
@@ -93,6 +93,22 @@ _Avoid_: certification, accessibility rating
 **Key scheme**:
 A central key that opens accessible toilets and other facilities for people with disability, from a governed list with the countries each is used in, such as MLAK in Australia and New Zealand.
 _Avoid_: disability key, access key (on its own)
+
+**Pet policy**:
+The rule on pets at a site (the pets fact) or on a ferry service: whether pets are allowed or carried, the rule per pet species, and conditions such as a maximum number, fees, areas and periods when pets are not allowed. Assistance animals are covered by law, not by a pet policy.
+_Avoid_: pet friendly, dog policy (for the whole rule)
+
+**Pet species**:
+A governed category of animal a pet policy names, such as dog, cat or horse.
+_Avoid_: animal type, pet type
+
+**Pet transit**:
+Whether travellers may take pets along a road segment, such as a road through a national park: yes, in the vehicle only, or no, with the authority that sets the rule and its link.
+_Avoid_: dog access, pet access (for a road)
+
+**Bait notice**:
+A notice that poison baits for pest animals, such as 1080, are laid in or next to a site or road segment, with the area, local dates and the authority's link. A safety fact, because a bait can kill a dog. OTWD records the notice and never the authority's live baiting programme.
+_Avoid_: baiting alert, 1080 warning
 
 **Description**:
 A short original text about a record, written by a contributor and published under the data licence.

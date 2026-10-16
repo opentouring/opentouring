@@ -584,7 +584,7 @@
     {
       "code": "pets_allowed",
       "label": "Pets allowed",
-      "description": "Pets may stay at the site, possibly with conditions. Read from the pets fact.",
+      "description": "Pets may stay at the site, possibly with conditions. Read from the pets fact. pets.species gives the rule per species.",
       "status": "active",
       "introduced_in": "1.0.0",
       "safety_fact": false,
@@ -594,15 +594,20 @@
       },
       "osm": [
         {
+          "tags": ["pets=yes"],
+          "match": "exact",
+          "note": "Documented on Key:pets as in use. pets=no when pets.allowed is no."
+        },
+        {
           "tags": ["dog=yes"],
           "match": "narrower",
-          "note": "Dogs only. dog=leashed when pets.allowed is on_leash."
+          "note": "Dogs only. dog=leashed when the dog rule is on_leash. See pet-species.json for other species."
         }
       ],
       "schema_org": {
         "property": "petsAllowed",
         "match": "exact",
-        "note": "petsAllowed is defined for LodgingBusiness (so Campground) and Accommodation. RVPark is not a LodgingBusiness, so use amenityFeature there."
+        "note": "petsAllowed is defined for LodgingBusiness (so Campground) and Accommodation, and takes a boolean or text, so species and conditions can go in the text. RVPark is not a LodgingBusiness, so use amenityFeature there."
       }
     },
     {

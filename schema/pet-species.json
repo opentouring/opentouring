@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "pet_species",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "dog",
+      "label": "Dog",
+      "description": "A dog travelling with its owner. Assistance animals are covered by law, not by this list.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        { "tags": ["dog=yes"], "match": "exact" },
+        {
+          "tags": ["dog=leashed"],
+          "match": "exact",
+          "note": "When the species is allowed on_leash."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "cat",
+      "label": "Cat",
+      "description": "A cat travelling with its owner. Many sites and parks that allow dogs do not allow cats, because cats hunt wildlife.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        { "tags": ["cat=yes"], "match": "exact", "note": "Documented on Key:cat as in use." }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "horse",
+      "label": "Horse",
+      "description": "A horse brought to the site, usually in a horse float, as at horse camps in parks and state forests.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["horse=yes"],
+          "match": "related",
+          "note": "Key:horse is access for riders on a way or area, not whether horses may stay."
+        }
+      ],
+      "schema_org": null
+    }
+  ]
+}

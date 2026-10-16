@@ -219,6 +219,25 @@
     },
     "step_free_access": false
   },
+  "pet_policy": {
+    "carried": "yes",
+    "arrangements": [
+      {
+        "arrangement": "in_vehicle",
+        "booking_required": false
+      },
+      {
+        "arrangement": "on_deck_on_leash",
+        "species": ["dog"],
+        "notes": [
+          {
+            "text": "Dogs on a short leash on the open deck only.",
+            "lang": "en-AU"
+          }
+        ]
+      }
+    ]
+  },
   "country_codes": ["AU"],
   "subdivision_codes": ["AU-VIC"],
   "localities": ["Port Welshpool"],

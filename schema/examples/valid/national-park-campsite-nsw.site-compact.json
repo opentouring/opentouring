@@ -72,6 +72,22 @@
   "pets": {
     "allowed": "no"
   },
+  "bait_notices": [
+    {
+      "area": "The reserve east of the campground, signed at the entry gate.",
+      "poison": "1080",
+      "authority": "Example Parks Agency",
+      "info_url": "https://www.example.org/parks/pest-baiting",
+      "from": "2026-09-01",
+      "to": "2026-11-30",
+      "notes": [
+        {
+          "text": "Keep dogs out of the park. Pets are not allowed here in any case.",
+          "lang": "en-AU"
+        }
+      ]
+    }
+  ],
   "rig_limits": {
     "max_length_m": 7,
     "big_rig_suitable": "no",

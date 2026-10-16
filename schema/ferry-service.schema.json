@@ -127,6 +127,14 @@
             }
           }
         },
+        "pet_policy": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FerryPetPolicy"
+            }
+          }
+        },
         "seasonal_closure": {
           "description": "Safety fact.",
           "x-otwd-safety-fact": true,
@@ -189,6 +197,9 @@
         },
         "accessibility": {
           "$ref": "values.schema.json#/$defs/FerryServiceAccessibility"
+        },
+        "pet_policy": {
+          "$ref": "values.schema.json#/$defs/FerryPetPolicy"
         },
         "seasonal_closure": {
           "$ref": "values.schema.json#/$defs/SeasonalClosure"

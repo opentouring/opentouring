@@ -190,6 +190,57 @@
         "decision_id": "otwd:decision:01M3R4TT40PZWKA3TMWJDFSFDG",
         "change_seq": 30702
       }
+    },
+    "pet_transit": {
+      "value": {
+        "permitted": "in_vehicle_only",
+        "species": ["dog"],
+        "authority": "Parks Victoria",
+        "info_url": "https://www.example.org/parks-victoria/dogs-in-parks",
+        "notes": [
+          {
+            "text": "Dogs may stay in the vehicle while driving through the national park. They may not be walked or left at camp.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-04-18",
+        "recorded_at": "2026-09-27T03:00:00Z",
+        "confidence": 0.75,
+        "submission_id": "otwd:submission:01M3DA2M00JYPKRN84QA3KMP5V",
+        "decision_id": "otwd:decision:01M3R1CYG0X93B31V87RY71HKA",
+        "change_seq": 30701
+      }
+    },
+    "bait_notices": {
+      "value": [
+        {
+          "area": "Both sides of the track between the gate and the river crossing.",
+          "poison": "1080",
+          "authority": "Example Land Management Agency",
+          "info_url": "https://www.example.org/land/wild-dog-baiting",
+          "from": "2026-03-01",
+          "notes": [
+            {
+              "text": "Wild dog baiting runs all year on this section.",
+              "lang": "en-AU"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-04-18",
+        "recorded_at": "2026-09-27T03:00:00Z",
+        "confidence": 0.75,
+        "submission_id": "otwd:submission:01M3DA2M00JYPKRN84QA3KMP5V",
+        "decision_id": "otwd:decision:01M3R1CYG0X93B31V87RY71HKA",
+        "change_seq": 30701
+      }
     }
   }
 }

@@ -497,7 +497,7 @@
       "additionalProperties": false
     },
     "Pets": {
-      "description": "The site's pet policy. The facilities pets_allowed and dog_off_leash are read from this fact.",
+      "description": "The site's pet policy. allowed is the general rule for pets. species gives the rule for each species where it differs or is known, and allowed must not be no when any species is allowed. The facilities pets_allowed and dog_off_leash are read from this fact.",
       "type": "object",
       "required": ["allowed"],
       "properties": {
@@ -506,8 +506,251 @@
           "type": "string",
           "enum": ["yes", "on_leash", "by_arrangement", "no"]
         },
+        "species": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/PetSpeciesRule"
+          }
+        },
+        "conditions": {
+          "$ref": "#/$defs/PetConditions"
+        },
         "dog_off_leash_area": {
           "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PetSpeciesRule": {
+      "description": "The rule for one species, from the pet species governed list (pet-species.json), with the same values as pets.allowed. max_number is the most of that species per site or booking.",
+      "type": "object",
+      "required": ["species", "allowed"],
+      "properties": {
+        "species": {
+          "$ref": "common.schema.json#/$defs/PetSpeciesCode"
+        },
+        "allowed": {
+          "type": "string",
+          "enum": ["yes", "on_leash", "by_arrangement", "no"]
+        },
+        "max_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PetConditions": {
+      "description": "Conditions on pets that are allowed. areas says where pets may stay: the whole site, designated pet-friendly sites, campsites only, cabins only or the day use area. not_allowed_periods are periods each year, as local month and day, when pets are not allowed, such as the summer school holidays.",
+      "type": "object",
+      "properties": {
+        "max_pets": {
+          "description": "Most pets per site or booking, of all species together.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "size_or_breed_restrictions": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        },
+        "fee": {
+          "$ref": "#/$defs/PetFee"
+        },
+        "areas": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["whole_site", "designated_sites", "campsites", "cabins", "day_use_area"]
+          }
+        },
+        "not_allowed_periods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/AnnualPeriod"
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "PetFee": {
+      "description": "A charge per pet: the amount for each period, such as A$10 per pet per night, or per crossing (use) on a ferry service.",
+      "type": "object",
+      "required": ["amount", "currency", "period"],
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/MoneyAmount"
+        },
+        "currency": {
+          "$ref": "common.schema.json#/$defs/CurrencyCode"
+        },
+        "period": {
+          "type": "string",
+          "enum": ["night", "day", "week", "stay", "use"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "FerryPetPolicy": {
+      "description": "How a ferry service carries pets. carried no: pets are not carried. carried yes: pets travel in one or more arrangements. in_vehicle: the pet stays in the traveller's vehicle on the vehicle deck. kennel: in a kennel on board. pet_friendly_cabin: in a cabin set aside for pets and their owners. on_deck_on_leash: on an open deck on a leash. in_carrier: in a closed carrier in the passenger areas. Assistance animals are covered by law, not by this fact.",
+      "type": "object",
+      "required": ["carried"],
+      "properties": {
+        "carried": {
+          "type": "string",
+          "enum": ["yes", "no"]
+        },
+        "arrangements": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "required": ["arrangement"],
+            "properties": {
+              "arrangement": {
+                "type": "string",
+                "enum": [
+                  "in_vehicle",
+                  "kennel",
+                  "pet_friendly_cabin",
+                  "on_deck_on_leash",
+                  "in_carrier"
+                ]
+              },
+              "species": {
+                "description": "The species this arrangement takes. Absent means every species the operator carries.",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "$ref": "common.schema.json#/$defs/PetSpeciesCode"
+                }
+              },
+              "booking_required": {
+                "type": "boolean"
+              },
+              "fee": {
+                "$ref": "#/$defs/PetFee"
+              },
+              "notes": {
+                "$ref": "common.schema.json#/$defs/Notes"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "carried": {
+            "const": "no"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "arrangements": false
+        }
+      }
+    },
+    "PetTransit": {
+      "description": "Whether travellers may take pets along a road segment, such as a road through a national park. yes: allowed. in_vehicle_only: allowed in transit if the pet stays in the vehicle. no: not allowed even in a vehicle. The authority that sets the rule and its information page are required, because the rule is the authority's to change.",
+      "type": "object",
+      "required": ["permitted", "authority", "info_url"],
+      "properties": {
+        "permitted": {
+          "type": "string",
+          "enum": ["yes", "in_vehicle_only", "no"]
+        },
+        "species": {
+          "description": "The species the rule applies to. Absent means every pet.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/PetSpeciesCode"
+          }
+        },
+        "authority": {
+          "description": "The authority that sets the rule, for example Parks Victoria.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "info_url": {
+          "description": "The authority's page for its rules on pets.",
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "BaitNotices": {
+      "description": "Safety fact. Notices that poison baits for pest animals, such as 1080 (sodium fluoroacetate) or PAPP baits, are laid in or next to the site or road segment. A bait can kill a dog that finds it. OTWD records the notice as signed or published, with its area, local dates and the authority's link, and never the authority's live baiting programme: apps send travellers to info_url for current baiting.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/BaitNotice"
+      }
+    },
+    "BaitNotice": {
+      "description": "One bait notice. from and to are local dates in the record's time zone, as the notice gives them. A notice with no to stays until the authority withdraws it.",
+      "type": "object",
+      "required": ["area", "authority", "info_url", "from"],
+      "properties": {
+        "area": {
+          "description": "The area baited, as the notice describes it, for example the reserve north of the campground.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "poison": {
+          "description": "The poison named on the notice, for example 1080.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "authority": {
+          "description": "The authority or land manager running the baiting, for example NSW National Parks and Wildlife Service.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "info_url": {
+          "description": "The authority's page for current baiting programmes.",
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        },
+        "from": {
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "type": "string",
+          "format": "date"
         },
         "notes": {
           "$ref": "common.schema.json#/$defs/Notes"

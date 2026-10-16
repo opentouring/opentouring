@@ -143,6 +143,44 @@
   },
   "pets": {
     "allowed": "by_arrangement",
+    "species": [
+      {
+        "species": "dog",
+        "allowed": "by_arrangement",
+        "max_number": 2
+      },
+      {
+        "species": "cat",
+        "allowed": "no"
+      }
+    ],
+    "conditions": {
+      "max_pets": 2,
+      "size_or_breed_restrictions": [
+        {
+          "text": "Small dogs under 10 kg only.",
+          "lang": "en-AU"
+        }
+      ],
+      "fee": {
+        "amount": 5,
+        "currency": "AUD",
+        "period": "night"
+      },
+      "areas": ["designated_sites"],
+      "not_allowed_periods": [
+        {
+          "from": "12-15",
+          "to": "01-31",
+          "notes": [
+            {
+              "text": "Summer school holidays.",
+              "lang": "en-AU"
+            }
+          ]
+        }
+      ]
+    },
     "notes": [
       {
         "text": "Small dogs on powered sites only, outside school holidays.",
