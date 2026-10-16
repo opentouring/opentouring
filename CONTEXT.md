@@ -321,8 +321,16 @@ The first partner app to read and contribute back to OTWD, on the same terms as 
 _Avoid_: owner, launch customer
 
 **API key**:
-The credential every reader of OTWD holds, free or paid, that binds them to the terms of service and measures their use.
+The credential every reader of OTWD holds, free or paid, that binds them to the terms of service and measures their use. A secret kept on the partner app's server, never shipped in a client app.
 _Avoid_: token, licence key
+
+**Contributor token**:
+A short-lived credential a partner app's server mints with its API key for one signed-in contributor, so the partner's client app can send that contributor's submissions without holding the key.
+_Avoid_: user token, session key, access key
+
+**Attestation**:
+A platform's check that a request comes from a genuine install of an app, such as Apple App Attest or the Play Integrity API, which a partner app's server verifies before minting a contributor token and reports to OTWD.
+_Avoid_: device check, app verification (as the term)
 
 **Tier**:
 A level of API service, from the free tier up to paid tiers that add volume, a service level, change feeds, delta files and support.

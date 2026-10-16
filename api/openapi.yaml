@@ -111,7 +111,9 @@ tags:
   - name: Change feed
     description: Every change applied to the live data, in order. Paid tiers.
   - name: Submissions
-    description: Send a contributor's new records, corrections, photos, closures, merge requests and problem reports for moderation.
+    description: Send a contributor's new records, corrections, confirmations, photos, closures, merge, unmerge, split and replacement requests and problem reports for moderation.
+  - name: Partner keys and tokens
+    description: Manage a partner app's API keys, and mint short-lived contributor tokens so mobile apps never hold an API key.
 
 paths:
   /v1/sites:
@@ -1051,6 +1053,9 @@ paths:
     post:
       tags: [Submissions]
       operationId: createSubmission
+      security:
+        - ApiKey: []
+        - ContributorToken: []
       summary: Send a submission
       description: |
         Sends a contributor's submission for moderation. A submission never changes live data
@@ -1132,6 +1137,9 @@ paths:
     get:
       tags: [Submissions]
       operationId: getSubmission
+      security:
+        - ApiKey: []
+        - ContributorToken: []
       summary: Get a submission's status
       description: Returns the status of a submission and, once decided, a summary of the moderation decision. Only the partner app that sent the submission, or the direct contributor who made it, can read it.
       parameters:
@@ -1158,6 +1166,9 @@ paths:
     post:
       tags: [Submissions]
       operationId: createPhotoUpload
+      security:
+        - ApiKey: []
+        - ContributorToken: []
       summary: Reserve a photo upload
       description: |
         Returns a short-lived upload URL on the API host and an upload_id. PUT the image there
@@ -1201,6 +1212,171 @@ paths:
                 $ref: "#/components/schemas/ValidationProblem"
         "429":
           $ref: "#/components/responses/TooManyRequests"
+
+  /v1/contributor-tokens:
+    post:
+      tags: [Partner keys and tokens]
+      operationId: createContributorToken
+      summary: Mint a contributor token
+      description: |
+        Called by a partner app's own server, with its API key, to give one of its contributors a
+        short-lived token. The partner app's mobile or web client then calls OTWD directly with
+        `Authorization: Bearer <token>` to send that contributor's submissions and photos and to
+        follow them, without ever holding the API key, which stays a server-side secret
+        (ADR 0039).
+
+        The token is bound to the partner app and the pseudonymous ID given here. A submission
+        sent with it must name the same pseudonymous ID in `contributor`, or the API answers 403
+        with problem type token-contributor-mismatch. Rate limits per contributor apply to the
+        pseudonymous ID whichever credential carries it.
+
+        Mint a token only for a contributor your server has signed in, and record in
+        `attestation` how your server checked the app instance asking for it, if it did, such as
+        Apple App Attest or the Play Integrity API. OTWD does not verify attestation itself: the
+        verdicts are for your server, which holds the app's credentials. OTWD records the method
+        with the token and weighs it in the API key's trust score.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContributorTokenRequest"
+      responses:
+        "201":
+          description: The token. It is shown once and cannot be fetched again.
+          headers:
+            Cache-Control:
+              description: Always no-store.
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContributorToken"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/partner/keys:
+    get:
+      tags: [Partner keys and tokens]
+      operationId: listApiKeys
+      summary: List the partner app's API keys
+      description: Lists the API keys of the partner app the signed-in developer manages, active and revoked, without their secrets. Authenticated with the developer portal's OIDC sign-in, never with an API key, so a leaked key cannot be used to manage keys.
+      security:
+        - PartnerAdmin: [partner:keys]
+      responses:
+        "200":
+          description: The partner app's API keys.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiKeyRecord"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      tags: [Partner keys and tokens]
+      operationId: createApiKey
+      summary: Create an API key
+      description: |
+        Creates an API key and returns its secret once. A partner app has at most two active keys,
+        so a key can be rotated without downtime: create the new key, deploy it, confirm traffic
+        has moved (last_used_at on the old key stops changing), then revoke the old key with
+        reason rotated. A third active key is refused with 409.
+      security:
+        - PartnerAdmin: [partner:keys]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApiKeyCreateRequest"
+      responses:
+        "201":
+          description: The new key, with its secret. Store the secret in your server's secret store. It is never shown again.
+          headers:
+            Cache-Control:
+              description: Always no-store.
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyCreated"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: The partner app already has two active keys. Revoke one first.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /v1/partner/keys/{api_key_id}/revoke:
+    post:
+      tags: [Partner keys and tokens]
+      operationId: revokeApiKey
+      summary: Revoke an API key
+      description: |
+        Revokes a key at once. Requests with it get 401 within the gateway's key cache time,
+        at most 60 seconds, and contributor tokens minted with it stop working at the same time.
+
+        Give reason rotated after a planned rotation. Give compromised, with compromised_since,
+        when the key leaked or was used by someone else: submissions it sent from that moment
+        that are still undecided are rejected with reason code api_key_compromised, and the
+        changes it produced from that moment are listed for a moderator, who can revert them in
+        bulk (ADR 0036). OTWD revokes a key itself with reason abused when it finds abuse, and
+        tells the partner app's contacts.
+      security:
+        - PartnerAdmin: [partner:keys]
+      parameters:
+        - name: api_key_id
+          in: path
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApiKeyRevocation"
+      responses:
+        "200":
+          description: The revoked key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyRecord"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
 webhooks:
   changeApplied:
@@ -1258,7 +1434,15 @@ components:
       type: apiKey
       in: header
       name: OTWD-API-Key
-      description: Your API key, from the developer portal. Keys are free and required for every request. Never embed a key with submission rights in a public web page.
+      description: Your API key, from the developer portal. Keys are free and required for every request that does not carry a contributor token. A key is a server-side secret. Never ship it in a mobile app, a desktop app or a web page, where it can be extracted (ADR 0039). Clients call OTWD with a contributor token from your server, or through your server.
+    ContributorToken:
+      type: http
+      scheme: bearer
+      description: A short-lived token for one contributor of a partner app, minted by the partner app's server with POST /v1/contributor-tokens. Opaque, valid for at most one hour, and good only for that contributor's submissions, photo uploads, appeals, replies and their status.
+    PartnerAdmin:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.opentouring.org/.well-known/openid-configuration
+      description: A partner app developer signed in to the developer portal through Open Touring's OIDC provider, with the partner:keys scope for the partner app. Used only to manage API keys.
 
   parameters:
     Bbox:
@@ -1538,7 +1722,7 @@ components:
           schema:
             $ref: "#/components/schemas/Problem"
     Forbidden:
-      description: The API key's tier does not include this operation, or submissions are closed for the key (problem type tier-required or contributions-closed).
+      description: The API key's tier does not include this operation, submissions are closed for the key, the key cannot mint tokens, or a contributor token names another contributor (problem type tier-required, contributions-closed, scope-required or token-contributor-mismatch).
       content:
         application/problem+json:
           schema:
@@ -1555,7 +1739,7 @@ components:
         ETag:
           $ref: "#/components/headers/ETag"
     TooManyRequests:
-      description: The API key's rate limit or quota is used up.
+      description: A rate limit or quota is used up, for the API key (problem type rate-limited) or for one contributor of the partner app (problem type contributor-rate-limited). RateLimit and RateLimit-Policy say which policy ran out.
       headers:
         Retry-After:
           $ref: "#/components/headers/RetryAfter"
@@ -2084,6 +2268,149 @@ components:
             type: string
         expires_at:
           $ref: "#/components/schemas/Timestamp"
+    ContributorTokenRequest:
+      type: object
+      required: [pseudonymous_id, consent, scopes]
+      properties:
+        pseudonymous_id:
+          description: The contributor's pseudonymous ID, as in a submission's contributor.
+          type: string
+          pattern: "^[A-Za-z0-9._~-]{8,128}$"
+        consent:
+          $ref: "../schema/submission.schema.json#/$defs/Consent"
+        scopes:
+          description: What the token may do. submit covers submissions, photo uploads, appeals and replies. read_own covers the status of the contributor's own submissions.
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [submit, read_own]
+        ttl_seconds:
+          description: How long the token lives, 15 minutes by default and one hour at most.
+          type: integer
+          minimum: 60
+          maximum: 3600
+          default: 900
+        attestation:
+          description: How the partner app's server checked the app instance that asked for this token, if it did.
+          type: object
+          required: [method, verified_at]
+          properties:
+            method:
+              description: apple_app_attest, play_integrity or other. An open enumeration.
+              $ref: "../schema/common.schema.json#/$defs/EnumCode"
+              x-otwd-known-values: [apple_app_attest, play_integrity, other]
+            verified_at:
+              $ref: "../schema/common.schema.json#/$defs/Timestamp"
+          additionalProperties: false
+      additionalProperties: false
+    ContributorToken:
+      type: object
+      required: [access_token, token_type, expires_in, expires_at, scopes]
+      properties:
+        access_token:
+          description: The opaque token. Send it as Authorization Bearer. Never log it.
+          type: string
+          minLength: 32
+          maxLength: 512
+        token_type:
+          const: Bearer
+        expires_in:
+          description: Seconds until it expires.
+          type: integer
+          minimum: 1
+        expires_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        scopes:
+          type: array
+          items:
+            type: string
+    ApiKeyRecord:
+      description: An API key without its secret.
+      type: object
+      required: [id, label, prefix, scopes, status, created_at]
+      properties:
+        id:
+          $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+        label:
+          type: string
+          maxLength: 100
+        prefix:
+          description: The first characters of the secret, to tell keys apart in logs and configuration.
+          type: string
+          maxLength: 16
+        scopes:
+          description: read covers every read endpoint. submit covers submissions and photo uploads made by the partner app's server. mint_tokens covers POST /v1/contributor-tokens.
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            enum: [read, submit, mint_tokens]
+        status:
+          description: active or revoked. An open enumeration.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [active, revoked]
+        created_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        last_used_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        revoked_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        revoke_reason:
+          description: rotated, compromised, abused or other. An open enumeration.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [rotated, compromised, abused, other]
+        compromised_since:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+    ApiKeyCreateRequest:
+      type: object
+      required: [label, scopes]
+      properties:
+        label:
+          description: A name for the key, such as production server.
+          type: string
+          minLength: 1
+          maxLength: 100
+        scopes:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [read, submit, mint_tokens]
+      additionalProperties: false
+    ApiKeyCreated:
+      allOf:
+        - $ref: "#/components/schemas/ApiKeyRecord"
+        - type: object
+          required: [secret]
+          properties:
+            secret:
+              description: The key itself, shown only in this response.
+              type: string
+              minLength: 32
+              maxLength: 128
+    ApiKeyRevocation:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          description: rotated after a planned rotation, compromised when the key leaked or someone else used it, or other.
+          type: string
+          enum: [rotated, compromised, other]
+        compromised_since:
+          description: For compromised, the earliest moment the key may have been misused. Submissions and changes from it after this moment are handled as described above.
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+      additionalProperties: false
+      if:
+        properties:
+          reason:
+            const: compromised
+      then:
+        required: [compromised_since]
+        properties:
+          compromised_since: true
     ChangeAppliedEvent:
       type: object
       required: [type, created_at, data]

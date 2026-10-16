@@ -33,7 +33,13 @@ Road restrictions answer the opposite question because they are the obstacles th
 
 ## Authentication
 
-Every request carries an API key in the `OTWD-API-Key` header, including bulk downloads and the governed lists. Keys are free from the developer portal. The key identifies the partner app, so submissions do not repeat it, and it sets the tier: the change feed, the `changeApplied` webhook and delta files need a paid tier, and a free key gets 403 with problem type `tier-required`. Submitting is free on every tier, and so is the `submissionDecided` webhook that reports the outcome of your own submissions. During the Preview, keys outside the maintainers' own get 403 with problem type `contributions-closed` on the submission endpoints.
+Every request carries an API key in the `OTWD-API-Key` header, including bulk downloads and the governed lists, unless it carries a contributor token. Keys are free from the developer portal. The key identifies the partner app, so submissions do not repeat it, and it sets the tier: the change feed, the `changeApplied` webhook and delta files need a paid tier, and a free key gets 403 with problem type `tier-required`. Submitting is free on every tier, and so is the `submissionDecided` webhook that reports the outcome of your own submissions. During the Preview, keys outside the maintainers' own get 403 with problem type `contributions-closed` on the submission endpoints.
+
+### Keys stay on your server
+
+An API key is a secret for your server ([ADR 0039](../docs/adr/0039-partner-api-keys-tokens-and-abuse.md)). Never ship it in a mobile app, desktop app or web page: anyone can pull it out and send submissions in your name under contributors they invent. If your client app calls OTWD directly, your server mints a contributor token for the signed-in contributor with `POST /v1/contributor-tokens` and hands it to the app, which sends `Authorization: Bearer <token>` on submissions, photo uploads, appeals, replies and their status. A token lives 15 minutes by default and an hour at most, and only works for the pseudonymous ID it was minted for. Before minting one, your server can check the app instance with Apple App Attest or the Play Integrity API and say so in `attestation`. OTWD records it, and it raises your key's trust score, but OTWD does not verify the vendors' verdicts itself. Reads from a client go through your server, or come from bulk downloads you serve yourself.
+
+You can hold two active keys at once. To rotate, create a new key in the developer portal, deploy it, wait until `last_used_at` on the old key stops changing, and revoke the old one with reason `rotated`. If a key leaks, revoke it as `compromised` with `compromised_since`: its undecided submissions from that moment are rejected, and a moderator reviews and can revert the changes they produced. Key management uses your developer portal sign-in, never an API key.
 
 ## Versioning
 
@@ -113,7 +119,7 @@ Any key can register a webhook endpoint in the developer portal for `submissionD
 
 ## Rate limits
 
-Responses carry the `RateLimit` and `RateLimit-Policy` header fields from the IETF RateLimit header fields draft, for example `RateLimit-Policy: "default";q=1000;w=60` and `RateLimit: "default";r=812;t=34`. When a limit is used up the API answers 429 with `Retry-After` in seconds. Limits depend on the tier and are set per API key.
+Responses carry the `RateLimit` and `RateLimit-Policy` header fields from the IETF RateLimit header fields draft, for example `RateLimit-Policy: "default";q=1000;w=60` and `RateLimit: "default";r=812;t=34`. When a limit is used up the API answers 429 with `Retry-After` in seconds. Limits depend on the tier and are set per API key, and submissions are also limited per contributor (pseudonymous ID) per key, with a `"contributor"` policy in the same headers and problem type `contributor-rate-limited` on 429.
 
 ## Errors
 
