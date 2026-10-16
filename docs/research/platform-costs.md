@@ -200,3 +200,7 @@ Run on a maintainer's Linode account, then deleted.
 | Delete               | `DELETE` returned 200 at 02:03:56 UTC. The instance returned 404 at 02:04:04 and the account listed no databases.                                                                                       |
 
 Conclusion: PostGIS is supported on Linode managed Postgres 18 in Sydney. ADR 0017 is accepted on this basis.
+
+## Object storage decision (16 October 2026)
+
+Sydney has no Linode Object Storage endpoint and Melbourne's is limited availability. The minimum stack therefore keeps one Singapore E3 bucket for encrypted OpenTofu state only (the US$5 a month object storage plan covers it) and uses Bunny Storage in Sydney for every public file. See ADR 0029.
