@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Seed source proposal
+description: Propose an open dataset to import into OTWD.
+title: "Seed source: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The licence checklist and the steps after acceptance are in docs/extending.md under "New seed source". Sources already listed are in docs/seed-sources.md.
+  - type: input
+    id: name
+    attributes:
+      label: Dataset and publisher
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Catalogue page
+      description: The publisher's own page for the dataset, where its licence is stated.
+    validations:
+      required: true
+  - type: input
+    id: licence
+    attributes:
+      label: Licence
+      description: As stated on the catalogue page, with its version.
+      placeholder: CC BY 4.0
+    validations:
+      required: true
+  - type: textarea
+    id: attribution
+    attributes:
+      label: Required attribution
+      description: The attribution the publisher asks for, word for word.
+    validations:
+      required: true
+  - type: checkboxes
+    id: licence-checks
+    attributes:
+      label: Licence checks
+      options:
+        - label: The licence allows republishing under CC BY 4.0 (no non-commercial, no-derivatives, share-alike or no-sublicensing terms).
+        - label: No other terms on the catalogue page or the publisher's site conflict with the licence.
+        - label: The data contains no OpenStreetMap-derived data and no third-party material under other terms.
+        - label: The data holds no personal information, or the fields that do are identified below to be dropped.
+  - type: textarea
+    id: supplies
+    attributes:
+      label: What it supplies
+      description: The record types and facts it can seed, the fields they come from, and the number of records.
+    validations:
+      required: true
+  - type: input
+    id: updates
+    attributes:
+      label: How often the publisher updates it
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Fields holding personal information, known quality problems, or anything a reviewer should check.

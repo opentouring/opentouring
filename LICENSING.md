@@ -16,6 +16,7 @@ Open Touring uses three licences: one for the data, one for the server code and 
 | `api/`                                           | Apache License 2.0                             | `Apache-2.0`    |
 | `sdks/`                                          | Apache License 2.0                             | `Apache-2.0`    |
 | `tools/`, `.claude/` and root tool configuration | Apache License 2.0                             | `Apache-2.0`    |
+| `.github/` (issue forms and templates)           | Apache License 2.0                             | `Apache-2.0`    |
 | Documentation (`*.md` at the root, `docs/`)      | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
 | OTWD data (bulk downloads and API responses)     | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
 

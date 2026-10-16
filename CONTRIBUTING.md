@@ -4,14 +4,14 @@
 
 Open Touring is in Preview. Code, documentation and proposals for the governed list are welcome now. Data contributions from outside the project (new sites, corrections, photos) open after a not-for-profit host has signed an agreement to take on the project, because the contributor terms need that host as a stable party to grant rights to. Until then, the Preview holds seeded government data and the maintainer's own submissions.
 
-Read [CONTEXT.md](CONTEXT.md) before writing code, schema or documentation, and use its terms. Read the [ADRs](docs/adr/) that touch the area you are changing. A change that contradicts an ADR needs a new ADR that supersedes it.
+Read [CONTEXT.md](CONTEXT.md) before writing code, schema or documentation, and use its terms. Read the [ADRs](docs/adr/) that touch the area you are changing. A change that contradicts an ADR needs a new ADR that supersedes it. [docs/extending.md](docs/extending.md) has a checklist for each kind of change: the files to touch, the review, who approves it and whether it needs an ADR.
 
 ## Code and documentation
 
-1. Open an issue describing the change, unless it is a small fix.
+1. Open an issue describing the change, unless it is a small fix. The issue forms cover bugs, governed list proposals, new facts and record types, seed sources, translations and moderation policy changes.
 2. Fork the repository and make the change on a branch.
 3. Sign off every commit (see below).
-4. Open a pull request that links the issue.
+4. Open a pull request that links the issue, and work through the checklist in the pull request template.
 
 Every source file carries an SPDX licence header matching its directory (see [LICENSING.md](LICENSING.md)). Documentation follows the project's writing style: plain Australian English, sentence case headings, no dashes used as punctuation, and text that says what the thing does and how to use it.
 
@@ -36,7 +36,7 @@ Use your real name or a name you are known by in the community. Pull requests wi
 Site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons come from governed lists, so that every partner app can rely on the same values. To propose an addition or a change:
 
 1. Check the current list in `schema/` and the existing issues, in case it is already covered or proposed.
-2. Open an issue titled "Governed list: add `<proposed_value>`" (or "change" or "retire").
+2. Open an issue with the "Governed list proposal" form, titled "Governed list: add `<proposed_value>`" (or "change" or "retire"). It gets the `governed-list` label.
 3. In the issue, give:
    - the proposed value in `snake_case`, and which governed list it belongs to
    - a one-sentence definition
@@ -56,8 +56,10 @@ The governed lists are written in en-AU, the reference language, and can be tran
 
 Outside data contributions are not open yet. When they open, every contributor will accept the data contributor terms first, and partner apps will need each contributor's consent to those terms before submitting on their behalf. The plain-English draft of those terms is in [docs/contributor-terms-draft.md](docs/contributor-terms-draft.md) and is not in force.
 
-If you represent a council, tourism body or park agency and can release data under CC BY 4.0 or a compatible licence, open an issue or email hello@opentouring.org. Seed sources are imported through the same moderation pipeline as other submissions and credited in every fact they supply.
+If you represent a council, tourism body or park agency and can release data under CC BY 4.0 or a compatible licence, open an issue with the "Seed source proposal" form or email hello@opentouring.org. Seed sources are imported through the same moderation pipeline as other submissions and credited in every fact they supply. The sources in use and planned are listed in [docs/seed-sources.md](docs/seed-sources.md).
+
+How submissions are moderated is published in [the moderation policy](docs/policies/moderation.md). How personal information is handled is set out in [the privacy policy draft](docs/policies/privacy-draft.md), which is not in force.
 
 ## Conduct and security
 
-Everyone in project spaces follows the [code of conduct](CODE_OF_CONDUCT.md). Report security problems privately as described in [SECURITY.md](SECURITY.md), not in a public issue.
+Everyone in project spaces follows the [code of conduct](CODE_OF_CONDUCT.md). Report security problems privately as described in [SECURITY.md](SECURITY.md), not in a public issue. To have a photo or text removed because it shows a person, a number plate or private property, or infringes copyright, follow [the takedown process](docs/policies/takedown.md).

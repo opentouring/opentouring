@@ -37,7 +37,7 @@ The site's location value becomes `SiteLocation`, which adds `generalised` to th
 
 ## Open questions
 
-- **Removing a record at its custodians' request.** Whether a record is closed, hidden or deleted when the people who speak for a place ask for it to be removed belongs with the moderation policy, and is not settled here.
+- **Removing a record at its custodians' request.** Whether a record is closed, hidden or deleted when the people who speak for a place ask for it to be removed is not settled here. The [takedown process](../policies/takedown.md) covers photos and text that show people, private property or copyright material, not records a community asks to withdraw.
 - **Australian heritage registers.** The access rules of state Aboriginal heritage registers, such as NSW AHIMS, were not confirmed from a primary source in this session, so OTWD's approach is not compared with them.
 - **AIATSIS access and use policy.** The AIATSIS policy on access to culturally sensitive collection material was not quoted from its primary text in this session.
 

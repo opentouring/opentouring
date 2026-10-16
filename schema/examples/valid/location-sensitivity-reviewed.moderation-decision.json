@@ -10,7 +10,7 @@
   "decided_at": "2026-09-29T00:58:00Z",
   "routing": {
     "route": "human_review",
-    "policy_version": "routing-1.0",
+    "policy_version": "routing-2.0",
     "submission_kind": "update_facts",
     "record_type": "site",
     "fields": ["/facts/location_sensitivity"],

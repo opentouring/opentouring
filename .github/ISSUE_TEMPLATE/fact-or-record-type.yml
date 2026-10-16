@@ -1,0 +1,69 @@
+# SPDX-License-Identifier: Apache-2.0
+name: New fact or record type proposal
+description: Propose a new fact on an existing record type, or a new record type.
+title: "Fact: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read CONTEXT.md and the ADRs that touch the area first. The files a change touches, the review and who approves it are listed in docs/extending.md under "New fact on an existing record type" and "New record type". For a new record type, change "Fact" in the title to "Record type".
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Proposal
+      options:
+        - New fact on an existing record type
+        - New record type
+    validations:
+      required: true
+  - type: dropdown
+    id: record-type
+    attributes:
+      label: Record type
+      description: For a new fact, the record type it belongs to.
+      options:
+        - Site
+        - Road restriction
+        - Road segment
+        - Ferry service
+        - Not applicable (new record type)
+    validations:
+      required: true
+  - type: textarea
+    id: need
+    attributes:
+      label: What travellers need it for
+      description: The question a traveller or partner app cannot answer today.
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: Proposed shape
+      description: The name in snake_case, the value and its units, and which values are allowed. For a record type, its main facts and whether it is a point or a line.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Where the values come from
+      description: Seed sources that publish it, with licences, or how contributors would observe it.
+    validations:
+      required: true
+  - type: textarea
+    id: mappings
+    attributes:
+      label: OpenStreetMap and schema.org mappings
+      description: The closest OSM tags and schema.org properties, or "none".
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Is it a safety fact?
+      description: Would a wrong value put a traveller at risk? A safety fact needs steering group approval recorded in an ADR.
+      options:
+        - "No"
+        - "Yes"
+        - Not sure
+    validations:
+      required: true
