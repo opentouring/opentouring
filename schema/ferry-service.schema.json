@@ -49,6 +49,8 @@
           }
         },
         "terminals": {
+          "description": "Safety fact. Moving a ferry service to other terminals sends travellers to a ramp the ferry does not use, so every change to the terminals needs a moderator.",
+          "x-otwd-safety-fact": true,
           "$ref": "common.schema.json#/$defs/Fact",
           "properties": {
             "value": {

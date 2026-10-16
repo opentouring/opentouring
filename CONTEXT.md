@@ -71,7 +71,7 @@ One field value about a record, such as a facility, a price, opening hours, a ri
 _Avoid_: property, field (when the value is meant)
 
 **Safety fact**:
-A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans and day-to-day road closures are never facts: OTWD links to the authority instead.
+A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans and day-to-day road closures are never facts: OTWD links to the authority instead.
 _Avoid_: critical field
 
 **Fire district**:

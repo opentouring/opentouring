@@ -43,5 +43,6 @@
   "terminal-not-a-ferry-terminal.ferry-service-compact.json": "/terminals/1: otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ is not a ferry_terminal site",
   "routing-rule-on-new-record.moderation-decision.json": "a routing rule cannot decide this: new_road_segment is on the always-human list",
   "routing-rule-on-safety-fact.moderation-decision.json": "a routing rule cannot decide this: /facts/location is a safety fact of a road_restriction",
-  "routing-rule-on-accepted-vehicle-classes.moderation-decision.json": "/facts/accepted_vehicle_classes is a safety fact of a ferry_service"
+  "routing-rule-on-accepted-vehicle-classes.moderation-decision.json": "/facts/accepted_vehicle_classes is a safety fact of a ferry_service",
+  "routing-rule-on-terminals.moderation-decision.json": "a routing rule cannot decide this: /facts/terminals is a safety fact of a ferry_service"
 }

@@ -60,16 +60,23 @@ SAFETY_MARKER = "x-otwd-safety-fact"
 # jsonschema library silently skips some of them, so their absence is fatal.
 REQUIRED_FORMATS = {"date", "date-time", "uri", "email", "json-pointer"}
 
+# The governed list files, named once each.
+SITE_TYPES = "site-types.json"
+FACILITIES = "facilities.json"
+STRUCTURES = "structures.json"
+SURFACES = "surfaces.json"
+ACCESS_CLASSES = "vehicle-access-classes.json"
+VEHICLE_CLASSES = "vehicle-classes.json"
+
 # Every governed list file, with the name its codes go by in error messages.
 GOVERNED_LISTS = {
-    "site-types.json": "site type",
-    "facilities.json": "facility",
-    "structures.json": "structure",
-    "surfaces.json": "surface",
-    "vehicle-access-classes.json": "vehicle access class",
-    "vehicle-classes.json": "vehicle class",
+    SITE_TYPES: "site type",
+    FACILITIES: "facility",
+    STRUCTURES: "structure",
+    SURFACES: "surface",
+    ACCESS_CLASSES: "vehicle access class",
+    VEHICLE_CLASSES: "vehicle class",
 }
-SITE_TYPES, FACILITIES, STRUCTURES, SURFACES, ACCESS_CLASSES, VEHICLE_CLASSES = GOVERNED_LISTS
 
 # Submission kinds on the always-human list for every record type, besides the
 # kinds that create a record (new_<record type>).

@@ -698,7 +698,7 @@
       "required": ["value_m", "basis"],
       "properties": {
         "value_m": {
-          "description": "The figure in metres. The fact that holds the measurement sets its range: VehicleHeightM for vertical clearance and VehicleWidthM for width, both capped at 10 m.",
+          "description": "The figure in metres. The fact that holds the measurement sets its range: VehicleHeightM for vertical clearance and VehicleWidthM for width limit, both capped at 10 m.",
           "type": "number"
         },
         "basis": {
@@ -726,14 +726,14 @@
       },
       "additionalProperties": false
     },
-    "VerticalClearance": {
-      "description": "Safety fact. The height a vehicle must be under to pass, in metres. measurements holds every figure known, signed, surveyed or measured, and lowest_m is the lowest of them, whatever its basis. That is the figure every rig filter compares a vehicle with.",
+    "MeasuredLimit": {
+      "description": "The shape shared by vertical clearance and width limit: every figure known, signed, surveyed or measured, and the lowest of them. The fact that uses it sets the range of lowest_m and of each figure's value_m.",
       "type": "object",
       "required": ["lowest_m", "lowest_basis", "measurements"],
       "properties": {
         "lowest_m": {
           "description": "The lowest figure of any basis in measurements, in metres. Rig filters and apps compare a vehicle with this figure, never with the signed figure alone, because a measured or surveyed figure lower than the sign is the one that strikes the vehicle.",
-          "$ref": "#/$defs/VehicleHeightM"
+          "type": "number"
         },
         "lowest_basis": {
           "description": "The basis of the lowest figure, so an app can say whether it is the signed limit or a lower measured or surveyed one.",
@@ -744,12 +744,7 @@
           "minItems": 1,
           "maxItems": 20,
           "items": {
-            "$ref": "#/$defs/LimitMeasurement",
-            "properties": {
-              "value_m": {
-                "$ref": "#/$defs/VehicleHeightM"
-              }
-            }
+            "$ref": "#/$defs/LimitMeasurement"
           }
         },
         "notes": {
@@ -758,37 +753,41 @@
       },
       "additionalProperties": false
     },
-    "WidthLimit": {
-      "description": "Safety fact. The width a vehicle must be under to pass, in metres, such as a single-lane bridge or a gate. lowest_m is the lowest figure of any basis, as for vertical clearance.",
-      "type": "object",
-      "required": ["lowest_m", "lowest_basis", "measurements"],
+    "VerticalClearance": {
+      "description": "Safety fact. The height a vehicle must be under to pass, in metres. measurements holds every figure known, signed, surveyed or measured, and lowest_m is the lowest of them, whatever its basis. That is the figure every rig filter compares a vehicle with.",
+      "$ref": "#/$defs/MeasuredLimit",
       "properties": {
         "lowest_m": {
-          "description": "The lowest figure of any basis in measurements, in metres. Rig filters and apps compare a vehicle with this figure, never with the signed figure alone, because a measured or surveyed figure lower than the sign is the one that strikes the vehicle.",
-          "$ref": "#/$defs/VehicleWidthM"
-        },
-        "lowest_basis": {
-          "description": "The basis of the lowest figure, so an app can say whether it is the signed limit or a lower measured or surveyed one.",
-          "$ref": "#/$defs/LimitBasis"
+          "$ref": "#/$defs/VehicleHeightM"
         },
         "measurements": {
-          "type": "array",
-          "minItems": 1,
-          "maxItems": 20,
           "items": {
-            "$ref": "#/$defs/LimitMeasurement",
+            "properties": {
+              "value_m": {
+                "$ref": "#/$defs/VehicleHeightM"
+              }
+            }
+          }
+        }
+      }
+    },
+    "WidthLimit": {
+      "description": "Safety fact. The width a vehicle must be under to pass, in metres, such as a single-lane bridge or a gate. lowest_m is the lowest figure of any basis, as for vertical clearance.",
+      "$ref": "#/$defs/MeasuredLimit",
+      "properties": {
+        "lowest_m": {
+          "$ref": "#/$defs/VehicleWidthM"
+        },
+        "measurements": {
+          "items": {
             "properties": {
               "value_m": {
                 "$ref": "#/$defs/VehicleWidthM"
               }
             }
           }
-        },
-        "notes": {
-          "$ref": "common.schema.json#/$defs/Notes"
         }
-      },
-      "additionalProperties": false
+      }
     },
     "WeightLimit": {
       "description": "Safety fact. The signed mass limits, in tonnes. gross_t is the gross mass of the vehicle or combination, including anything towed. axle_load_t is the most any one axle may carry. Either or both may be given.",
