@@ -416,7 +416,7 @@
           "maximum": 1
         },
         "change_seq": {
-          "description": "The change that set this fact. Submissions are checked for conflicts against it, and the change names the moderation decision behind it.",
+          "description": "The change that set this fact. Submissions are checked for conflicts against it, and the change names the moderation decision behind it, unless it was a recompute.",
           "$ref": "#/$defs/ChangeSeq"
         },
         "moderator_edited": {

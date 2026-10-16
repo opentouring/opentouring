@@ -21,8 +21,11 @@ The script runs three stages:
 1. Every *.schema.json file is checked against the JSON Schema 2020-12
    metaschema, the governed lists against vocabulary.schema.json and
    facilities.json against the per-facility schemas in values.schema.json.
-   The governed lists are in en-AU, the reference language.
-   For each record type in RECORD_TYPES it checks that the full form,
+   The governed lists are in en-AU, the reference language. The record type
+   registry (record-types.json) and the seed source registry (seed-sources.json)
+   are checked against their schemas, and every known value of an open
+   enumeration against the schema it annotates.
+   For each record type in RECORD_TYPES (read from record-types.json) it checks that the full form,
    FactValues, the compact form and the submissions name the same facts with
    the same value shapes and share one set of required facts.
 2. Each document is validated against its schema with format checking on
@@ -34,7 +37,11 @@ The script runs three stages:
    lowest figures, the always-human list derived from the schema's safety
    fact markers, ferry terminals, translations that name only codes and
    attributes of the reference list from a folder named for their language
-   and carry the SPDX header, and a few cross-field rules.
+   and carry the SPDX header, record types across merges, unmerges, splits and
+   replacements, retracted stubs that keep nothing, photo licences against their
+   provenance, and a few cross-field rules. Every published document (records in
+   both forms and changes) is walked for contributor, submission, upload and API
+   key identifiers, which it must never carry (ADR 0038).
 
 A top-level "$comment" in a document (the SPDX header of the example files)
 is removed before validation against the schema.
@@ -600,6 +607,8 @@ class SemanticChecker:
     def published(self, node: Any, where: str = "") -> None:
         """No contributor, submission, upload or API key identifier anywhere in published data."""
         if isinstance(node, dict):
+            if "display_name" in node and node.get("source_kind") != "contributor":
+                self.fail(f"{where}/display_name", "only a direct contributor's fact can name them")
             for key, value in node.items():
                 if key in PRIVATE_KEYS:
                     self.fail(f"{where}/{key}", f"published data never carries {key}")
@@ -982,22 +991,23 @@ def check_record_type_registry(context: Context) -> list[str]:
     codes = [entry["code"] for entry in document["entries"]]
     if len(codes) != len(set(codes)):
         problems.append(f"{RECORD_TYPE_REGISTRY}: duplicate codes")
-    for entry, record_type in zip(document["entries"], RECORD_TYPES):
-        where = f"{RECORD_TYPE_REGISTRY} {entry['code']}"
-        if reserved.match(f"otwd:{entry['code']}:"):
+    for entry in document["entries"]:
+        code, where = entry["code"], f"{RECORD_TYPE_REGISTRY} {entry['code']}"
+        if reserved.match(f"otwd:{code}:"):
             problems.append(f"{where}: the ID kind is reserved for another identifier")
+        stem = code.replace("_", "-")
         if (entry["full_schema"], entry["compact_schema"]) != (
-            record_type.full,
-            record_type.compact,
+            schema_file(stem),
+            schema_file(f"{stem}-compact"),
         ):
-            problems.append(
-                f"{where}: schemas must be {record_type.full} and {record_type.compact}"
-            )
+            problems.append(f"{where}: schemas must be named after the code, as {stem}.schema.json")
         for name in (entry["full_schema"], entry["compact_schema"]):
             if name not in context.schemas:
                 problems.append(f"{where}: {name} does not exist")
-        if entry["creation_kind"] != record_type.new_kind:
-            problems.append(f"{where}: creation_kind must be {record_type.new_kind}")
+        if entry["creation_kind"] != f"new_{code}":
+            problems.append(f"{where}: creation_kind must be new_{code}")
+        if entry["creation_kind"] not in submission_kinds(context):
+            problems.append(f"{where}: {entry['creation_kind']} is not a known submission kind")
     return problems
 
 

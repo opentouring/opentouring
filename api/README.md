@@ -14,7 +14,7 @@ Redocly resolves the relative references into `../schema/`. To produce a single 
 
 ## Record types
 
-The record type registry (`GET /v1/record-types`, from `schema/record-types.json`) lists every record type with its geometry, schemas and path, and a minor version can add one. The API serves four record types today, with the same conventions: sites (`/v1/sites`), road restrictions (`/v1/road-restrictions`), road segments (`/v1/road-segments`) and ferry services (`/v1/ferry-services`). Each has a list endpoint and a get endpoint by public ID, the compact and full views, ETags, 301 redirects for merged records, closures, photos, bulk downloads, change feed coverage and submissions, and the sections below describe them for every record type. Sites and road restrictions are points, and road segments and ferry services are lines. OTWD serves no map tiles.
+The record type registry (`GET /v1/record-types`, from `schema/record-types.json`) lists every record type with its geometry, schemas and path, and a minor version can add one. The registry lists four record types today, and the API serves every record type with the same conventions: sites (`/v1/sites`), road restrictions (`/v1/road-restrictions`), road segments (`/v1/road-segments`) and ferry services (`/v1/ferry-services`). Each has a list endpoint and a get endpoint by public ID, the compact and full views, ETags, 301 redirects for merged records, closures, photos, bulk downloads, change feed coverage and submissions, and the sections below describe them for every record type. Sites and road restrictions are points, and road segments and ferry services are lines. OTWD serves no map tiles.
 
 ## Finding records along a route
 

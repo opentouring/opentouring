@@ -41,7 +41,7 @@ Copyright stays with each contributor. Code contributions are licensed under the
 
 OTWD data is published under CC BY 4.0. Attribute it as "Open Touring contributors, OTWD, CC BY 4.0" with a link to https://opentouring.org. Some facts come from seed sources that require their own attribution, and that attribution is carried in each fact's provenance and in the attribution file shipped with every bulk download.
 
-Photos are licensed under CC BY 4.0 by the person who took them. Data contributors keep ownership of what they submit and grant the operator and its successors the rights described in the contributor terms, which are a draft and not yet in force ([docs/contributor-terms-draft.md](docs/contributor-terms-draft.md)).
+A contributor's photo is licensed by the person who took it under CC BY 4.0, or CC0 1.0 if they choose, and a photo from a seed source keeps that source's compatible licence ([ADR 0037](docs/adr/0037-structured-attribution-and-photo-licences.md)). Data contributors keep ownership of what they submit and grant the operator and its successors the rights described in the contributor terms, which are a draft and not yet in force ([docs/contributor-terms-draft.md](docs/contributor-terms-draft.md)).
 
 OpenStreetMap data is never imported into OTWD. The website's map uses an OpenStreetMap-based basemap for display, with OpenStreetMap attribution.
 

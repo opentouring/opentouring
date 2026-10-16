@@ -13,9 +13,11 @@ info:
     downloads and the change feed, and send their contributors' submissions, which are moderated
     before they become changes.
 
-    Sites, road restrictions, road segments and ferry services are the four record types. They
-    share public IDs, facts with provenance, compact and full views, closures, merges, the change
-    feed and submissions, so everything below about sites applies to all four. Sites and road
+    Sites, road restrictions, road segments and ferry services are the record types today, and
+    GET /v1/record-types lists them. A minor version can add one, so skip records, changes and
+    downloads of a record type you do not know. Every record type shares public IDs, facts with
+    provenance, compact and full views, closures, merges, the change feed and submissions, so
+    everything below about sites applies to all of them. Sites and road
     restrictions are points. Road segments and ferry services are lines. OTWD serves no map tiles.
 
     ## Rig filters
@@ -2717,7 +2719,7 @@ components:
           items:
             $ref: "../schema/common.schema.json#/$defs/ChangeSeq"
         appealable_until:
-          description: Last moment the contributor can appeal, with POST /v1/submissions/{submission_id}/appeals or on the Open Touring website.
+          description: Last moment the contributor can appeal. Every contributor, including a partner app's pseudonymous contributors, can appeal with POST /v1/submissions/{submission_id}/appeals, and direct contributors can also appeal on the Open Touring website.
           $ref: "#/components/schemas/Timestamp"
         appeal_of:
           description: When this decision answers an appeal, the decision appealed against.
