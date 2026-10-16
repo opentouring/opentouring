@@ -14,9 +14,6 @@
     "id": {
       "$ref": "common.schema.json#/$defs/SiteId"
     },
-    "redirect_to": {
-      "$ref": "common.schema.json#/$defs/SiteId"
-    },
     "derived": {
       "$ref": "common.schema.json#/$defs/PointDerived"
     },
@@ -244,7 +241,7 @@
       }
     },
     "RequiredFacts": {
-      "description": "The facts a site always has when it is not merged: names, location, site_types. Shared by the full form, the compact form and the submission that creates one.",
+      "description": "The facts a site always has when it is not a stub (merged, replaced or retracted): names, location, site_types. Shared by the full form, the compact form and the submission that creates one.",
       "required": ["names", "location", "site_types"],
       "properties": {
         "names": true,

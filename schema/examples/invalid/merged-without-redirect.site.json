@@ -6,12 +6,9 @@
     "value": "merged",
     "provenance": {
       "source_kind": "contributor",
-      "contributor_id": "otwd:contributor:01KKS1RPGCFYJK8VCTP4V7BMX8",
       "observed_on": "2026-09-20",
       "recorded_at": "2026-09-22T01:00:00Z",
       "confidence": 1.0,
-      "submission_id": "otwd:submission:01M1FXC0GHRDQMWE6VX9BD49SJ",
-      "decision_id": "otwd:decision:01M1Y1A6D57488GYF929K0YA38",
       "change_seq": 21003
     }
   },

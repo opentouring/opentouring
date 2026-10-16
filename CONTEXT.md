@@ -35,12 +35,16 @@ _Avoid_: launch market, region, coverage area
 ### Records and what is known about them
 
 **Record**:
-One thing OTWD keeps facts about under its own public ID: a site, a road restriction, a road segment or a ferry service.
+One thing OTWD keeps facts about under its own public ID: a site, a road restriction, a road segment, a ferry service, or a record of a type registered later.
 _Avoid_: entity, object, feature, item
 
 **Record type**:
-The kind of record: site, road restriction, road segment or ferry service. Every record type shares public IDs, facts with provenance, closures, merges and submissions.
+The kind of record: site, road restriction, road segment or ferry service, as listed in the record type registry. Every record type shares public IDs, facts with provenance, closures, merges and submissions. Consumers skip records of a type they do not know.
 _Avoid_: entity type, layer, collection
+
+**Record type registry**:
+The published list of record types (`record-types.json`, served at `/v1/record-types`), with each one's geometry, schemas, API path and creation kind. A minor version can add a record type to it, with an ADR.
+_Avoid_: type table, entity list
 
 **Site**:
 Any place a traveller stops at that OTWD records, such as a campsite, caravan park, rest area, dump point, ferry terminal or attraction. A point record.
@@ -81,6 +85,10 @@ _Avoid_: default language, master language
 **Translation**:
 The labels and descriptions of one governed list in one language other than the reference language, keyed by code and reviewed like any governed list change. It never changes what a code means. A machine translation an app shows is marked as one and is never a fact.
 _Avoid_: locale file, localisation (for the file)
+
+**Open enumeration**:
+A list of values the contract defines that a minor version can extend, such as change kinds, submission kinds or price units. OTWD sends only the values its schema version lists, and consumers accept any value and apply the fallback the schema gives for one they do not know. Unlike a governed list, it has no labels or mappings and is extended by pull request and ADR.
+_Avoid_: enum (for an open one), extensible enum
 
 **Fact**:
 One field value about a record, such as a facility, a price, opening hours, a rig limit or a vertical clearance, carrying its own provenance.
@@ -131,7 +139,7 @@ A short original text about a record, written by a contributor and published und
 _Avoid_: review, blurb
 
 **Photo**:
-An image of a record, such as a site or the sign at a road restriction, licensed under the data licence by the person who took it, with its embedded location removed.
+An image of a record, such as a site or the sign at a road restriction, with its embedded location removed. A contributor's photo is licensed by the person who took it under CC BY 4.0, or CC0 1.0 if they choose. A photo from a seed source keeps that source's compatible licence and credit.
 _Avoid_: image upload, media
 
 **Public ID**:
@@ -149,6 +157,26 @@ _Avoid_: outage, suspension (as the term)
 **Merge**:
 Combining duplicate records of one record type, where the losing record's public ID redirects to the surviving one.
 _Avoid_: dedupe (as a noun), deletion
+
+**Unmerge**:
+Undoing a wrong merge, so the merged record is a record of its own again under the same public ID, with the facts it had before.
+_Avoid_: split (for this), restore
+
+**Split**:
+Making new records of the same record type from part of a record that described more than one thing. The record keeps its public ID and the rest of its facts.
+_Avoid_: unmerge (for this), fork
+
+**Replacement**:
+Closing a record that was recorded as the wrong record type, such as a low bridge recorded as a site, and redirecting its public ID to a new record of the right type. The record's status becomes replaced.
+_Avoid_: retype, conversion, move
+
+**Retraction**:
+Reducing a record that should never have been published, because the thing does not exist or a takedown removed it, to a stub that keeps only its public ID and status. The API answers it with 410.
+_Avoid_: deletion, purge, withdrawal
+
+**Stub**:
+What remains of a merged, replaced or retracted record: its public ID, status and timestamps, and for a merge or replacement the public ID it redirects to. A stub has no facts and is never listed.
+_Avoid_: tombstone, placeholder
 
 ### Roads and ferries
 
@@ -255,12 +283,24 @@ _Avoid_: buffer, swath
 ### Provenance and sources
 
 **Provenance**:
-Who supplied a fact, through which partner app or seed source, when, and with what confidence.
+Where a fact came from, as published: the kind of source, the partner app or seed source, the dates and the confidence. It never identifies a contributor, and who supplied the fact stays in the identity link.
 _Avoid_: source (on its own), metadata, history
 
 **Seed source**:
 An external open dataset imported under a compatible licence, such as a state parks dataset, recorded as provenance.
 _Avoid_: import, feed, scrape
+
+**Seed source registry**:
+The published list of seed sources (`seed-sources.json`, served at `/v1/seed-sources`), with each one's licence, credit, changes notice and licence review. A seed source is imported only after its licence review is confirmed.
+_Avoid_: source list, data catalogue
+
+**Attribution entry**:
+One credit a record needs, as structured data: the text to show, the licence, links to the licence and the source, and the changes notice where the licence asks for one. A record's attribution list starts with the Open Touring credit.
+_Avoid_: credit string, citation
+
+**Changes notice**:
+The statement of what OTWD changed in a seed source's data or photo, such as mapping it to OTWD codes, which CC BY licences ask a reuser to give.
+_Avoid_: modification flag, disclaimer
 
 **Compatible licence**:
 A licence on outside data that allows OTWD to republish it under CC BY 4.0.
@@ -283,7 +323,7 @@ Opening hours, ferry operating hours, check-in times, seasonal closures and othe
 _Avoid_: UTC schedule, timetable (for the stored hours)
 
 **Confirmation**:
-A later report that an existing fact is still true, recorded as provenance without changing the value.
+A later report that an existing fact is still true, sent as a confirm_facts submission and recorded as provenance without changing the value. A fact publishes how many different contributors confirmed it and when, never who.
 _Avoid_: re-verification, upvote
 
 ### People and applications
@@ -296,8 +336,16 @@ _Avoid_: user, author, editor
 A contributor who signs in to Open Touring itself and is known by a display name.
 _Avoid_: member, account holder
 
+**Display name**:
+The name a direct contributor chooses for their account. It is published with their contributions only if they opt in, which is off by default.
+_Avoid_: username, handle (as the term), real name
+
+**Identity link**:
+The private record that ties each contribution to the contributor who made it: their contributor ID and, for a partner app's contributor, the partner app and pseudonymous ID. OTWD holds it only for moderation, trust scores, rate limits and abuse handling, never publishes it, and never publishes any per-record stand-in for it. ADR 0038 sets how a future per-record contributor reference would be derived if a feature ever needs one.
+_Avoid_: user mapping, identity table
+
 **Pseudonymous ID**:
-The stable identifier a partner app sends for one of its contributors, unique per contributor per partner app, carrying no name or email.
+The stable identifier a partner app sends for one of its contributors, unique per contributor per partner app, carrying no name or email. It is part of the identity link and never published.
 _Avoid_: user ID, anonymous ID
 
 **Partner app**:
@@ -309,8 +357,16 @@ The first partner app to read and contribute back to OTWD, on the same terms as 
 _Avoid_: owner, launch customer
 
 **API key**:
-The credential every reader of OTWD holds, free or paid, that binds them to the terms of service and measures their use.
+The credential every reader of OTWD holds, free or paid, that binds them to the terms of service and measures their use. A secret kept on the partner app's server, never shipped in a client app.
 _Avoid_: token, licence key
+
+**Contributor token**:
+A short-lived credential a partner app's server mints with its API key for one signed-in contributor, so the partner's client app can send that contributor's submissions without holding the key.
+_Avoid_: user token, session key, access key
+
+**Attestation**:
+A platform's check that a request comes from a genuine install of an app, such as Apple App Attest or the Play Integrity API, which a partner app's server verifies before minting a contributor token and reports to OTWD.
+_Avoid_: device check, app verification (as the term)
 
 **Tier**:
 A level of API service, from the free tier up to paid tiers that add volume, a service level, change feeds, delta files and support.
@@ -355,7 +411,7 @@ The fixed code that sends each submission to a human queue or, where allowed, to
 _Avoid_: triage (by the AI), dispatch
 
 **Always-human list**:
-The kinds of submission that routing always sends to a person: new records of every record type, closures, merges and any change to a safety fact. Membership follows from the submission's kind and the safety facts it touches, never from a flag routing sets for itself.
+The kinds of submission that routing always sends to a person: new records of every record type, closures, merges, unmerges, splits, replacements and any submission that changes or confirms a safety fact. Membership follows from the submission's kind and the safety facts it touches, never from a flag routing sets for itself.
 _Avoid_: exceptions, manual list
 
 **Moderation decision**:
@@ -367,8 +423,16 @@ A moderator's correction to a submission before approving it, recorded in the mo
 _Avoid_: edit, override, moderator change
 
 **Appeal**:
-A contributor's request for a moderator to reconsider a moderation decision.
+A contributor's request for a moderator to reconsider a moderation decision, made through the API or the website before the decision's appeal deadline and reviewed by a different moderator.
 _Avoid_: dispute, complaint
+
+**Revert**:
+A change that undoes an earlier change on a moderator's decision, such as after an upheld appeal or to remove everything an abused API key sent, restoring the earlier values with their provenance.
+_Avoid_: rollback, undo
+
+**Takedown**:
+A change that removes content, such as a photo showing a person or text copied without permission, on a moderator's decision for a stated reason. Who asked for it is never published.
+_Avoid_: deletion, removal request, DMCA
 
 **Evaluation set**:
 The collection of human moderation decisions used to measure how well verdicts predict them.
@@ -381,8 +445,12 @@ The current state of every record, built from approved changes, which the API an
 _Avoid_: production table, master data
 
 **Change**:
-An approved submission once applied to the live data, with a sequence number in the change feed.
+One update to the live data, with a sequence number in the change feed. Its kind says what happened to the record and its change origin says why.
 _Avoid_: update, edit, commit
+
+**Change origin**:
+Why a change happened: an approved submission, a revert of an earlier change, a takedown, or a recompute of derived values. Only a recompute has no moderation decision behind it.
+_Avoid_: source, cause, trigger
 
 **Change feed**:
 The ordered stream of changes, by sequence number, that partner apps on paid tiers can follow or receive as webhooks.

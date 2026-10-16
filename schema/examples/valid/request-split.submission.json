@@ -1,0 +1,51 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "request_split",
+  "record_id": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
+  "base_change_seq": 33200,
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "u_7f3d2a9b41c8"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-15T01:00:00Z",
+  "proposed": {
+    "reason": [
+      {
+        "text": "The record covers two camping areas on opposite banks of the creek, reached from different roads.",
+        "lang": "en-AU"
+      }
+    ],
+    "parts": [
+      {
+        "facts": {
+          "names": [
+            {
+              "text": "Bluegum Creek North Bank Camp",
+              "lang": "en",
+              "kind": "primary"
+            }
+          ],
+          "location": {
+            "lat": -26.40311,
+            "lng": 151.80244,
+            "accuracy_m": 20
+          },
+          "site_types": {
+            "primary": "free_camp"
+          }
+        },
+        "facilities": {
+          "toilets": {
+            "available": false
+          }
+        }
+      }
+    ],
+    "remove": ["/facilities/toilets"]
+  }
+}

@@ -27,9 +27,9 @@
       "const": true
     },
     "category": {
-      "description": "plausible: consistent with the evidence and nothing suspicious found. needs_human_judgement: the model cannot tell. likely_duplicate: probably describes an existing record of the same record type. likely_copied: text or photo appears to be copied from elsewhere. implausible: contradicts the evidence, such as a location at sea or an outlier price. safety_concern: could mislead travellers about a safety fact. spam: advertising or unrelated content. abusive: offensive content or personal information.",
-      "type": "string",
-      "enum": [
+      "description": "plausible: consistent with the evidence and nothing suspicious found. needs_human_judgement: the model cannot tell. likely_duplicate: probably describes an existing record of the same record type. likely_copied: text or photo appears to be copied from elsewhere. implausible: contradicts the evidence, such as a location at sea or an outlier price. safety_concern: could mislead travellers about a safety fact. spam: advertising or unrelated content. abusive: offensive content or personal information. Open: routing and moderators treat a category they do not know as needs_human_judgement.",
+      "$ref": "common.schema.json#/$defs/EnumCode",
+      "x-otwd-known-values": [
         "plausible",
         "needs_human_judgement",
         "likely_duplicate",
@@ -83,8 +83,16 @@
         "required": ["kind", "ref"],
         "properties": {
           "kind": {
-            "type": "string",
-            "enum": ["record", "submission", "photo", "seed_record", "fixed_check", "url"]
+            "description": "What the reference points at. Open: a reader shows a reference of a kind it does not know as plain text.",
+            "$ref": "common.schema.json#/$defs/EnumCode",
+            "x-otwd-known-values": [
+              "record",
+              "submission",
+              "photo",
+              "seed_record",
+              "fixed_check",
+              "url"
+            ]
           },
           "ref": {
             "description": "An OTWD ID, a seed source record reference (seed source ID, a hash sign, the record ID), a fixed check name, or an HTTPS URL.",
@@ -147,9 +155,9 @@
           "maxLength": 100
         },
         "tier": {
-          "description": "fast: the small model every submission goes through. strong: the larger model used only for uncertain or high-risk submissions.",
-          "type": "string",
-          "enum": ["fast", "strong"]
+          "description": "fast: the small model every submission goes through. strong: the larger model used only for uncertain or high-risk submissions. Open: a reader treats a tier it does not know as fast.",
+          "$ref": "common.schema.json#/$defs/EnumCode",
+          "x-otwd-known-values": ["fast", "strong"]
         }
       },
       "additionalProperties": false

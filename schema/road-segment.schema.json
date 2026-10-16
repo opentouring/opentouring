@@ -14,9 +14,6 @@
     "id": {
       "$ref": "common.schema.json#/$defs/RoadSegmentId"
     },
-    "redirect_to": {
-      "$ref": "common.schema.json#/$defs/RoadSegmentId"
-    },
     "derived": {
       "$ref": "common.schema.json#/$defs/LineDerived"
     },
@@ -200,7 +197,7 @@
       }
     },
     "RequiredFacts": {
-      "description": "The facts a road segment always has when it is not merged: geometry, and a surface or a vehicle access class. Shared by the full form, the compact form and the submission that creates one.",
+      "description": "The facts a road segment always has when it is not a stub (merged, replaced or retracted): geometry, and a surface or a vehicle access class. Shared by the full form, the compact form and the submission that creates one.",
       "required": ["geometry"],
       "properties": {
         "geometry": true

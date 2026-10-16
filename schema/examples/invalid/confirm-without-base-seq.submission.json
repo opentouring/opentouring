@@ -1,0 +1,19 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "confirm_facts",
+  "record_id": "otwd:site:01KR6JW0QBNHM90XV3GS9Y2G26",
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "u_7f3d2a9b41c8"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-15T07:40:00Z",
+  "observed_on": "2026-10-15",
+  "proposed": {
+    "fields": ["/facts/prices", "/facilities/toilets"]
+  }
+}
