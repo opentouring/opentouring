@@ -1001,6 +1001,71 @@
       },
       "additionalProperties": false
     },
+    "WaterNotices": {
+      "description": "Safety fact. Notices from a water authority or health department that the water supply at a site is not safe to drink as supplied (ADR 0044). OTWD records each notice as the authority published it, with the affected area, local dates and the authority's page, never a live water quality feed: apps send travellers to info_url for the current advice. Apps that show the drinking_water facility show current water notices beside it.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/WaterNotice"
+      }
+    },
+    "WaterNotice": {
+      "description": "One water notice. kind boil_water: boil the water before drinking it or using it for food. do_not_drink: do not drink the water even after boiling, though it may serve other uses as the notice says. do_not_use: do not use the water at all. other: any other water quality advice, described in notes. from and to are local dates as the notice gives them, read in the site's time zone. A notice with no to stays until the authority lifts it. authority is the authority that issued it and info_url its page for the notice or current notices.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["kind", "area", "authority", "info_url", "from"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["boil_water", "do_not_drink", "do_not_use", "other"]
+        },
+        "area": {
+          "description": "The area or supply the notice covers, as it describes them, for example the town supply of Example Creek.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "from": {
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        },
+        "to": {
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false,
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "other"
+          }
+        }
+      },
+      "then": {
+        "required": ["notes"],
+        "properties": {
+          "notes": true
+        }
+      }
+    },
+    "FloodDepthMarker": {
+      "description": "Safety fact. Whether a depth marker (a depth indicator post graduated in metres) stands at a ford or causeway so travellers can read the depth of water over the road, and the road authority with its page for current road conditions (ADR 0044). OTWD records the marker, never a live depth: water rises and falls by the hour, so apps send travellers to info_url and to the marker itself. present false: the crossing has no marker, so the depth cannot be read on site.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["present", "authority", "info_url"],
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
     "AccessFeature": {
       "description": "Wheelchair access to one feature. yes: a wheelchair user can reach and use it without help. limited: usable with help or with difficulty, such as a ramp steeper than the standard allows or a door narrower than a modern chair. no: a wheelchair user cannot reach or use it. notes says what limits it.",
       "type": "object",

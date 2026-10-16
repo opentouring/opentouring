@@ -1,0 +1,11 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/seasonal-caravan-park-tas.site.json",
+  "$patch": [
+    {
+      "op": "add",
+      "path": "/facts/water_notices/value/0/to",
+      "value": "2026-10-01"
+    }
+  ]
+}

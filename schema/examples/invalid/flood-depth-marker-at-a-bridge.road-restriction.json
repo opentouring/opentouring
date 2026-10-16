@@ -1,0 +1,14 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/floodway-causeway-qld.road-restriction.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/facts/structure/value",
+      "value": {
+        "code": "bridge",
+        "passage": "over"
+      }
+    }
+  ]
+}

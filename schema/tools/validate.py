@@ -104,6 +104,8 @@ GOVERNED_LISTS = {
     PET_SPECIES: "pet species",
     SELF_CONTAINED_SCHEMES: "self-contained scheme",
 }
+# Structures where water crosses the road, the only ones a flood depth marker stands at.
+FLOOD_CROSSINGS = {"ford", "causeway"}
 
 # Submission kinds on the always-human list for every record type, besides the
 # kinds that create a record (new_<record type>).
@@ -450,6 +452,7 @@ class SemanticChecker:
             "pet_transit": self.pet_transit,
             "bait_notices": self.bait_notices,
             "camping_rules": self.camping_rules,
+            "water_notices": self.water_notices,
         }
 
     def fail(self, where: str, message: str) -> None:
@@ -638,6 +641,12 @@ class SemanticChecker:
             label = GOVERNED_LISTS[list_name]
             self.fail(where, f"{label} {scheme!r} is not used in {' or '.join(self.countries)}")
 
+    def water_notices(self, value: list, where: str) -> None:
+        """Notices end after they start."""
+        for index, notice in enumerate(value):
+            if "to" in notice and notice["to"] < notice["from"]:
+                self.fail(f"{where}/{index}/to", "is before from")
+
     def record_rules(self, values: dict, where: str, suffix: str) -> None:
         """Rules across a record's facts that do not apply to a submission's partial facts."""
         closures = values.get("opening_hours", {}).get("seasonal_closures")
@@ -645,6 +654,12 @@ class SemanticChecker:
             self.fail(
                 f"{where}/seasonal_operation",
                 "give the site's season here or in opening_hours.seasonal_closures, not both",
+            )
+        structure = values.get("structure", {}).get("code")
+        if "flood_depth_marker" in values and structure not in FLOOD_CROSSINGS:
+            self.fail(
+                f"{where}/flood_depth_marker",
+                f"a flood depth marker stands only at a ford or causeway, not a {structure}",
             )
 
     def facts(self, values: dict, where: str, suffix: str) -> None:

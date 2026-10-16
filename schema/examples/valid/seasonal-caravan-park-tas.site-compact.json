@@ -59,6 +59,15 @@
     "for_sale": true,
     "collection": "prohibited"
   },
+  "water_notices": [
+    {
+      "kind": "boil_water",
+      "area": "The Example Bay town supply, which the park is connected to",
+      "authority": "Example Water Corporation",
+      "info_url": "https://www.example.org/water/boil-water-alerts",
+      "from": "2026-10-04"
+    }
+  ],
   "country_code": "AU",
   "subdivision_code": "AU-TAS",
   "locality": "Example Bay",
@@ -76,5 +85,6 @@
     }
   },
   "min_confidence": 0.86,
+  "safety_facts_observed_on": "2026-10-03",
   "attribution": ["Open Touring contributors, opentouring.org, CC BY 4.0"]
 }

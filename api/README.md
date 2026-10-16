@@ -31,7 +31,7 @@ The road restriction, road segment and ferry service lists take `route`, the rou
 
 Road restrictions answer the opposite question because they are the obstacles themselves. Other filters follow one pattern: a filter on a fact keeps records where the fact is unknown, and the matching `_known` parameter (`rig_limits_known`, `vehicle_access_class_known`, `towing_permitted_known`) leaves them out. On road segments, `vehicle_access_class` keeps segments a vehicle of that class can use, `towing_permitted` keeps segments with one of the listed values and `has_seasonal_closure` keeps segments with or without a seasonal closure. On ferry services, `vehicle_class` keeps services that carry every listed class.
 
-Sites and road segments take `camping` (allowed, restricted or prohibited), `self_contained_required`, `camping_rules_known`, `permit_kind` and `tide_dependent`. Sites also take `children_allowed` with `age_rules_known` and `open_on` (a local date checked against the site's season). A missing permit or tidal access fact is unknown, never proof that none applies ([ADR 0043](../docs/adr/0043-site-rules-permits-and-amenities.md)).
+Sites and road segments take `camping` (allowed, restricted or prohibited), `self_contained_required`, `camping_rules_known`, `permit_kind` and `tide_dependent`. Sites also take `children_allowed` with `age_rules_known`, `open_on` (a local date checked against the site's season) and `has_water_notice`, and road restrictions take `flood_depth_marker`. A missing permit, water notice or tidal access fact is unknown, never proof that none applies ([ADR 0043](../docs/adr/0043-site-rules-permits-and-amenities.md), [ADR 0044](../docs/adr/0044-water-notices-and-flood-depth-markers.md)).
 
 ## Authentication
 

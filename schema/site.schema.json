@@ -236,6 +236,16 @@
               "$ref": "values.schema.json#/$defs/TidalAccess"
             }
           }
+        },
+        "water_notices": {
+          "description": "Safety fact. Boil water and other water quality notices for the site's supply, as the water authority published them, with its link. Every change needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/WaterNotices"
+            }
+          }
         }
       },
       "additionalProperties": false,
@@ -320,6 +330,9 @@
         },
         "tidal_access": {
           "$ref": "values.schema.json#/$defs/TidalAccess"
+        },
+        "water_notices": {
+          "$ref": "values.schema.json#/$defs/WaterNotices"
         }
       }
     },

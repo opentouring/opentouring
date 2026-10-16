@@ -1,0 +1,47 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:road_restriction:01M0F8RMJC88418Z0QRK6QJP9X",
+  "status": "active",
+  "created_at": "2026-09-08T22:45:00Z",
+  "updated_at": "2026-09-08T22:45:00Z",
+  "change_seq": 40688,
+  "name": "Yabby Creek Causeway",
+  "names": [
+    {
+      "text": "Yabby Creek Causeway",
+      "lang": "en",
+      "kind": "primary"
+    }
+  ],
+  "location": {
+    "lat": -19.30481,
+    "lng": 146.11736,
+    "accuracy_m": 10
+  },
+  "road": {
+    "name": "Yabby Creek Road"
+  },
+  "structure": {
+    "code": "causeway",
+    "passage": "over"
+  },
+  "flood_depth_marker": {
+    "present": true,
+    "authority": "Example Regional Council",
+    "info_url": "https://www.example.org/council/road-conditions",
+    "notes": [
+      {
+        "text": "Depth marker posts on both approaches, graduated to 2 m.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "country_code": "AU",
+  "subdivision_code": "AU-QLD",
+  "locality": "Example Creek",
+  "time_zone": "Australia/Brisbane",
+  "min_confidence": 0.87,
+  "safety_facts_observed_on": "2026-09-05",
+  "attribution": ["Open Touring contributors, opentouring.org, CC BY 4.0"]
+}

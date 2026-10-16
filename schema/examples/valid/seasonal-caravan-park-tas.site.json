@@ -181,6 +181,28 @@
         "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
         "change_seq": 40412
       }
+    },
+    "water_notices": {
+      "value": [
+        {
+          "kind": "boil_water",
+          "area": "The Example Bay town supply, which the park is connected to",
+          "authority": "Example Water Corporation",
+          "info_url": "https://www.example.org/water/boil-water-alerts",
+          "from": "2026-10-04"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
     }
   },
   "facilities": {

@@ -83,7 +83,7 @@ One field value about a record, such as a facility, a price, opening hours, a ri
 _Avoid_: property, field (when the value is meant)
 
 **Safety fact**:
-A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, tidal access to a site or road segment, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures, live baiting programmes and tide times are never facts: OTWD links to the authority instead.
+A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, water notices on a site, tidal access to a site or road segment, a road restriction's location, every limit on it and its flood depth marker, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures, live baiting programmes, live water quality, tide times and live flood depths are never facts: OTWD links to the authority instead.
 _Avoid_: critical field
 
 **Fire district**:
@@ -121,6 +121,10 @@ _Avoid_: dog access, pet access (for a road)
 **Bait notice**:
 A notice that poison baits for pest animals, such as 1080, are laid in or next to a site or road segment, with the area, local dates and the authority's link. A safety fact, because a bait can kill a dog. OTWD records the notice and never the authority's live baiting programme.
 _Avoid_: baiting alert, 1080 warning
+
+**Water notice**:
+A boil water, do not drink or do not use notice for a site's water supply, with the area, local dates and the issuing authority's link. A safety fact. OTWD records the notice as published and never a live water quality feed.
+_Avoid_: boil water alert (as the field name), water warning
 
 **Camping rules**:
 Whether overnight camping at a site or along a road segment is allowed, restricted or prohibited under the rules of the council or land manager that sets them, with the authority and its link, and whether only self-contained vehicles may camp.
@@ -183,6 +187,10 @@ _Avoid_: hazard, obstacle, low bridge (as a record type)
 **Structure**:
 The built thing at a road restriction, from a governed list: bridge, tunnel, overhead structure, causeway or floodway, ford, gate, cattle grid, or no structure when the limit is only signed.
 _Avoid_: asset, object, obstruction
+
+**Flood depth marker**:
+Whether a depth marker post stands at a ford or causeway so travellers can read the depth of water over the road, with the road authority and its link. A safety fact. OTWD never records a live depth.
+_Avoid_: flood gauge, depth reading
 
 **Passage**:
 How the road passes a structure: over it (weight and width matter), under it (vertical clearance matters), through it, or along an open road.

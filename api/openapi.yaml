@@ -297,6 +297,11 @@ paths:
           schema:
             $ref: "../schema/common.schema.json#/$defs/LocalDate"
           example: "2026-12-27"
+        - name: has_water_notice
+          in: query
+          description: When true, returns only sites with a water notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the site's time zone. When false, only sites without a current notice. A missing notice is unknown, so false is not proof that the water is safe to drink.
+          schema:
+            type: boolean
         - $ref: "#/components/parameters/Status"
         - $ref: "#/components/parameters/Country"
         - $ref: "#/components/parameters/Subdivision"
@@ -480,6 +485,11 @@ paths:
             maxItems: 20
             items:
               $ref: "../schema/common.schema.json#/$defs/StructureCode"
+        - name: flood_depth_marker
+          in: query
+          description: When true, returns only fords and causeways with a depth marker. When false, only those recorded as having none, which is where a traveller cannot read the depth on site. Restrictions with no flood_depth_marker fact are left out either way.
+          schema:
+            type: boolean
         - $ref: "#/components/parameters/RigLengthM"
         - $ref: "#/components/parameters/RigHeightM"
         - $ref: "#/components/parameters/RigWidthM"

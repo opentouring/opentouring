@@ -79,14 +79,20 @@
   "bait-notice-in-another-time-zone.road-segment.json": "/facts/bait_notices/value/0/time_zone: Australia/Perth is not one of the record's time zones",
   "adults-only-with-children-allowed.site-compact.json": "/age_rules: {'children_allowed': True, 'min_guest_age': 18",
   "camping-rules-without-authority-link.site.json": "/facts/camping_rules/value: 'info_url' is a required property",
+  "flood-depth-marker-at-a-bridge.road-restriction.json": "a flood depth marker stands only at a ford or causeway, not a bridge",
+  "flood-depth-marker-change-not-marked-safety.change.json": "/safety_fact_changed: is false but /facts/flood_depth_marker changed",
+  "flood-depth-marker-without-road-authority.road-restriction.json": "/facts/flood_depth_marker/value: 'authority' is a required property",
   "other-permit-without-notes.road-segment.json": "/facts/permits/value/0: 'notes' is a required property",
   "permit-without-issuer.road-segment.json": "/facts/permits/value/0: 'authority' is a required property",
   "quiet-hours-in-utc.site.json": "/facts/quiet_hours/value/from: '11:00Z' does not match",
+  "routing-rule-on-water-notices.moderation-decision.json": "a routing rule cannot decide this: /facts/water_notices is a safety fact of a site",
   "seasonal-operation-and-seasonal-closures.site.json": "give the site's season here or in opening_hours.seasonal_closures, not both",
   "self-contained-required-where-camping-allowed.site.json": "is allowed but self-contained vehicles are required",
   "self-contained-scheme-not-used-in-country.site.json": "self-contained scheme 'cmca_scv' is not used in NZ",
   "self-contained-schemes-without-requirement.site.json": "/facts/camping_rules/value/self_contained: {'required': False",
   "tidal-access-change-not-marked-safety.change.json": "/safety_fact_changed: is false but /facts/tidal_access changed",
   "tidal-access-without-tide-source.site.json": "/facts/tidal_access/value: 'info_url' is a required property",
-  "unknown-self-contained-scheme.site.json": "unknown self-contained scheme code 'blue_warrant'"
+  "unknown-self-contained-scheme.site.json": "unknown self-contained scheme code 'blue_warrant'",
+  "water-notice-ends-before-start.site.json": "/facts/water_notices/value/0/to: is before from",
+  "water-notice-without-authority-link.site-compact.json": "/water_notices/0: 'info_url' is a required property"
 }
