@@ -44,7 +44,7 @@ Mappings, checked on the OSM wiki, taginfo and schema.org on 2026-10-16 (`docs/r
 ## Open questions
 
 - **4WD recovery points.** The scope named 4WD recovery points or similar. No primary source found in this session describes fixed recovery points a land manager provides on a track, OSM has no documented tag, and in four-wheel driving "rated recovery points" usually means the points on a vehicle. They are not modelled until a source shows what travellers would look for.
-- **New Zealand transition regulations.** The transition period was extended by regulations made in 2025, which the regulator's page names. Their text could not be retrieved from legislation.govt.nz in this session, so the end date rests on the regulator's page.
+- **New Zealand transition regulations.** Schedule 1AA of the Freedom Camping Act lets regulations extend the transition period. The regulations that set its end could not be retrieved from legislation.govt.nz in this session, so the end date of 6 June 2026 rests on the regulator's page.
 - **Other countries.** No other national self-contained certification scheme was searched for beyond Australia. A country joins the list by proposal when a primary source names its scheme.
 - **Queensland camping permits.** The Queensland Parks and Wildlife Service booking pages returned 403 in this session, so their wording is not quoted.
 
