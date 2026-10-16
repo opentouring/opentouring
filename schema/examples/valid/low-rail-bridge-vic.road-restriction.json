@@ -21,8 +21,6 @@
       "observed_on": "2026-08-01",
       "recorded_at": "2026-09-03T01:00:00Z",
       "confidence": 0.9,
-      "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
-      "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
       "change_seq": 30110
     }
   },
@@ -46,13 +44,10 @@
       ],
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-12",
         "recorded_at": "2026-09-15T05:30:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01M3D36WR0241BJPX7E6TGCPMP",
-        "decision_id": "otwd:decision:01M3QTH780SS0HQ5SS26S3VZC3",
         "change_seq": 30412
       }
     },
@@ -79,8 +74,6 @@
         "observed_on": "2026-08-01",
         "recorded_at": "2026-09-03T01:00:00Z",
         "confidence": 0.9,
-        "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
-        "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
         "change_seq": 30110
       },
       "confirmations": {
@@ -109,8 +102,6 @@
         "observed_on": "2026-08-01",
         "recorded_at": "2026-09-03T01:00:00Z",
         "confidence": 0.9,
-        "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
-        "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
         "change_seq": 30110
       }
     },
@@ -142,8 +133,6 @@
         "observed_on": "2026-08-01",
         "recorded_at": "2026-09-03T01:00:00Z",
         "confidence": 0.9,
-        "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
-        "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
         "change_seq": 30110
       }
     },
@@ -186,13 +175,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-12",
         "recorded_at": "2026-09-15T05:30:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01M3D36WR0241BJPX7E6TGCPMP",
-        "decision_id": "otwd:decision:01M3QTH780SS0HQ5SS26S3VZC3",
         "change_seq": 30412
       }
     }

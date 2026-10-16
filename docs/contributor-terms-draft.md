@@ -41,7 +41,7 @@ By submitting, you promise that:
 
 ## Attribution
 
-The operator credits contributors collectively as "Open Touring contributors". Each fact records the contributor's display name or pseudonymous ID, the partner app it came through and when it was submitted. You agree that collective credit satisfies any attribution you are owed.
+The operator credits contributors collectively as "Open Touring contributors". Published data names the partner app a fact came through and when it was observed, and never identifies you, unless you signed in to Open Touring and chose to show your display name on your contributions. The operator keeps a private record of who contributed what, for moderation, trust scores and handling abuse. You agree that collective credit satisfies any attribution you are owed.
 
 ## Moderation
 

@@ -6,13 +6,10 @@
     "value": "active",
     "provenance": {
       "source_kind": "partner_app",
-      "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
       "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
       "observed_on": "2026-04-20",
       "recorded_at": "2026-04-22T04:00:00Z",
       "confidence": 0.85,
-      "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-      "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
       "change_seq": 9001
     }
   },
@@ -36,13 +33,10 @@
       ],
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     },
@@ -69,10 +63,8 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120,
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4"
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM"
       }
     },
     "site_types": {
@@ -82,13 +74,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     },
@@ -98,13 +87,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     },
@@ -114,13 +100,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     },
@@ -130,13 +113,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     },
@@ -146,13 +126,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     }
@@ -170,13 +147,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     },
@@ -192,13 +166,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-04-20",
         "recorded_at": "2026-04-22T04:00:00Z",
         "confidence": 0.85,
-        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
-        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
         "change_seq": 9001
       }
     }

@@ -84,7 +84,7 @@ flowchart LR
 
 **Pipelines.** Python jobs (GDAL, Shapely, GeoPandas) import seed sources as submissions with seed-source provenance, and build bulk downloads after changes. Seed imports go through the same submission log and moderation pipeline as contributions from people.
 
-**Identity.** A self-hosted OIDC provider (Zitadel or Keycloak) signs in direct contributors and moderators. Contributors who come through a partner app are known only by the pseudonymous ID the partner app sends.
+**Identity.** A self-hosted OIDC provider (Zitadel or Keycloak) signs in direct contributors and moderators. Contributors who come through a partner app are known only by the pseudonymous ID the partner app sends. The identity link between contributors and their contributions stays in the database for moderation, trust scores and abuse handling, and published records, bulk downloads and the change feed never carry it ([ADR 0038](adr/0038-contributor-identity-in-published-data.md)).
 
 **Website.** An Astro site that uses only the public API, with its own API key. Site pages at `/sites/<state>/<slug>-<id>` are rendered on demand and cached at the CDN with stale-while-revalidate, then purged when a change touches the site. The map is a MapLibre GL island on a free OSM-based basemap. The developer portal is Starlight, with API reference generated from the OpenAPI spec. Contribute and moderate pages are signed-in islands that call the API. Per-language routes will come later, with governed list labels in the reader's language and contributors' free text in the language it was written in.
 

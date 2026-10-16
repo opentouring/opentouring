@@ -8,6 +8,5 @@
   "changed_fields": ["/facts/names", "/facts/location", "/facts/site_types"],
   "safety_fact_changed": false,
   "split_from": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
-  "submission_id": "otwd:submission:01M6GDV1E1S92AWVEWE1SMV3K8",
   "decision_id": "otwd:decision:01MD3K44KKATG802DXA2RCP6DV"
 }

@@ -3,7 +3,7 @@
   "$id": "https://schema.opentouring.org/otwd/v1/change.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD change",
-  "description": "A change applied to the live data, as it appears in the change feed (GET /v1/changes), in change webhooks and in delta files. It covers every record type and names the record in record_id. kind says what the change did to the record and origin says why it happened: most changes apply an approved submission, and the others revert an earlier change, carry out a takedown or recompute derived values (ADR 0036). Sequence numbers are global, strictly increasing in the order changes are applied, and never reused. They may have gaps, so use previous_seq to detect a missed change to one record. The change feed is retained for 90 days, and a consumer that falls further behind starts again from a full bulk download.",
+  "description": "A change applied to the live data, as it appears in the change feed (GET /v1/changes), in change webhooks and in delta files. It covers every record type and names the record in record_id. kind says what the change did to the record and origin says why it happened: most changes apply an approved submission (without naming it), and the others revert an earlier change, carry out a takedown or recompute derived values (ADR 0036). Sequence numbers are global, strictly increasing in the order changes are applied, and never reused. They may have gaps, so use previous_seq to detect a missed change to one record. The change feed is retained for 90 days, and a consumer that falls further behind starts again from a full bulk download.",
   "type": "object",
   "required": ["seq", "record_id", "kind", "origin", "applied_at", "changed_fields"],
   "properties": {
@@ -123,11 +123,8 @@
       "$ref": "common.schema.json#/$defs/EnumCode",
       "x-otwd-known-values": ["boundary_update", "tz_database_update", "geometry_reprocessed"]
     },
-    "submission_id": {
-      "$ref": "common.schema.json#/$defs/SubmissionId"
-    },
     "decision_id": {
-      "description": "The moderation decision behind the change. Absent for origin recompute, which no one decides.",
+      "description": "The moderation decision behind the change. Absent for origin recompute, which no one decides. Changes never name the submission, so the change feed cannot be joined to who submitted (ADR 0038). A partner app finds the changes its own submissions produced in their status.",
       "$ref": "common.schema.json#/$defs/DecisionId"
     }
   },
@@ -266,7 +263,7 @@
       }
     },
     {
-      "description": "A change that applies a submission names the submission and the decision.",
+      "description": "A change that applies a submission names the decision that approved it.",
       "if": {
         "properties": {
           "origin": {
@@ -275,15 +272,14 @@
         }
       },
       "then": {
-        "required": ["submission_id", "decision_id"],
+        "required": ["decision_id"],
         "properties": {
-          "submission_id": true,
           "decision_id": true
         }
       }
     },
     {
-      "description": "A revert names the change it undoes and the decision that ordered it, never a submission.",
+      "description": "A revert names the change it undoes and the decision that ordered it.",
       "if": {
         "properties": {
           "origin": {
@@ -292,23 +288,11 @@
         }
       },
       "then": {
-        "allOf": [
-          {
-            "required": ["reverts_seq", "decision_id"],
-            "properties": {
-              "reverts_seq": true,
-              "decision_id": true
-            }
-          },
-          {
-            "not": {
-              "required": ["submission_id"],
-              "properties": {
-                "submission_id": true
-              }
-            }
-          }
-        ]
+        "required": ["reverts_seq", "decision_id"],
+        "properties": {
+          "reverts_seq": true,
+          "decision_id": true
+        }
       },
       "else": {
         "not": {
@@ -320,7 +304,7 @@
       }
     },
     {
-      "description": "A takedown names its reason and the decision, never a submission, so the requester is never exposed.",
+      "description": "A takedown names its reason and the decision. Like every change it never names a submission, so the requester is never exposed.",
       "if": {
         "properties": {
           "origin": {
@@ -329,23 +313,11 @@
         }
       },
       "then": {
-        "allOf": [
-          {
-            "required": ["takedown_reason", "decision_id"],
-            "properties": {
-              "takedown_reason": true,
-              "decision_id": true
-            }
-          },
-          {
-            "not": {
-              "required": ["submission_id"],
-              "properties": {
-                "submission_id": true
-              }
-            }
-          }
-        ]
+        "required": ["takedown_reason", "decision_id"],
+        "properties": {
+          "takedown_reason": true,
+          "decision_id": true
+        }
       },
       "else": {
         "not": {
@@ -357,7 +329,7 @@
       }
     },
     {
-      "description": "A recompute changes derived values only, names its reason, and has no submission or decision. derived_updated comes only from a recompute.",
+      "description": "A recompute changes derived values only, names its reason, and has no decision. derived_updated comes only from a recompute.",
       "if": {
         "properties": {
           "origin": {
@@ -375,20 +347,10 @@
           },
           {
             "not": {
-              "anyOf": [
-                {
-                  "required": ["submission_id"],
-                  "properties": {
-                    "submission_id": true
-                  }
-                },
-                {
-                  "required": ["decision_id"],
-                  "properties": {
-                    "decision_id": true
-                  }
-                }
-              ]
+              "required": ["decision_id"],
+              "properties": {
+                "decision_id": true
+              }
             }
           }
         ],

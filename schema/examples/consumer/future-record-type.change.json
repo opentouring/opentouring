@@ -7,6 +7,5 @@
   "applied_at": "2027-03-02T04:10:00Z",
   "changed_fields": ["/facts/names", "/facts/location"],
   "safety_fact_changed": false,
-  "submission_id": "otwd:submission:01M4B8Q9N3P7S1V5X9Z3B7D1F5",
   "decision_id": "otwd:decision:01M4B8R0P4R8T2W6Y0A4C8E2G6"
 }

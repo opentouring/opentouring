@@ -247,7 +247,7 @@ _Avoid_: buffer, swath
 ### Provenance and sources
 
 **Provenance**:
-Who supplied a fact, through which partner app or seed source, when, and with what confidence.
+Where a fact came from, as published: the kind of source, the partner app or seed source, the dates and the confidence. It never identifies a contributor, and who supplied the fact stays in the identity link.
 _Avoid_: source (on its own), metadata, history
 
 **Seed source**:
@@ -300,8 +300,16 @@ _Avoid_: user, author, editor
 A contributor who signs in to Open Touring itself and is known by a display name.
 _Avoid_: member, account holder
 
+**Display name**:
+The name a direct contributor chooses for their account. It is published with their contributions only if they opt in, which is off by default.
+_Avoid_: username, handle (as the term), real name
+
+**Identity link**:
+The private record that ties each contribution to the contributor who made it: their contributor ID and, for a partner app's contributor, the partner app and pseudonymous ID. OTWD holds it only for moderation, trust scores, rate limits and abuse handling, never publishes it, and never publishes any per-record stand-in for it. ADR 0038 sets how a future per-record contributor reference would be derived if a feature ever needs one.
+_Avoid_: user mapping, identity table
+
 **Pseudonymous ID**:
-The stable identifier a partner app sends for one of its contributors, unique per contributor per partner app, carrying no name or email.
+The stable identifier a partner app sends for one of its contributors, unique per contributor per partner app, carrying no name or email. It is part of the identity link and never published.
 _Avoid_: user ID, anonymous ID
 
 **Partner app**:

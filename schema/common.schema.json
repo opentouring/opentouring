@@ -79,7 +79,7 @@
       "pattern": "^otwd:upload:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
     },
     "ContributorId": {
-      "description": "OTWD's own public ID for a contributor. Signed-in contributors receive one at sign-in. Contributors who reach OTWD through a partner app receive one the first time the partner app sends their pseudonymous ID, and the pseudonymous ID itself is never published.",
+      "description": "OTWD's own ID for a contributor. Signed-in contributors receive one at sign-in. Contributors who reach OTWD through a partner app receive one the first time the partner app sends their pseudonymous ID. It is private: it appears in submissions a direct contributor sends, in moderation records and in moderator endpoints, and never in published data (ADR 0038). The pseudonymous ID behind it is never published either.",
       "type": "string",
       "pattern": "^otwd:contributor:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
     },
@@ -379,24 +379,21 @@
       }
     },
     "Provenance": {
-      "description": "Who supplied a fact, through which partner app or seed source, when, and with what confidence. Every fact carries one. Every fact reaches the live data through a submission, a moderation decision and a change, including seed source imports, so all three are always named.",
+      "description": "Where a fact came from, as published: the kind of source, the partner app or seed source, the dates, the confidence and the change that set it. It never identifies a contributor (ADR 0038). OTWD keeps who supplied each fact privately, in the submission log, for moderation, trust scores and abuse handling. A direct contributor who chose to be named shows only their display name.",
       "type": "object",
-      "required": [
-        "source_kind",
-        "recorded_at",
-        "confidence",
-        "submission_id",
-        "decision_id",
-        "change_seq"
-      ],
+      "required": ["source_kind", "recorded_at", "confidence", "change_seq"],
       "properties": {
         "source_kind": {
           "description": "contributor: a signed-in contributor supplied the fact directly. partner_app: a partner app supplied it, usually on behalf of one of its contributors. seed_source: it was imported from an open dataset. Open: a consumer treats a source kind it does not know as an unnamed source and still reads the fact's confidence.",
           "$ref": "#/$defs/EnumCode",
           "x-otwd-known-values": ["contributor", "partner_app", "seed_source"]
         },
-        "contributor_id": {
-          "$ref": "#/$defs/ContributorId"
+        "display_name": {
+          "description": "For source_kind contributor only, and only when the direct contributor chose to be named on their contributions, which is off by default: the display name they chose. Never an email address. A name repeated across records links them, so apps should not encourage it.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "^[^@]+$"
         },
         "partner_app_id": {
           "$ref": "#/$defs/PartnerAppId"
@@ -418,14 +415,8 @@
           "minimum": 0,
           "maximum": 1
         },
-        "submission_id": {
-          "$ref": "#/$defs/SubmissionId"
-        },
-        "decision_id": {
-          "$ref": "#/$defs/DecisionId"
-        },
         "change_seq": {
-          "description": "The change that set this fact. Submissions are checked for conflicts against it.",
+          "description": "The change that set this fact. Submissions are checked for conflicts against it, and the change names the moderation decision behind it.",
           "$ref": "#/$defs/ChangeSeq"
         },
         "moderator_edited": {
@@ -445,15 +436,21 @@
             }
           },
           "then": {
-            "required": ["contributor_id"],
-            "properties": {
-              "contributor_id": true
-            },
             "not": {
-              "required": ["seed_source"],
-              "properties": {
-                "seed_source": true
-              }
+              "anyOf": [
+                {
+                  "required": ["seed_source"],
+                  "properties": {
+                    "seed_source": true
+                  }
+                },
+                {
+                  "required": ["partner_app_id"],
+                  "properties": {
+                    "partner_app_id": true
+                  }
+                }
+              ]
             }
           }
         },
@@ -466,16 +463,32 @@
             }
           },
           "then": {
-            "required": ["partner_app_id"],
-            "properties": {
-              "partner_app_id": true
-            },
-            "not": {
-              "required": ["seed_source"],
-              "properties": {
-                "seed_source": true
+            "allOf": [
+              {
+                "required": ["partner_app_id"],
+                "properties": {
+                  "partner_app_id": true
+                }
+              },
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": ["seed_source"],
+                      "properties": {
+                        "seed_source": true
+                      }
+                    },
+                    {
+                      "required": ["display_name"],
+                      "properties": {
+                        "display_name": true
+                      }
+                    }
+                  ]
+                }
               }
-            }
+            ]
           }
         },
         {
@@ -487,26 +500,32 @@
             }
           },
           "then": {
-            "required": ["seed_source"],
-            "properties": {
-              "seed_source": true
-            },
-            "not": {
-              "anyOf": [
-                {
-                  "required": ["contributor_id"],
-                  "properties": {
-                    "contributor_id": true
-                  }
-                },
-                {
-                  "required": ["partner_app_id"],
-                  "properties": {
-                    "partner_app_id": true
-                  }
+            "allOf": [
+              {
+                "required": ["seed_source"],
+                "properties": {
+                  "seed_source": true
                 }
-              ]
-            }
+              },
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": ["partner_app_id"],
+                      "properties": {
+                        "partner_app_id": true
+                      }
+                    },
+                    {
+                      "required": ["display_name"],
+                      "properties": {
+                        "display_name": true
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

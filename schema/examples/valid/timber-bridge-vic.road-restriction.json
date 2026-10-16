@@ -6,13 +6,10 @@
     "value": "active",
     "provenance": {
       "source_kind": "partner_app",
-      "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
       "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
       "observed_on": "2026-09-20",
       "recorded_at": "2026-09-24T02:15:00Z",
       "confidence": 0.8,
-      "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-      "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
       "change_seq": 30588
     }
   },
@@ -36,13 +33,10 @@
       ],
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T02:15:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-        "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
         "change_seq": 30588
       }
     },
@@ -54,13 +48,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T02:15:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-        "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
         "change_seq": 30588
       }
     },
@@ -70,13 +61,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T02:15:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-        "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
         "change_seq": 30588
       }
     },
@@ -93,13 +81,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T02:15:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-        "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
         "change_seq": 30588
       }
     },
@@ -116,13 +101,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T02:15:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-        "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
         "change_seq": 30588
       }
     },
@@ -144,13 +126,10 @@
       },
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T02:15:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-        "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
         "change_seq": 30588
       }
     },
@@ -163,13 +142,10 @@
       ],
       "provenance": {
         "source_kind": "partner_app",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T02:15:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
-        "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA",
         "change_seq": 30588
       }
     }

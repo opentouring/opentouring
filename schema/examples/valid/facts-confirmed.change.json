@@ -8,6 +8,5 @@
   "previous_seq": 33120,
   "changed_fields": ["/facts/prices", "/facilities/toilets"],
   "safety_fact_changed": false,
-  "submission_id": "otwd:submission:01M4R98N7R4E5HQJ7XH62J005T",
   "decision_id": "otwd:decision:01M72CFTA7WAFA6VRJGYM6DM21"
 }

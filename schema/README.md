@@ -48,23 +48,23 @@ Each change in `change.schema.json` has a `kind`, what happened to the record, a
 
 ## Facts and provenance
 
-Every fact carries its provenance: who supplied it, through which partner app or seed source, when it was observed, when OTWD recorded it, and with what confidence. In the full form each fact is an object holding the value and its provenance side by side:
+Every fact carries its provenance: what kind of source supplied it, through which partner app or seed source, when it was observed, when OTWD recorded it, with what confidence, and the change that set it. In the full form each fact is an object holding the value and its provenance side by side:
 
 ```json
 "rig_limits": {
   "value": { "max_length_m": 7, "big_rig_suitable": "no" },
   "provenance": {
-    "source_kind": "contributor",
-    "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+    "source_kind": "partner_app",
+    "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
     "observed_on": "2026-09-06",
     "recorded_at": "2026-09-08T23:10:00Z",
     "confidence": 0.8,
-    "submission_id": "otwd:submission:01KSEY055P9K7NVDVYTYQ12B0M",
-    "decision_id": "otwd:decision:01KSVP53ET0XV8C1K5Y3HC83EP",
     "change_seq": 20211
   }
 }
 ```
+
+Published provenance never identifies a contributor ([ADR 0038](../docs/adr/0038-contributor-identity-in-published-data.md)). It names the partner app, or the seed source, and the date. A direct contributor appears as `source_kind` contributor, with their `display_name` only if they chose to be named. Contributor IDs, pseudonymous IDs and submission IDs stay in the submission log, where moderation, trust scores and abuse handling use them, and `tools/validate.py` fails any record or change that carries one, in any field. Confirmations publish a count of different contributors, never who they were.
 
 Every record type uses the same fact wrapper, `Fact` in `common.schema.json`, and constrains its `value` with the value shape from `values.schema.json`. The parts every record shares live in `common.schema.json` once: the full form envelope (`FullRecord`: identity, `StatusFact`, timestamps, `change_seq`, photos and the merge rule), the compact form envelope (`CompactRecord`: the same with the closure fields flattened, the primary `name`, `attribution`, `min_confidence` and `safety_facts_observed_on`), and derived values (`PointDerivedValues` and `LineDerivedValues`, wrapped as `PointDerived` and `LineDerived` in the full form). A change to how provenance, status or photos work is made once for all four record types.
 

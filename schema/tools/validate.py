@@ -119,6 +119,12 @@ ALWAYS_HUMAN_KINDS = {
     "request_split",
     "request_replacement",
 }
+# Published data (records in both forms, bulk download rows, which are records, and changes)
+# never identifies a contributor or anything that links back to one (ADR 0038). These are
+# checked anywhere in a published document, so a future free-text or extension field cannot
+# carry them either.
+PRIVATE_ID = re.compile(r"otwd:(contributor|submission|upload|api_key):")
+PRIVATE_KEYS = {"contributor_id", "pseudonymous_id", "submission_id", "moderator_id", "api_key_id"}
 # The licences a contributor may choose for their own photo (ADR 0037).
 CONTRIBUTOR_PHOTO_LICENCES = {"CC-BY-4.0", "CC0-1.0"}
 # The top-level fields of a retracted stub: everything else was removed with the record.
@@ -591,6 +597,23 @@ class SemanticChecker:
         for source in sorted({source for source in sources if sources.count(source) > 1}):
             self.fail("/attribution", f"{source} is credited more than once")
 
+    def published(self, node: Any, where: str = "") -> None:
+        """No contributor, submission, upload or API key identifier anywhere in published data."""
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key in PRIVATE_KEYS:
+                    self.fail(f"{where}/{key}", f"published data never carries {key}")
+                self.published(value, f"{where}/{key}")
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                self.published(value, f"{where}/{index}")
+        elif isinstance(node, str) and PRIVATE_ID.search(node):
+            self.fail(
+                where,
+                "published data never carries a contributor, submission, upload or API key "
+                "identifier",
+            )
+
     def other_type(self, record_id: str, other: str, where: str) -> None:
         """A replacement is a record of another record type."""
         if record_type_of(other) == record_type_of(record_id):
@@ -613,6 +636,7 @@ class SemanticChecker:
 
 def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
     """Any record in either form. The full form wraps facts and nests derived values."""
+    checker.published(document)
     if full:
         derived, where, suffix = document.get("derived", {}), "/derived", "/value"
         values = {name: fact["value"] for name, fact in document.get("facts", {}).items()}
@@ -695,6 +719,7 @@ def check_decision_results(document: dict, checker: SemanticChecker) -> None:
 
 
 def check_change(document: dict, checker: SemanticChecker) -> None:
+    checker.published(document)
     record_id = document["record_id"]
     for field in ("merged_into", "unmerged_from", "split_from"):
         if field in document:

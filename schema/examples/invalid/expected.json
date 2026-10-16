@@ -11,7 +11,6 @@
   "unknown-site-type.site.json": "unknown site type code 'poi'",
   "subdivision-not-in-country.site.json": "subdivision NZ-CAN is not in country AU",
   "unknown-time-zone.site.json": "unknown IANA time zone 'Australia/Seymour'",
-  "seed-provenance-with-contributor.site.json": "should not be valid under {'anyOf': [{'required': ['contributor_id'], 'properties'",
   "latitude-out-of-range.site.json": "-95.0 is less than the minimum of -90",
   "photo-wrong-licence.site.json": "'CC-BY-SA-4.0' is not a known value of this open enumeration",
   "currency-lower-case.site.json": "'aud' does not match",
@@ -57,7 +56,6 @@
   "submission-id-as-record-id.change.json": "should not be valid under {'$ref': '#/$defs/NonRecordId'}",
   "unknown-change-kind.change.json": "'facts_reordered' is not a known value of this open enumeration",
   "recompute-changes-a-fact.change.json": "'/derived' was expected",
-  "takedown-names-submission.change.json": "should not be valid under {'required': ['submission_id']",
   "revert-without-target.change.json": "'reverts_seq' is a required property",
   "replaced-by-same-type.site.json": "a replacement is another record type",
   "retracted-keeps-name.site-compact.json": "a retracted record keeps only its stub",
@@ -68,5 +66,10 @@
   "attribution-without-changes.road-restriction-compact.json": "'changes' is a required property",
   "attribution-not-led-by-open-touring.site-compact.json": "'Open Touring contributors' was expected",
   "attribution-as-text.site-compact.json": "is not of type 'object'",
-  "seed-photo-relicensed.site.json": "a photo from a seed source keeps its licence"
+  "seed-photo-relicensed.site.json": "a photo from a seed source keeps its licence",
+  "seed-provenance-with-partner-app.site.json": "should not be valid under {'anyOf': [{'required': ['partner_app_id'], 'properties'",
+  "submission-id-in-change.change.json": "'submission_id' was unexpected",
+  "contributor-id-in-provenance.site.json": "'contributor_id' was unexpected",
+  "display-name-on-partner-app-fact.site.json": "should not be valid under {'anyOf': [{'required': ['seed_source']",
+  "contributor-id-in-description.site-compact.json": "published data never carries a contributor, submission, upload or API key identifier"
 }
