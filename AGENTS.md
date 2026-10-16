@@ -40,7 +40,7 @@ Site types, facilities, structures, surfaces, vehicle access classes and vehicle
 
 ### Issue tracker
 
-GitHub Issues on opentouring/opentouring, drafted under `.scratch/` until the GitHub organisation exists. See `docs/agents/issue-tracker.md`.
+GitHub Issues on opentouring/opentouring. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
