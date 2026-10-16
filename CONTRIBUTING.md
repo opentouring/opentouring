@@ -50,9 +50,7 @@ Values stay global: no country-specific values, metric units only, ISO 3166 code
 
 ## Translating the governed lists
 
-The governed lists are written in en-AU, the reference language, and can be translated into any language. A translation is a file at `schema/i18n/<language>/<list file>` holding labels and descriptions keyed by code. It never changes codes, safety facts or mappings. Translations are contributed as pull requests and reviewed like any governed list change, by a speaker of the language. [schema/i18n/README.md](schema/i18n/README.md) explains the format and the steps. Write the text yourself or check every line of a draft: unreviewed machine translation is not accepted.
-
-A web tool for translators who do not use git is planned, most likely Weblate, which is open source and offers free hosting to libre projects. It is not set up yet.
+The governed lists are written in en-AU, the reference language, and can be translated into any language. A translation is a file at `schema/i18n/<language>/<list file>` holding labels and descriptions keyed by code. It never changes codes, safety facts or mappings. Translations are contributed as pull requests and reviewed like any governed list change, by a speaker of the language. Issues and pull requests for the governed lists, translations included, carry the `governed-list` label. [schema/i18n/README.md](schema/i18n/README.md) explains the format and the steps. Write the text yourself or check every line of a draft: unreviewed machine translation is not accepted.
 
 ## Data contributions
 

@@ -817,11 +817,10 @@
       }
     },
     "TimeZones": {
-      "description": "Every IANA time zone the line passes through, in order from its start, so the first is time_zone. A schedule's own time_zone must be one of them.",
+      "description": "Every IANA time zone the line passes through, in order from its start, so the first is time_zone. A zone appears again each time the line returns to it, as on a track from South Australia into Victoria and back, but never twice in a row (tools/validate.py checks this). A schedule's own time_zone must be one of them.",
       "type": "array",
       "minItems": 1,
       "maxItems": 10,
-      "uniqueItems": true,
       "items": {
         "$ref": "#/$defs/TimeZone"
       }

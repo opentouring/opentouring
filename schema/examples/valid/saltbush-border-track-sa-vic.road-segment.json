@@ -23,8 +23,8 @@
     "subdivision_codes": ["AU-SA", "AU-VIC"],
     "localities": ["Pinnaroo", "Murrayville"],
     "time_zone": "Australia/Adelaide",
-    "time_zones": ["Australia/Adelaide", "Australia/Melbourne"],
-    "length_km": 13.9
+    "time_zones": ["Australia/Adelaide", "Australia/Melbourne", "Australia/Adelaide"],
+    "length_km": 22.8
   },
   "facts": {
     "names": {
@@ -55,7 +55,10 @@
           [140.94872, -35.52611],
           [140.9652, -35.52702],
           [140.99814, -35.5294],
-          [141.03106, -35.53215]
+          [141.03106, -35.53215],
+          [141.0085, -35.5512],
+          [140.9802, -35.5638],
+          [140.9411, -35.5702]
         ]
       },
       "provenance": {
@@ -145,7 +148,7 @@
             "to": "02-28",
             "notes": [
               {
-                "text": "The Victorian section closes over summer for fire danger. The gate is at the border fence.",
+                "text": "The Victorian loop closes over summer for fire danger, with gates at both border crossings.",
                 "lang": "en-AU"
               }
             ]

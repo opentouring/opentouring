@@ -45,10 +45,9 @@ info:
 
     ## Languages
 
-    Governed list endpoints honour `Accept-Language`. Labels and descriptions are written in en-AU,
-    the reference language, and translated by contributors. A missing translation falls back from
-    the requested tag to its base language and then to en-AU, so a label is never blank. The
-    response carries `Content-Language` and `Vary: Accept-Language`.
+    Governed list endpoints honour `Accept-Language`, with the fallback the parameter describes.
+    Labels and descriptions are written in en-AU, the reference language, and translated by
+    contributors. The response carries `Content-Language` and `Vary: Accept-Language`.
 
     Record responses are not translated. They carry codes, which apps label from the governed
     lists in the traveller's language, and free text such as names, descriptions and notes in the
@@ -1319,7 +1318,7 @@ components:
     AcceptLanguage:
       name: Accept-Language
       in: header
-      description: The languages the reader prefers, as in RFC 9110, for example de-AT, de;q=0.8. Governed list labels and descriptions are served in the best match. A missing translation falls back from the tag to its base language (de-AT to de) and then to en-AU, the reference language, and the entry names the language it fell back to in label_lang or description_lang. Without this header the list is served in en-AU.
+      description: The languages the reader prefers, as in RFC 9110, for example de-AT, de;q=0.8. Governed list text is served in the best match. A missing translation falls back to the base language (de-AT to de), then to en-AU, and label_lang or description_lang names the language used. Without this header the list is in en-AU.
       schema:
         type: string
         maxLength: 200

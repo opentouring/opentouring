@@ -12,15 +12,16 @@ i18n/
     └── ...
 ```
 
-`<language>` is a BCP 47 tag, such as `de`, `fr-CA` or `pjt` (Pitjantjatjara). Use the base language (`de`) for text that suits every region, and add a regional tag (`de-AT`) only for the entries that differ there: a missing entry falls back from `de-AT` to `de` and then to en-AU, so nothing shows blank.
+`<language>` is a BCP 47 tag in its canonical case, such as `de`, `fr-CA`, `en-US` or `pjt` (Pitjantjatjara). Tags compare case-insensitively, but the folder is always written in canonical case. Use the base language (`de`) for text that suits every region, and add a regional tag (`de-AT`) only for the entries that differ there, because a missing entry falls back to the base language and then to en-AU ([ADR 0031](../../docs/adr/0031-governed-lists-and-the-api-are-translatable.md)).
 
 ## What a translation holds
 
-A translation follows `../translation.schema.json`. It names its `list`, its `language` (the same as its folder) and the `reference_version` of the governed list it was translated from, and gives the text for each code it covers:
+A translation follows `../translation.schema.json`. Like every governed list file, it starts with the SPDX licence header in `$comment`. It names its `list`, its `language` (the same as its folder) and the `reference_version` of the governed list it was translated from, and gives the text for each code it covers:
 
 ```json
 {
   "$schema": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
   "list": "facilities",
   "language": "de",
   "reference_version": "1.0.0",
@@ -40,7 +41,7 @@ It holds labels, descriptions and attribute descriptions only. Codes, safety fac
 
 1. Copy the label and description of each entry from the reference list and write them in your language. Write them yourself, or check every line of a draft against the reference: unreviewed machine translation is not accepted.
 2. Save the file as `i18n/<language>/<list file>`, with `reference_version` set to the version of the list you translated from.
-3. Run `npm run check:schema`. It checks the file against the schema, the reference list and its folder.
-4. Open a pull request titled "Governed list: `<language>` translation of `<list>`", with the governed-list label. It is reviewed like any governed list change, by a speaker of the language, before it merges.
+3. Run `npm run check:schema`. It checks the file against the schema, the reference list and its folder, and checks that it carries the SPDX header.
+4. Open a pull request titled "Governed list: `<language>` translation of `<list>`". It gets the `governed-list` label. It is reviewed like any governed list change, by a speaker of the language, before it merges.
 
 When the reference list gains entries, they show in en-AU until someone translates them and raises `reference_version`.

@@ -29,15 +29,15 @@ The script runs three stages:
    (date, date-time, uri, email, json-pointer).
 3. Rules that JSON Schema cannot express, and that the API also enforces,
    are checked: governed list codes, ISO 3166-2 prefixes, IANA time zones
-   (a line's time_zones start with its time_zone and hold every schedule's own
-   time_zone),
+   (a line's time_zones start with its time_zone, never list one zone twice in a
+   row and hold every schedule's own time_zone),
    lowest figures, the always-human list derived from the schema's safety
    fact markers, ferry terminals, translations that name only codes and
-   attributes of the reference list from a folder named for their language,
-   and a few cross-field rules.
+   attributes of the reference list from a folder named for their language
+   and carry the SPDX header, and a few cross-field rules.
 
 A top-level "$comment" in a document (the SPDX header of the example files)
-is removed before validation.
+is removed before validation against the schema.
 
 Files under examples/valid and i18n must pass. Files under examples/invalid must
 fail, and examples/invalid/expected.json names a fragment of the error each one
@@ -65,6 +65,7 @@ SCHEMA_DIR = Path(__file__).resolve().parent.parent
 EXAMPLES = SCHEMA_DIR / "examples"
 BASE = "https://schema.opentouring.org/otwd/v1/"
 COMMENT_KEY = "$comment"
+SPDX_COMMENT = "SPDX-License-Identifier: Apache-2.0"
 SAFETY_MARKER = "x-otwd-safety-fact"
 I18N = "i18n"
 REFERENCE_LANGUAGE = "en-AU"
@@ -108,6 +109,7 @@ def list_file(list_name: str) -> str:
 
 
 def version_tuple(version: str) -> tuple[int, ...]:
+    """A dotted version as numbers, so 1.10.0 sorts after 1.9.0."""
     return tuple(int(part) for part in version.split("."))
 
 
@@ -154,6 +156,34 @@ RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_T
 def load_json(path: Path) -> Any:
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def canonical_tag(tag: str) -> str:
+    """A BCP 47 tag in its canonical case (RFC 5646 section 2.1.1), such as en-US or zh-Hant-TW.
+
+    Tags compare case-insensitively, so two tags are the same language when their canonical
+    forms are equal.
+    """
+    parts = tag.split("-")
+    canonical = [parts[0].lower()]
+    after_singleton = False
+    for part in parts[1:]:
+        after_singleton |= len(part) == 1
+        if after_singleton:
+            canonical.append(part.lower())
+        elif len(part) == 2:
+            canonical.append(part.upper())
+        elif len(part) == 4 and part.isalpha():
+            canonical.append(part.title())
+        else:
+            canonical.append(part.lower())
+    return "-".join(canonical)
+
+
+def record_zones(derived: dict) -> list[str]:
+    """The time zones a record lies in: a line's time_zones, or a point's one time_zone."""
+    time_zone = derived.get("time_zone")
+    return derived.get("time_zones", [time_zone] if time_zone else [])
 
 
 def without_comment(document: Any) -> Any:
@@ -442,7 +472,7 @@ class SemanticChecker:
                     where, f"subdivision {subdivision} is not in country {' or '.join(countries)}"
                 )
         time_zone = values.get("time_zone")
-        zones = values.get("time_zones", [time_zone] if time_zone else [])
+        zones = record_zones(values)
         for zone in dict.fromkeys(filter(None, [time_zone, *zones])):
             try:
                 zoneinfo.ZoneInfo(zone)
@@ -450,6 +480,12 @@ class SemanticChecker:
                 self.fail(where, f"unknown IANA time zone {zone!r}")
         if zones and time_zone and zones[0] != time_zone:
             self.fail(where, f"time_zones starts with {zones[0]}, not time_zone {time_zone}")
+        for index, (zone, following) in enumerate(zip(zones, zones[1:]), start=1):
+            if zone == following:
+                self.fail(
+                    f"{where.rstrip('/')}/time_zones/{index}",
+                    f"{zone} is listed twice in a row: list a zone again only after another",
+                )
 
     def schedule_zones(self, values: dict, zones: list[str], where: str, suffix: str) -> None:
         """A schedule's own time_zone is one of the zones the record lies in."""
@@ -490,9 +526,7 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
     else:
         derived, where, suffix, values, facts_where = document, "/", "", document, ""
     checker.derived(derived, where)
-    time_zone = derived.get("time_zone")
-    zones = derived.get("time_zones", [time_zone] if time_zone else [])
-    checker.schedule_zones(values, zones, facts_where, suffix)
+    checker.schedule_zones(values, record_zones(derived), facts_where, suffix)
     checker.facts(values, facts_where, suffix)
     checker.facilities(document.get("facilities", {}), "/facilities")
     if document.get("redirect_to") == document["id"]:
@@ -542,7 +576,7 @@ def check_translation(document: dict, checker: SemanticChecker) -> None:
     """A translation names only codes and attributes of its reference list, in another language."""
     reference_file = list_file(document["list"])
     reference = checker.vocab.lists[reference_file]
-    if document["language"].lower() == REFERENCE_LANGUAGE.lower():
+    if canonical_tag(document["language"]) == REFERENCE_LANGUAGE:
         checker.fail(
             "/language", f"{REFERENCE_LANGUAGE} is the reference language, not a translation"
         )
@@ -570,15 +604,31 @@ def is_translation(path: Path) -> bool:
     return path.parent.parent.name == I18N
 
 
-def translation_location(path: Path, document: dict) -> list[str]:
-    """The folder names the translation's language and the file name its list."""
+def translation_file(path: Path, document: dict) -> list[str]:
+    """The folder names the translation's language, the file name its list, and it is licensed.
+
+    Language tags compare case-insensitively, and the folder is the tag in canonical case.
+    """
     problems = []
     folder, expected_file = path.parent.name, list_file(document["list"])
-    if document["language"] != folder:
-        problems.append(f"/language: is {document['language']} but the folder is {folder}")
+    language = document["language"]
+    if canonical_tag(language) != canonical_tag(folder):
+        problems.append(f"/language: is {language} but the folder is {folder}")
+    elif folder != canonical_tag(folder):
+        problems.append(
+            f"/language: the folder {folder} must be the tag in canonical case, "
+            f"{canonical_tag(folder)} (tags compare case-insensitively)"
+        )
     if path.name != expected_file:
         problems.append(f"/list: is {document['list']} but the file is {path.name}")
+    if document.get(COMMENT_KEY) != SPDX_COMMENT:
+        problems.append(f"/{COMMENT_KEY}: must be {SPDX_COMMENT!r}, like every governed list file")
     return problems
+
+
+def no_file_rules(path: Path, document: dict) -> list[str]:
+    """Documents other than translations have no rules on the file itself."""
+    return []
 
 
 @dataclass(frozen=True)
@@ -588,6 +638,8 @@ class DocumentKind:
     stem: str
     semantic_check: Callable[[dict, SemanticChecker], None]
     rejects_deprecated: bool = False
+    # Rules on the file itself, given its path and the document with its $comment.
+    file_check: Callable[[Path, dict], list[str]] = no_file_rules
 
     @property
     def suffix(self) -> str:
@@ -599,6 +651,8 @@ class DocumentKind:
 
     @staticmethod
     def for_path(path: Path) -> DocumentKind | None:
+        if is_translation(path):
+            return TRANSLATION
         return next((kind for kind in DOCUMENT_KINDS if path.name.endswith(kind.suffix)), None)
 
 
@@ -623,26 +677,25 @@ DOCUMENT_KINDS = tuple(
     DocumentKind("moderation-decision", check_moderation_decision),
     DocumentKind("change", check_change),
 )
-TRANSLATION = DocumentKind("translation", check_translation)
+TRANSLATION = DocumentKind("translation", check_translation, file_check=translation_file)
 
 
 def check_document(path: Path, context: Context) -> list[str]:
-    kind = TRANSLATION if is_translation(path) else DocumentKind.for_path(path)
+    kind = DocumentKind.for_path(path)
     if kind is None:
         suffixes = ", ".join(kind.suffix for kind in DOCUMENT_KINDS)
         return [
             f"/: cannot tell the schema from the file name (expected one of {suffixes}, "
             f"or a translation at {I18N}/<language>/<list file>)"
         ]
-    document = without_comment(load_json(path))
+    raw = load_json(path)
+    document = without_comment(raw)
     schema_errors = list(context.validator(kind.schema).iter_errors(document))
     if schema_errors:
         return all_errors(schema_errors)
     checker = SemanticChecker(context, kind.rejects_deprecated)
     kind.semantic_check(document, checker)
-    if kind is TRANSLATION:
-        checker.errors += translation_location(path, document)
-    return checker.errors
+    return checker.errors + kind.file_check(path, raw)
 
 
 def check_record_type(context: Context, record_type: RecordType) -> list[str]:

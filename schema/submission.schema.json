@@ -50,7 +50,7 @@
       "$ref": "common.schema.json#/$defs/Timestamp"
     },
     "observed_on": {
-      "description": "The date the contributor observed what they report. Defaults to the date of contributor_submitted_at.",
+      "description": "The date the contributor observed what they report, on the local calendar of the record's time zone. Defaults to the date of contributor_submitted_at in the record's time zone (time_zone, the zone at the start, for a line), not its UTC date.",
       "$ref": "common.schema.json#/$defs/LocalDate"
     },
     "partner_reference": {

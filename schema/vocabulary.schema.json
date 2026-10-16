@@ -162,7 +162,7 @@
           "maxLength": 500
         },
         "label_lang": {
-          "description": "API responses only: the language the label is in, when it differs from the document's language because no translation exists. The fallback runs from the requested tag to its base language (de-AT to de) and then to en-AU, so a label is never blank. Never present in the governed list files.",
+          "description": "API responses only: the language the label is in, when it differs from the document's language because no translation exists and the label fell back (ADR 0031). Never present in the governed list files.",
           "$ref": "common.schema.json#/$defs/LanguageTag"
         },
         "description_lang": {

@@ -49,5 +49,9 @@
   "i18n/en-GB/facilities.json": "/language: is en-US but the folder is en-GB",
   "i18n/en-NZ/facilities.json": "'safety_fact' was unexpected",
   "timestamp-with-offset.site.json": "/updated_at: '2026-09-09T09:10:00+10:00' does not match",
-  "schedule-zone-not-on-line.road-segment.json": "Australia/Perth is not one of the record's time zones"
+  "schedule-zone-not-on-line.road-segment.json": "Australia/Perth is not one of the record's time zones",
+  "repeated-time-zone.road-segment.json": "/derived/time_zones/2: Australia/Melbourne is listed twice in a row",
+  "fare-zone-not-on-line.ferry-service.json": "/facts/fares/value/time_zone: Australia/Sydney is not one of the record's time zones",
+  "i18n/en-IE/site-types.json": "/$comment: must be 'SPDX-License-Identifier: Apache-2.0'",
+  "i18n/en-ca/site-types.json": "/language: the folder en-ca must be the tag in canonical case, en-CA"
 }
