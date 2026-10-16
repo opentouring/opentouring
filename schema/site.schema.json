@@ -177,6 +177,65 @@
               "$ref": "values.schema.json#/$defs/FireDistrict"
             }
           }
+        },
+        "camping_rules": {
+          "description": "Whether overnight camping is allowed, restricted or prohibited, under the council's or land manager's rules, with the authority and its link.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/CampingRules"
+            }
+          }
+        },
+        "permits": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Permits"
+            }
+          }
+        },
+        "quiet_hours": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/QuietHours"
+            }
+          }
+        },
+        "age_rules": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/AgeRules"
+            }
+          }
+        },
+        "firewood": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Firewood"
+            }
+          }
+        },
+        "seasonal_operation": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/SeasonalOperation"
+            }
+          }
+        },
+        "tidal_access": {
+          "description": "Safety fact. Reaching the site depends on the tide, with the tide authority's prediction page. A traveller caught by the tide can lose the vehicle, so every change needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/TidalAccess"
+            }
+          }
         }
       },
       "additionalProperties": false,
@@ -240,6 +299,27 @@
         },
         "fire_district": {
           "$ref": "values.schema.json#/$defs/FireDistrict"
+        },
+        "camping_rules": {
+          "$ref": "values.schema.json#/$defs/CampingRules"
+        },
+        "permits": {
+          "$ref": "values.schema.json#/$defs/Permits"
+        },
+        "quiet_hours": {
+          "$ref": "values.schema.json#/$defs/QuietHours"
+        },
+        "age_rules": {
+          "$ref": "values.schema.json#/$defs/AgeRules"
+        },
+        "firewood": {
+          "$ref": "values.schema.json#/$defs/Firewood"
+        },
+        "seasonal_operation": {
+          "$ref": "values.schema.json#/$defs/SeasonalOperation"
+        },
+        "tidal_access": {
+          "$ref": "values.schema.json#/$defs/TidalAccess"
         }
       }
     },

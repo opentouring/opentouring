@@ -182,6 +182,22 @@
         "change_seq": 18877
       }
     },
+    "firewood": {
+      "value": {
+        "collection": "allowed"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
     "rig_limits": {
       "value": {
         "big_rig_suitable": "yes",
@@ -281,8 +297,7 @@
       "value": {
         "available": true,
         "attributes": {
-          "fire_rings_only": false,
-          "bring_own_firewood": false
+          "fire_rings_only": false
         }
       },
       "provenance": {

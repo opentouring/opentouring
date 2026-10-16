@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "self_contained_schemes",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "nz_self_containment",
+      "label": "Certificate of self-containment (New Zealand)",
+      "description": "A certificate of self-containment issued under the Plumbers, Gasfitters, and Drainlayers Act 2006, with the green warrant card displayed in the vehicle. The vehicle must have a toilet permanently fixed to it and usable inside it. On council land, freedom camping in a vehicle without one is allowed only where a bylaw permits it (Freedom Camping Act 2011, section 10).",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "countries": ["NZ"],
+      "statutory": true,
+      "osm": [],
+      "schema_org": null
+    },
+    {
+      "code": "cmca_scv",
+      "label": "CMCA self-contained vehicle accreditation",
+      "description": "The Campervan and Motorhome Club of Australia's self-contained vehicle (SCV) accreditation, given on the owner's signed declaration that the vehicle meets the club's SCV policy, with a panel or card shown in the vehicle. A club scheme, not a law: some councils accept it where they require self-contained vehicles.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "countries": ["AU"],
+      "statutory": false,
+      "osm": [],
+      "schema_org": null
+    }
+  ]
+}

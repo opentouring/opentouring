@@ -67,7 +67,7 @@ A typed detail of a facility, defined with the facility in the governed list, su
 _Avoid_: property, option, sub-field
 
 **Governed list**:
-A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species, which the community extends by proposal and the steering group approves.
+A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species and self-contained schemes, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
 **Reference language**:
@@ -83,7 +83,7 @@ One field value about a record, such as a facility, a price, opening hours, a ri
 _Avoid_: property, field (when the value is meant)
 
 **Safety fact**:
-A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures and live baiting programmes are never facts: OTWD links to the authority instead.
+A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, tidal access to a site or road segment, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures, live baiting programmes and tide times are never facts: OTWD links to the authority instead.
 _Avoid_: critical field
 
 **Fire district**:
@@ -121,6 +121,34 @@ _Avoid_: dog access, pet access (for a road)
 **Bait notice**:
 A notice that poison baits for pest animals, such as 1080, are laid in or next to a site or road segment, with the area, local dates and the authority's link. A safety fact, because a bait can kill a dog. OTWD records the notice and never the authority's live baiting programme.
 _Avoid_: baiting alert, 1080 warning
+
+**Camping rules**:
+Whether overnight camping at a site or along a road segment is allowed, restricted or prohibited under the rules of the council or land manager that sets them, with the authority and its link, and whether only self-contained vehicles may camp.
+_Avoid_: camping legality, free camping status
+
+**Self-contained scheme**:
+A governed certification that a vehicle holds its own water, toilet and waste, with the countries it is used in and whether it is issued under a law, such as New Zealand's certificate of self-containment.
+_Avoid_: SCV status, self-contained badge
+
+**Permit**:
+A permit a traveller needs to enter a park, camp, enter land held by its traditional owners or a community, or travel along a road through it, with the issuing authority, its link and whether it must be obtained in advance. OTWD records that a permit is needed, never a traveller's permit.
+_Avoid_: pass (on its own), licence (for a permit)
+
+**Tidal access**:
+Reaching a site or driving a road segment depends on the tide, with the advised window around low tide and the tide authority's prediction page. A safety fact. OTWD never stores tide times.
+_Avoid_: tide times, beach access
+
+**Quiet hours**:
+The local clock times a site's rules ask travellers to keep noise down, read in the site's time zone.
+_Avoid_: curfew, noise hours
+
+**Age rules**:
+Whether a site takes children, the age from which an adults-only site takes guests, and the age the person who books must be.
+_Avoid_: adults only (as the field), family friendly
+
+**Seasonal operation**:
+The periods each year a site operates, as local month and day: the operator's own season, distinct from a seasonal closure and a temporary closure.
+_Avoid_: open season, seasonal opening (for a closure)
 
 **Description**:
 A short original text about a record, written by a contributor and published under the data licence.

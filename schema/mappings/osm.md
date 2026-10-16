@@ -200,6 +200,13 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `cat`   | `cat=yes`     | exact   | Documented on Key:cat as in use.                                              |
 | `horse` | `horse=yes`   | related | Key:horse is access for riders on a way or area, not whether horses may stay. |
 
+## Self-contained schemes
+
+| Code                  | OSM tags | Match | Note                                                                                     |
+| --------------------- | -------- | ----- | ---------------------------------------------------------------------------------------- |
+| `nz_self_containment` | none     |       | No documented key. `self_contained=*` has 2 uses in taginfo and no wiki page.            |
+| `cmca_scv`            | none     |       | No documented key. `caravans=*` and `motorhome=*` say whether a vehicle type is allowed. |
+
 ## Record types and their facts
 
 Road restrictions, road segments and ferry services are not governed lists, so their mapping is given here only. OSM records most of these facts as tags on the road way or ferry route a limit applies to.
@@ -232,6 +239,14 @@ Road restrictions, road segments and ferry services are not governed lists, so t
 | `pet_transit` in_vehicle_only                                | none                                                                                       |         | OSM has no value for pets carried in a vehicle.                                                                                             |
 | `bait_notices`                                               | none                                                                                       |         | No documented tag. `hazard=poison` has 6 uses and no wiki page.                                                                             |
 | `pet_policy` on a ferry service                              | none                                                                                       |         | No documented tag for pets on a ferry.                                                                                                      |
+| `camping_rules.camping` allowed or prohibited                | `camping=yes`, `camping=no`                                                                | related | Key:camping (in use) is documented for natural areas, not camp sites. Restricted has no value.                                              |
+| `camping_rules.self_contained`                               | none                                                                                       |         | No documented key for a self-contained requirement.                                                                                         |
+| `permits`                                                    | `access=permit`, `permit=*`                                                                | related | Key:access documents permit. Key:permit (in use) documents no park, camping or land values.                                                 |
+| `quiet_hours`                                                | `quiet_hours=*`                                                                            | related | Key:quiet_hours is a proposal (status proposed), in opening_hours syntax.                                                                   |
+| `age_rules.min_guest_age`                                    | `min_age=*`                                                                                | related | Key:min_age is de facto. No adults-only key is documented.                                                                                  |
+| `firewood.provided`                                          | `wood_provided=yes`                                                                        | related | Key:wood_provided (in use) is for fire places and shelters. No key is documented for collecting firewood.                                   |
+| `tidal_access`                                               | none                                                                                       |         | `tidal=yes` marks an area in the tidal range, not access. `access:tide` has 67 uses and no wiki page.                                       |
+| `seasonal_operation`                                         | `opening_hours=*` with months, `seasonal=*`                                                | related | Key:seasonal is de facto and points amenities to opening_hours.                                                                             |
 | Ferry terminal                                               | `amenity=ferry_terminal`                                                                   | exact   | A site with the `ferry_terminal` site type.                                                                                                 |
 | `vehicle_limits.max_length_m` and the like                   | `maxlength=*`, `maxheight=*`, `maxweight=*` on the ferry route                             | related | Per-class limits and vehicle bands have no OSM equivalent.                                                                                  |
 

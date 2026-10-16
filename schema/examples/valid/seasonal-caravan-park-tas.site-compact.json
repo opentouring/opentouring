@@ -1,0 +1,80 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01MY7K9GTV0QD3ST6FCQCBQFCK",
+  "status": "active",
+  "created_at": "2026-10-06T00:30:00Z",
+  "updated_at": "2026-10-06T00:30:00Z",
+  "change_seq": 40412,
+  "name": "Lagoon Edge Holiday Park",
+  "names": [
+    {
+      "text": "Lagoon Edge Holiday Park",
+      "lang": "en",
+      "kind": "primary"
+    }
+  ],
+  "location": {
+    "lat": -42.1294,
+    "lng": 148.0361,
+    "accuracy_m": 10
+  },
+  "site_types": {
+    "primary": "caravan_park"
+  },
+  "opening_hours": {
+    "weekly": [
+      {
+        "days": ["mo", "tu", "we", "th", "fr", "sa", "su"],
+        "opens": "08:00",
+        "closes": "20:00"
+      }
+    ]
+  },
+  "seasonal_operation": {
+    "open": [
+      {
+        "from": "10-01",
+        "to": "04-30"
+      }
+    ],
+    "dates_year": 2026
+  },
+  "quiet_hours": {
+    "from": "22:00",
+    "to": "07:00"
+  },
+  "age_rules": {
+    "children_allowed": false,
+    "min_guest_age": 18,
+    "min_booking_age": 21,
+    "notes": [
+      {
+        "text": "Adults only. The person who books must be 21 or older.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "firewood": {
+    "for_sale": true,
+    "collection": "prohibited"
+  },
+  "country_code": "AU",
+  "subdivision_code": "AU-TAS",
+  "locality": "Example Bay",
+  "time_zone": "Australia/Hobart",
+  "facilities": {
+    "drinking_water": {
+      "available": true,
+      "attributes": {
+        "source": "town_supply",
+        "treated": true
+      }
+    },
+    "power": {
+      "available": true
+    }
+  },
+  "min_confidence": 0.86,
+  "attribution": ["Open Touring contributors, opentouring.org, CC BY 4.0"]
+}

@@ -765,6 +765,242 @@
       },
       "unevaluatedProperties": false
     },
+    "CampingRules": {
+      "description": "Whether a traveller may camp overnight at a site or along a road segment, under the rules of the council or land manager that sets them (ADR 0043). OTWD records the standing rule as the authority publishes or signs it, with the authority and its page for the rules, and never enforcement or day-to-day closures. allowed: camping is allowed, with no conditions beyond those recorded here and in stay_limits. restricted: allowed only under conditions, such as only in marked bays, only in certified self-contained vehicles or only with a permit. prohibited: no overnight camping. A missing fact is unknown, never proof that camping is allowed.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["camping", "authority", "info_url"],
+      "properties": {
+        "camping": {
+          "type": "string",
+          "enum": ["allowed", "restricted", "prohibited"]
+        },
+        "self_contained": {
+          "$ref": "#/$defs/SelfContainedRequirement"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "SelfContainedRequirement": {
+      "description": "Whether only self-contained vehicles may camp, and the certification schemes the authority accepts, from the self-contained scheme governed list (self-contained-schemes.json). required true: only a vehicle certified under one of schemes may camp, so camping must be restricted. schemes absent with required true: the authority asks for a self-contained vehicle without naming a scheme. Each scheme must be used in the record's country.",
+      "type": "object",
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "schemes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/SelfContainedSchemeCode"
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "required": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["schemes"],
+          "properties": {
+            "schemes": true
+          }
+        }
+      }
+    },
+    "Permits": {
+      "description": "The permits a traveller needs to enter, camp at or travel through a site or road segment (ADR 0043). OTWD records that a permit is needed, who issues it and where to get it, never a traveller's permit.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/Permit"
+      }
+    },
+    "Permit": {
+      "description": "One permit, with the authority that issues it and its page for applying. kind park_entry: a pass to enter a park or reserve. camping: a permit or booking that camping requires. land_entry: a permit to enter land held by its traditional owners or a community, such as Aboriginal land in the Northern Territory. transit: a permit to travel along a road through such land or a reserve, keeping to the road. other: any other permit, described in notes. in_advance true: the permit must be obtained before arrival, not at the site or on the way. free true: the authority issues it without charge.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["kind", "authority", "info_url"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["park_entry", "camping", "land_entry", "transit", "other"]
+        },
+        "in_advance": {
+          "type": "boolean"
+        },
+        "free": {
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false,
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "other"
+          }
+        }
+      },
+      "then": {
+        "required": ["notes"],
+        "properties": {
+          "notes": true
+        }
+      }
+    },
+    "QuietHours": {
+      "description": "The site's quiet hours as its rules or signs give them: local clock times read in the site's time zone, never converted to UTC. A to earlier than from means the period ends after midnight. days limits them to some days of the week, and absent means every day.",
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": {
+          "$ref": "common.schema.json#/$defs/LocalTime"
+        },
+        "to": {
+          "$ref": "common.schema.json#/$defs/LocalTime"
+        },
+        "days": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Weekday"
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AgeRules": {
+      "description": "Who the site takes by age. children_allowed false: the site takes adults only, and min_guest_age is the age from which it takes a guest, such as 18. min_booking_age: the age the person who books or registers must be, such as 18 or 25, whether or not children are allowed.",
+      "type": "object",
+      "required": ["children_allowed"],
+      "properties": {
+        "children_allowed": {
+          "type": "boolean"
+        },
+        "min_guest_age": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "min_booking_age": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "children_allowed": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["min_guest_age"],
+          "properties": {
+            "min_guest_age": true
+          }
+        }
+      }
+    },
+    "Firewood": {
+      "description": "Firewood at the site. for_sale true: the operator sells firewood on site. provided true: the operator supplies it at no extra charge. collection: whether travellers may gather firewood on or around the site: allowed, restricted (only fallen dead wood, or only in some areas, as notes say) or prohibited. Whether fires are allowed at all is the fires_allowed facility.",
+      "type": "object",
+      "properties": {
+        "for_sale": {
+          "type": "boolean"
+        },
+        "provided": {
+          "type": "boolean"
+        },
+        "collection": {
+          "type": "string",
+          "enum": ["allowed", "restricted", "prohibited"]
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "TidalAccess": {
+      "description": "Safety fact. Reaching the site or driving the road segment depends on the tide, such as a beach drive or a crossing covered at high tide (ADR 0043). OTWD records the standing rule and the tide authority's prediction page in authority and info_url, never live tides or tide times: apps send travellers to info_url for the tides on the day. low_tide_window_h: the hours either side of low tide in which the authority or the signs advise travelling, when they give one. station: the tide station the advice refers to, as the authority names it. time_zone works as on a bait notice, for a road segment that crosses zones.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["authority", "info_url"],
+      "properties": {
+        "low_tide_window_h": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 6
+        },
+        "station": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "time_zone": {
+          "$ref": "#/$defs/ScheduleTimeZone"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "SeasonalOperation": {
+      "description": "The periods each year a site operates, as local month and day read in the site's time zone, such as a caravan park open from April to October (ADR 0043). It is the site's own season, distinct from a seasonal closure, which an authority declares, and from a temporary closure. Outside every period the site is not operating. A site gives its season here or as opening_hours.seasonal_closures, never both. dates_year: the year whose published dates the periods came from, when the operator sets them each year.",
+      "type": "object",
+      "required": ["open"],
+      "properties": {
+        "open": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/AnnualPeriod"
+          }
+        },
+        "dates_year": {
+          "type": "integer",
+          "minimum": 1990,
+          "maximum": 2200
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
     "AccessFeature": {
       "description": "Wheelchair access to one feature. yes: a wheelchair user can reach and use it without help. limited: usable with help or with difficulty, such as a ramp steeper than the standard allows or a door narrower than a modern chair. no: a wheelchair user cannot reach or use it. notes says what limits it.",
       "type": "object",
@@ -2021,9 +2257,6 @@
               "items": {
                 "$ref": "#/$defs/AnnualPeriod"
               }
-            },
-            "bring_own_firewood": {
-              "type": "boolean"
             }
           },
           "additionalProperties": false

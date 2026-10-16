@@ -141,6 +141,33 @@
             }
           }
         },
+        "camping_rules": {
+          "description": "Whether camping along the road segment, such as in the road reserve, is allowed, restricted or prohibited, with the authority and its link.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/CampingRules"
+            }
+          }
+        },
+        "permits": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Permits"
+            }
+          }
+        },
+        "tidal_access": {
+          "description": "Safety fact. Driving the road segment depends on the tide, such as a beach drive, with the tide authority's prediction page. Every change needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/TidalAccess"
+            }
+          }
+        },
         "description": {
           "$ref": "common.schema.json#/$defs/Fact",
           "properties": {
@@ -193,6 +220,15 @@
         },
         "bait_notices": {
           "$ref": "values.schema.json#/$defs/BaitNotices"
+        },
+        "camping_rules": {
+          "$ref": "values.schema.json#/$defs/CampingRules"
+        },
+        "permits": {
+          "$ref": "values.schema.json#/$defs/Permits"
+        },
+        "tidal_access": {
+          "$ref": "values.schema.json#/$defs/TidalAccess"
         },
         "description": {
           "$ref": "values.schema.json#/$defs/Description"

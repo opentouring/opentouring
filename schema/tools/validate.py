@@ -90,6 +90,7 @@ ACCESS_CLASSES = "vehicle-access-classes.json"
 VEHICLE_CLASSES = "vehicle-classes.json"
 KEY_SCHEMES = "key-schemes.json"
 PET_SPECIES = "pet-species.json"
+SELF_CONTAINED_SCHEMES = "self-contained-schemes.json"
 
 # Every governed list file, with the name its codes go by in error messages.
 GOVERNED_LISTS = {
@@ -101,6 +102,7 @@ GOVERNED_LISTS = {
     VEHICLE_CLASSES: "vehicle class",
     KEY_SCHEMES: "key scheme",
     PET_SPECIES: "pet species",
+    SELF_CONTAINED_SCHEMES: "self-contained scheme",
 }
 
 # Submission kinds on the always-human list for every record type, besides the
@@ -447,6 +449,7 @@ class SemanticChecker:
             "pet_policy": self.pet_policy,
             "pet_transit": self.pet_transit,
             "bait_notices": self.bait_notices,
+            "camping_rules": self.camping_rules,
         }
 
     def fail(self, where: str, message: str) -> None:
@@ -537,7 +540,7 @@ class SemanticChecker:
         toilets = toilets_of(value)
         if "key_scheme" in toilets:
             self.code(KEY_SCHEMES, toilets["key_scheme"], f"{where}/toilets/key_scheme")
-            self.key_scheme_country(toilets["key_scheme"], where)
+            self.scheme_country(KEY_SCHEMES, toilets["key_scheme"], f"{where}/toilets/key_scheme")
         if wheelchair_of(value).get("toilets") == "no" and toilets.get("accessible_count", 0) > 0:
             self.fail(
                 f"{where}/toilets/accessible_count",
@@ -551,15 +554,6 @@ class SemanticChecker:
                     f"is {str(toilets['ambulant']).lower()} but ambulant_count is "
                     f"{toilets['ambulant_count']}",
                 )
-
-    def key_scheme_country(self, scheme: str, where: str) -> None:
-        """A key scheme is one used in the record's country."""
-        entry = self.vocab.lists[KEY_SCHEMES].get(scheme)
-        if entry and self.countries and not set(self.countries) & set(entry["countries"]):
-            self.fail(
-                f"{where}/toilets/key_scheme",
-                f"key scheme {scheme!r} is not used in {' or '.join(self.countries)}",
-            )
 
     def accessible_facilities(self, values: dict, facilities: dict, where: str) -> None:
         """The compact form's accessible_facilities matches what the accessibility fact gives."""
@@ -622,6 +616,36 @@ class SemanticChecker:
                     f"{where}/{index}/time_zone",
                     f"{zone} is not one of the record's time zones ({', '.join(self.zones)})",
                 )
+
+    def camping_rules(self, value: dict, where: str) -> None:
+        """Known self-contained schemes used in the record's country, required only when restricted."""
+        rule = value.get("self_contained", {})
+        for index, scheme in enumerate(rule.get("schemes", [])):
+            path = f"{where}/self_contained/schemes/{index}"
+            self.code(SELF_CONTAINED_SCHEMES, scheme, path)
+            self.scheme_country(SELF_CONTAINED_SCHEMES, scheme, path)
+        if rule.get("required") and value["camping"] != "restricted":
+            self.fail(
+                f"{where}/camping",
+                f"is {value['camping']} but self-contained vehicles are required, "
+                "which makes camping restricted",
+            )
+
+    def scheme_country(self, list_name: str, scheme: str, where: str) -> None:
+        """A key scheme or self-contained scheme is one used in the record's country."""
+        entry = self.vocab.lists[list_name].get(scheme)
+        if entry and self.countries and not set(self.countries) & set(entry["countries"]):
+            label = GOVERNED_LISTS[list_name]
+            self.fail(where, f"{label} {scheme!r} is not used in {' or '.join(self.countries)}")
+
+    def record_rules(self, values: dict, where: str, suffix: str) -> None:
+        """Rules across a record's facts that do not apply to a submission's partial facts."""
+        closures = values.get("opening_hours", {}).get("seasonal_closures")
+        if "seasonal_operation" in values and closures:
+            self.fail(
+                f"{where}/seasonal_operation",
+                "give the site's season here or in opening_hours.seasonal_closures, not both",
+            )
 
     def facts(self, values: dict, where: str, suffix: str) -> None:
         """Check plain fact values. suffix is /value when the facts came from the full form."""
@@ -723,6 +747,7 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
         filter(None, [derived.get("country_code")])
     )
     checker.facts(values, facts_where, suffix)
+    checker.record_rules(values, facts_where, suffix)
     checker.facilities(document.get("facilities", {}), "/facilities")
     if not full and record_type_of(document["id"]).code == "site":
         checker.accessible_facilities(values, document.get("facilities", {}), "/facilities")
