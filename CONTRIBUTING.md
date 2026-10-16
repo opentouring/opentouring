@@ -33,7 +33,7 @@ Use your real name or a name you are known by in the community. Pull requests wi
 
 ## Proposing a governed list value
 
-Site types, facilities, structures, surfaces, vehicle access classes and vehicle classes come from governed lists, so that every partner app can rely on the same values. To propose an addition or a change:
+Site types, facilities, structures, surfaces, vehicle access classes, vehicle classes and key schemes come from governed lists, so that every partner app can rely on the same values. To propose an addition or a change:
 
 1. Check the current list in `schema/` and the existing issues, in case it is already covered or proposed.
 2. Open an issue titled "Governed list: add `<proposed_value>`" (or "change" or "retire").

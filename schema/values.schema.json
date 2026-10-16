@@ -515,6 +515,252 @@
       },
       "additionalProperties": false
     },
+    "AccessFeature": {
+      "description": "Wheelchair access to one feature. yes: a wheelchair user can reach and use it without help. limited: usable with help or with difficulty, such as a ramp steeper than the standard allows or a door narrower than a modern chair. no: a wheelchair user cannot reach or use it. notes says what limits it.",
+      "type": "object",
+      "required": ["access"],
+      "properties": {
+        "access": {
+          "type": "string",
+          "enum": ["yes", "limited", "no"]
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AccessibilityBasis": {
+      "description": "What the accessibility fact rests on, alongside its provenance. assessed_to_standard: assessed against a named access standard, given in standard, such as AS 1428.1 in Australia. signposted: the operator or land manager signs the features as accessible, for example with the International Symbol of Access. operator_reported: stated by the operator or land manager, or a seed source, without a named standard. contributor_observation: what a contributor saw or used on site.",
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "assessed_to_standard",
+            "signposted",
+            "operator_reported",
+            "contributor_observation"
+          ]
+        },
+        "standard": {
+          "description": "The standard assessed against, as its publisher names it, for example AS 1428.1-2021.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "assessed_on": {
+          "description": "The local date of the assessment.",
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "assessed_to_standard"
+          }
+        }
+      },
+      "then": {
+        "required": ["standard"],
+        "properties": {
+          "standard": true
+        }
+      }
+    },
+    "AccessibleToilets": {
+      "description": "Toilets for people with disability. accessible_count counts wheelchair accessible toilets and ambulant_count toilets with grab rails for people who walk with difficulty. changing_places is true when there is a Changing Places toilet, with a hoist and an adult change table. key_scheme names the central key that opens the toilets, from the key scheme governed list (key-schemes.json), and must be a scheme used in the site's country. A count of 0 records that there are none.",
+      "type": "object",
+      "properties": {
+        "accessible_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "ambulant_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "changing_places": {
+          "type": "boolean"
+        },
+        "changing_places_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "key_required": {
+          "description": "True when a key is needed, from a key scheme or from the operator.",
+          "type": "boolean"
+        },
+        "key_scheme": {
+          "$ref": "common.schema.json#/$defs/KeySchemeCode"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1,
+      "dependentSchemas": {
+        "key_scheme": {
+          "required": ["key_required"],
+          "properties": {
+            "key_required": {
+              "const": true
+            }
+          }
+        },
+        "changing_places_count": {
+          "required": ["changing_places"],
+          "properties": {
+            "changing_places": {
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "AccessiblePaths": {
+      "description": "The paths between the accessible features: the main surface and notes on gradient, such as a steep ramp to the amenities block.",
+      "type": "object",
+      "properties": {
+        "surface": {
+          "type": "string",
+          "enum": [
+            "sealed",
+            "compacted_gravel",
+            "loose_gravel",
+            "boardwalk",
+            "grass",
+            "sand",
+            "mixed"
+          ]
+        },
+        "gradient_notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "SiteAccessibility": {
+      "description": "Access for people with disability at a site. wheelchair gives yes, limited or no per feature. basis says what the fact rests on. The accessible_facilities facility is read from this fact. Moderators treat a yes with care, because a wrong yes can strand a traveller who relied on it.",
+      "type": "object",
+      "required": ["basis"],
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/AccessibilityBasis"
+        },
+        "wheelchair": {
+          "description": "Wheelchair access to each feature of the site: arrival is the entrance, reception or the point where a traveller arrives. A feature that is absent is unknown.",
+          "type": "object",
+          "properties": {
+            "arrival": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "toilets": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "showers": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "parking": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "paths": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "campsites": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "cabins": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "camp_kitchen": {
+              "$ref": "#/$defs/AccessFeature"
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "toilets": {
+          "$ref": "#/$defs/AccessibleToilets"
+        },
+        "accessible_parking_spaces": {
+          "description": "Parking spaces marked for people with disability.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "step_free_access": {
+          "description": "True when the features recorded as yes or limited can be reached from arrival without steps.",
+          "type": "boolean"
+        },
+        "paths": {
+          "$ref": "#/$defs/AccessiblePaths"
+        },
+        "hearing_loop": {
+          "description": "True when reception or the main building has a hearing loop.",
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 2
+    },
+    "FerryServiceAccessibility": {
+      "description": "Access for people with disability on a ferry service. boarding covers getting on and off with the ferry terminal ramp or gangway, and seating the passenger areas. Access at the ferry terminals themselves is recorded on the terminal sites. Moderators treat a yes with care, because a wrong yes can strand a traveller who relied on it.",
+      "type": "object",
+      "required": ["basis"],
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/AccessibilityBasis"
+        },
+        "wheelchair": {
+          "description": "Wheelchair access to each feature of the ferry service. A feature that is absent is unknown.",
+          "type": "object",
+          "properties": {
+            "boarding": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "seating": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "toilets": {
+              "$ref": "#/$defs/AccessFeature"
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "toilets": {
+          "$ref": "#/$defs/AccessibleToilets"
+        },
+        "step_free_access": {
+          "description": "True when a wheelchair user can board and reach the passenger areas without steps.",
+          "type": "boolean"
+        },
+        "hearing_loop": {
+          "description": "True when the passenger areas have a hearing loop.",
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 2
+    },
     "Bookings": {
       "description": "Whether and how to book.",
       "type": "object",
@@ -1181,7 +1427,7 @@
       "additionalProperties": false
     },
     "Facilities": {
-      "description": "A map from facility code to facility value. Codes with defined attributes are checked here. Codes not listed are accepted with free-form attributes so that new governed list entries do not break older validators. In stored sites and in submissions the codes pets_allowed, dog_off_leash and big_rig_access are read from the pets and rig_limits facts instead (see StoredFacilities). The compact site form fills them in for convenience.",
+      "description": "A map from facility code to facility value. Codes with defined attributes are checked here. Codes not listed are accepted with free-form attributes so that new governed list entries do not break older validators. In stored sites and in submissions the codes pets_allowed, dog_off_leash, big_rig_access and accessible_facilities are read from the pets, rig_limits and accessibility facts instead (see StoredFacilities). The compact site form fills them in for convenience.",
       "type": "object",
       "propertyNames": {
         "$ref": "common.schema.json#/$defs/FacilityCode"
@@ -1247,7 +1493,7 @@
       }
     },
     "StoredFacilities": {
-      "description": "Facilities as submitted and stored: the codes read from other facts (pets_allowed, dog_off_leash, big_rig_access) are not allowed.",
+      "description": "Facilities as submitted and stored: the codes read from other facts (pets_allowed, dog_off_leash, big_rig_access, accessible_facilities) are not allowed.",
       "$ref": "#/$defs/Facilities",
       "not": {
         "anyOf": [
@@ -1267,6 +1513,12 @@
             "required": ["big_rig_access"],
             "properties": {
               "big_rig_access": true
+            }
+          },
+          {
+            "required": ["accessible_facilities"],
+            "properties": {
+              "accessible_facilities": true
             }
           }
         ]
@@ -1659,6 +1911,7 @@
       "additionalProperties": false
     },
     "AccessibleFacilitiesValue": {
+      "description": "Read from the accessibility fact. available is true when any wheelchair feature is yes or limited, false when every recorded feature is no. wheelchair is yes when every recorded feature is yes, limited otherwise. features lists the features whose access is yes.",
       "allOf": [
         {
           "$ref": "#/$defs/FacilityWithAttributes"
@@ -1670,13 +1923,26 @@
         "attributes": {
           "type": "object",
           "properties": {
+            "wheelchair": {
+              "type": "string",
+              "enum": ["yes", "limited"]
+            },
             "features": {
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
               "items": {
                 "type": "string",
-                "enum": ["toilet", "shower", "parking", "path", "campsite", "cabin"]
+                "enum": [
+                  "arrival",
+                  "toilets",
+                  "showers",
+                  "parking",
+                  "paths",
+                  "campsites",
+                  "cabins",
+                  "camp_kitchen"
+                ]
               }
             }
           },

@@ -28,6 +28,7 @@ Test applied to each dataset: can OTWD redistribute it under CC BY 4.0? Usable m
 - Format: CSV (12.1 MB, 25,624 rows read), resource dated 2026-09-30. Published at the start of each month per https://toiletmap.gov.au/copyright.
 - Direct file: https://data.gov.au/data/dataset/553b3049-2b8b-46a2-95e6-640d7986a8c1/resource/34076296-6692-4e30-b627-67b7c4eb1027/download/toiletmapexport_261001_074429.csv
 - Fields (read from the CSV header): FacilityID, URL, Name, FacilityType, Address1, Town, State, AddressNote, Latitude, Longitude, Parking, ParkingAccessible, ParkingNote, KeyRequired, MLAK24, PaymentRequired, AccessNote, ChangingPlaces, BabyChange, DumpPoint, DPWashout, DPAfterHours, DumpPointNote, OpeningHours, OpeningHoursNote, Male, Female, Unisex, Ambulant, Accessible, ToiletNote, SharpsDisposal, DrinkingWater, SanitaryDisposal, Shower. No rig size limits. Fee is a boolean (PaymentRequired) with no amount.
+- Accessibility fields (Accessible, Ambulant, ChangingPlaces, MLAK24, KeyRequired, ParkingAccessible, AccessNote) are booleans except AccessNote. Their mapping to the accessibility fact is in `schema/README.md`.
 - Counts per state (my tally of the CSV):
 
 | State | Facilities                    | Dump point = True | Drinking water = True | Shower = True |

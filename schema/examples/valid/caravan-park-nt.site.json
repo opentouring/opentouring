@@ -301,6 +301,81 @@
         "change_seq": 15120
       }
     },
+    "accessibility": {
+      "value": {
+        "basis": {
+          "kind": "assessed_to_standard",
+          "standard": "AS 1428.1-2021",
+          "assessed_on": "2026-05-12"
+        },
+        "wheelchair": {
+          "arrival": {
+            "access": "yes"
+          },
+          "toilets": {
+            "access": "yes"
+          },
+          "showers": {
+            "access": "yes"
+          },
+          "parking": {
+            "access": "yes"
+          },
+          "paths": {
+            "access": "limited",
+            "notes": [
+              {
+                "text": "Compacted gravel between the powered sites. Sealed path from reception to the amenities block.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "campsites": {
+            "access": "limited"
+          },
+          "cabins": {
+            "access": "yes",
+            "notes": [
+              {
+                "text": "One accessible cabin with a roll-in shower.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "camp_kitchen": {
+            "access": "yes"
+          }
+        },
+        "toilets": {
+          "accessible_count": 2,
+          "ambulant_count": 2,
+          "changing_places": false,
+          "key_required": false
+        },
+        "accessible_parking_spaces": 2,
+        "step_free_access": true,
+        "paths": {
+          "surface": "mixed",
+          "gradient_notes": [
+            {
+              "text": "Gentle slope down to the river sites.",
+              "lang": "en-AU"
+            }
+          ]
+        },
+        "hearing_loop": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
     "rig_limits": {
       "value": {
         "max_length_m": 22,
@@ -562,24 +637,6 @@
     "tent_sites": {
       "value": {
         "available": true
-      },
-      "provenance": {
-        "source_kind": "contributor",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
-        "observed_on": "2026-07-02",
-        "recorded_at": "2026-07-04T00:15:00Z",
-        "confidence": 0.93,
-        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
-        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
-        "change_seq": 15120
-      }
-    },
-    "accessible_facilities": {
-      "value": {
-        "available": true,
-        "attributes": {
-          "features": ["toilet", "shower", "parking"]
-        }
       },
       "provenance": {
         "source_kind": "contributor",

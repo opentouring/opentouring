@@ -89,7 +89,7 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The site types, facilities, structures, surfaces, vehicle access classes and vehicle classes records are described with.
+    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes and key schemes records are described with.
   - name: Bulk downloads
     description: The whole dataset, or the changes between two sequence numbers, as files.
   - name: Change feed
@@ -143,7 +143,7 @@ paths:
               $ref: "../schema/common.schema.json#/$defs/SiteTypeCode"
         - name: facility
           in: query
-          description: Facility codes that must all be available. Codes read from other facts (pets_allowed, dog_off_leash, big_rig_access) work here too.
+          description: Facility codes that must all be available. Codes read from other facts (pets_allowed, dog_off_leash, big_rig_access, accessible_facilities) work here too.
           style: form
           explode: false
           schema:
@@ -161,6 +161,46 @@ paths:
           description: When true, returns only sites whose big_rig_suitable is yes or limited.
           schema:
             type: boolean
+        - name: wheelchair
+          in: query
+          description: Wheelchair access values to include, matched against each listed feature's access in the accessibility fact. With `wheelchair_feature`, only those features are compared. Without it, a site matches when every recorded feature has one of the values, as in the accessible_facilities wheelchair attribute.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [yes, limited, no]
+          example: [yes, limited]
+        - name: wheelchair_feature
+          in: query
+          description: Accessibility features that must all have one of the `wheelchair` values, for example toilets,showers. A site with no recorded access for a listed feature stays in unless `accessibility_known=true`.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 8
+            items:
+              type: string
+              enum: [arrival, toilets, showers, parking, paths, campsites, cabins, camp_kitchen]
+        - name: key_scheme
+          in: query
+          description: Key scheme codes. Returns sites whose accessible toilets open with one of them.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 10
+            items:
+              $ref: "../schema/common.schema.json#/$defs/KeySchemeCode"
+          example: [mlak]
+        - name: accessibility_known
+          in: query
+          description: When true, excludes sites with no recorded accessibility, or with no recorded access for a listed `wheelchair_feature`.
+          schema:
+            type: boolean
+            default: false
         - $ref: "#/components/parameters/Status"
         - $ref: "#/components/parameters/Country"
         - $ref: "#/components/parameters/Subdivision"
@@ -606,6 +646,23 @@ paths:
             items:
               $ref: "../schema/common.schema.json#/$defs/VehicleClassCode"
           example: [car_towing]
+        - name: wheelchair_boarding
+          in: query
+          description: Wheelchair access values to include for boarding, from the accessibility fact, for example yes,limited.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [yes, limited, no]
+        - name: accessibility_known
+          in: query
+          description: When true, excludes services with no recorded wheelchair access for boarding.
+          schema:
+            type: boolean
+            default: false
         - $ref: "#/components/parameters/RigLengthM"
         - $ref: "#/components/parameters/RigHeightM"
         - $ref: "#/components/parameters/RigWidthM"
@@ -752,6 +809,24 @@ paths:
       operationId: listVehicleClasses
       summary: List vehicle classes
       description: Returns the governed list of vehicle classes used by ferry services, with OSM access mappings.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/key-schemes:
+    get:
+      tags: [Governed lists]
+      operationId: listKeySchemes
+      summary: List key schemes
+      description: Returns the governed list of central key schemes that open accessible toilets, such as MLAK, with the countries each is used in and OSM centralkey mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
       responses:

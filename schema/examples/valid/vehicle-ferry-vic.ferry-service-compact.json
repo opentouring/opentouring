@@ -199,6 +199,26 @@
     "capacity_cars": 60,
     "timetable_url": "https://www.example.com/ferry/timetable"
   },
+  "accessibility": {
+    "basis": {
+      "kind": "contributor_observation"
+    },
+    "wheelchair": {
+      "boarding": {
+        "access": "limited",
+        "notes": [
+          {
+            "text": "The ramp is steep at low tide. Crew help on request.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "seating": {
+        "access": "yes"
+      }
+    },
+    "step_free_access": false
+  },
   "country_codes": ["AU"],
   "subdivision_codes": ["AU-VIC"],
   "localities": ["Port Welshpool"],

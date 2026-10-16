@@ -67,6 +67,7 @@ STRUCTURES = "structures.json"
 SURFACES = "surfaces.json"
 ACCESS_CLASSES = "vehicle-access-classes.json"
 VEHICLE_CLASSES = "vehicle-classes.json"
+KEY_SCHEMES = "key-schemes.json"
 
 # Every governed list file, with the name its codes go by in error messages.
 GOVERNED_LISTS = {
@@ -76,6 +77,7 @@ GOVERNED_LISTS = {
     SURFACES: "surface",
     ACCESS_CLASSES: "vehicle access class",
     VEHICLE_CLASSES: "vehicle class",
+    KEY_SCHEMES: "key scheme",
 }
 
 # Submission kinds on the always-human list for every record type, besides the
@@ -291,6 +293,7 @@ class SemanticChecker:
             "vehicle_limits": self.vehicle_limits,
             "fares": self.fares,
             "terminals": self.terminals,
+            "accessibility": self.accessibility,
         }
 
     def fail(self, where: str, message: str) -> None:
@@ -376,6 +379,29 @@ class SemanticChecker:
             elif "ferry_terminal" not in types:
                 self.fail(f"{where}/{index}", f"{site_id} is not a ferry_terminal site")
 
+    def accessibility(self, value: dict, where: str) -> None:
+        """A known key scheme, and no accessible toilets counted where wheelchair toilets are no."""
+        toilets = value.get("toilets", {})
+        if "key_scheme" in toilets:
+            self.code(KEY_SCHEMES, toilets["key_scheme"], f"{where}/toilets/key_scheme")
+        access = value.get("wheelchair", {}).get("toilets", {}).get("access")
+        if access == "no" and toilets.get("accessible_count", 0) > 0:
+            self.fail(
+                f"{where}/toilets/accessible_count",
+                f"wheelchair toilets access is no but accessible_count is "
+                f"{toilets['accessible_count']}",
+            )
+
+    def key_scheme_country(self, values: dict, countries: list[str], where: str) -> None:
+        """A key scheme is one used in the record's country."""
+        scheme = values.get("accessibility", {}).get("toilets", {}).get("key_scheme")
+        entry = self.vocab.lists[KEY_SCHEMES].get(scheme)
+        if entry and countries and not set(countries) & set(entry["countries"]):
+            self.fail(
+                f"{where}/accessibility",
+                f"key scheme {scheme!r} is not used in {' or '.join(countries)}",
+            )
+
     def facts(self, values: dict, where: str, suffix: str) -> None:
         """Check plain fact values. suffix is /value when the facts came from the full form."""
         for name, check in self.fact_checks.items():
@@ -452,6 +478,8 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
         derived, where, suffix, values, facts_where = document, "/", "", document, ""
     checker.derived(derived, where)
     checker.facts(values, facts_where, suffix)
+    countries = derived.get("country_codes") or list(filter(None, [derived.get("country_code")]))
+    checker.key_scheme_country(values, countries, facts_where)
     checker.facilities(document.get("facilities", {}), "/facilities")
     if document.get("redirect_to") == document["id"]:
         checker.fail("/redirect_to", "a record cannot redirect to itself")
@@ -657,10 +685,11 @@ def check_facilities(context: Context) -> list[str]:
     values = "values.schema.json"
     per_code = context.definition(values, "Facilities")["properties"]
     site_facilities = context.definition("site.schema.json", "FacilityFacts")["properties"]
-    if site_facilities.keys() != per_code.keys():
-        difference = sorted(site_facilities.keys() ^ per_code.keys())
+    stored = per_code.keys() - context.vocab.stored_elsewhere
+    if site_facilities.keys() != stored:
+        difference = sorted(site_facilities.keys() ^ stored)
         problems.append(
-            f"site.schema.json FacilityFacts and {values} list different codes: {difference}"
+            f"site.schema.json FacilityFacts and {values} list different stored codes: {difference}"
         )
     marked = {code for code, fact in site_facilities.items() if fact.get(SAFETY_MARKER)}
     listed_safety = {

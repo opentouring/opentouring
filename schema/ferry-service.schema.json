@@ -118,6 +118,15 @@
             }
           }
         },
+        "accessibility": {
+          "description": "Access for people with disability on board. Not a safety fact, but moderators treat a yes with care, because a wrong yes can strand a traveller who relied on it.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FerryServiceAccessibility"
+            }
+          }
+        },
         "seasonal_closure": {
           "description": "Safety fact.",
           "x-otwd-safety-fact": true,
@@ -177,6 +186,9 @@
         },
         "crossing": {
           "$ref": "values.schema.json#/$defs/Crossing"
+        },
+        "accessibility": {
+          "$ref": "values.schema.json#/$defs/FerryServiceAccessibility"
         },
         "seasonal_closure": {
           "$ref": "values.schema.json#/$defs/SeasonalClosure"

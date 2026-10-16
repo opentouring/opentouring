@@ -340,6 +340,39 @@
         "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
         "change_seq": 31003
       }
+    },
+    "accessibility": {
+      "value": {
+        "basis": {
+          "kind": "contributor_observation"
+        },
+        "wheelchair": {
+          "boarding": {
+            "access": "limited",
+            "notes": [
+              {
+                "text": "The ramp is steep at low tide. Crew help on request.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "seating": {
+            "access": "yes"
+          }
+        },
+        "step_free_access": false
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
     }
   }
 }

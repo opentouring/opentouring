@@ -117,6 +117,15 @@
             }
           }
         },
+        "accessibility": {
+          "description": "Access for people with disability. Not a safety fact, but moderators treat a yes with care, because a wrong yes can strand a traveller who relied on it. The accessible_facilities facility is read from it.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/SiteAccessibility"
+            }
+          }
+        },
         "bookings": {
           "$ref": "common.schema.json#/$defs/Fact",
           "properties": {
@@ -201,6 +210,9 @@
         "pets": {
           "$ref": "values.schema.json#/$defs/Pets"
         },
+        "accessibility": {
+          "$ref": "values.schema.json#/$defs/SiteAccessibility"
+        },
         "bookings": {
           "$ref": "values.schema.json#/$defs/Bookings"
         },
@@ -228,7 +240,7 @@
       }
     },
     "FacilityFacts": {
-      "description": "A map from facility code to a fact holding the facility value and its provenance, so each facility has its own provenance. Codes with defined attributes are checked against their per-code schema. Codes pets_allowed, dog_off_leash and big_rig_access are read from the pets and rig_limits facts and never appear here.",
+      "description": "A map from facility code to a fact holding the facility value and its provenance, so each facility has its own provenance. Codes with defined attributes are checked against their per-code schema. Codes pets_allowed, dog_off_leash, big_rig_access and accessible_facilities are read from the pets, rig_limits and accessibility facts and never appear here.",
       "type": "object",
       "propertyNames": {
         "$ref": "common.schema.json#/$defs/FacilityCode"
@@ -251,6 +263,12 @@
             "required": ["big_rig_access"],
             "properties": {
               "big_rig_access": true
+            }
+          },
+          {
+            "required": ["accessible_facilities"],
+            "properties": {
+              "accessible_facilities": true
             }
           }
         ]
@@ -352,14 +370,6 @@
           "properties": {
             "value": {
               "$ref": "values.schema.json#/$defs/MobileCoverageValue"
-            }
-          }
-        },
-        "accessible_facilities": {
-          "$ref": "#/$defs/FacilityFact",
-          "properties": {
-            "value": {
-              "$ref": "values.schema.json#/$defs/AccessibleFacilitiesValue"
             }
           }
         },

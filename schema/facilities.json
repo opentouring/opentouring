@@ -636,22 +636,72 @@
     {
       "code": "accessible_facilities",
       "label": "Accessible facilities",
-      "description": "Facilities designed for people using a wheelchair or with limited mobility.",
+      "description": "Facilities a wheelchair user can reach and use, with or without help. Read from the accessibility fact.",
       "status": "active",
       "introduced_in": "1.0.0",
       "safety_fact": false,
       "attributes": [
         {
+          "name": "wheelchair",
+          "type": "enum",
+          "description": "yes when every recorded wheelchair feature is yes, limited otherwise.",
+          "values": ["yes", "limited"]
+        },
+        {
           "name": "features",
           "type": "list",
-          "description": "Which facilities are accessible.",
-          "values": ["toilet", "shower", "parking", "path", "campsite", "cabin"]
+          "description": "The wheelchair features whose access is yes.",
+          "values": [
+            "arrival",
+            "toilets",
+            "showers",
+            "parking",
+            "paths",
+            "campsites",
+            "cabins",
+            "camp_kitchen"
+          ]
         }
       ],
+      "stored_as": {
+        "field": "/facts/accessibility",
+        "rule": "available is true when any accessibility.wheelchair feature is yes or limited, false when every recorded feature is no. Absent when no feature is recorded."
+      },
       "osm": [
         {
           "tags": ["wheelchair=yes"],
-          "match": "exact"
+          "match": "exact",
+          "note": "When the wheelchair attribute is yes."
+        },
+        {
+          "tags": ["wheelchair=limited"],
+          "match": "exact",
+          "note": "When the wheelchair attribute is limited."
+        },
+        {
+          "tags": ["toilets:wheelchair=yes"],
+          "match": "related",
+          "note": "When toilets is in features. Approved on the OSM wiki."
+        },
+        {
+          "tags": ["capacity:disabled=*"],
+          "match": "related",
+          "note": "The count in accessibility.accessible_parking_spaces."
+        },
+        {
+          "tags": ["centralkey=*"],
+          "match": "related",
+          "note": "The key scheme in accessibility.toilets.key_scheme. See key-schemes.json."
+        },
+        {
+          "tags": ["changing_table:adult=yes"],
+          "match": "related",
+          "note": "When accessibility.toilets.changing_places is true. An adult change table alone is not a Changing Places toilet."
+        },
+        {
+          "tags": ["wheelchair:description=*"],
+          "match": "related",
+          "note": "The accessibility notes."
         }
       ],
       "schema_org": {

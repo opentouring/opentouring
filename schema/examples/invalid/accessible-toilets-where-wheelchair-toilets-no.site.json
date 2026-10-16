@@ -1,0 +1,687 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KR6JW0QBNHM90XV3GS9Y2G26",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "contributor",
+      "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+      "observed_on": "2026-07-02",
+      "recorded_at": "2026-07-04T00:15:00Z",
+      "confidence": 0.93,
+      "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+      "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+      "change_seq": 15120
+    }
+  },
+  "created_at": "2026-07-04T00:15:00Z",
+  "updated_at": "2026-08-30T02:02:44Z",
+  "change_seq": 19304,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-NT",
+    "locality": "Katherine",
+    "time_zone": "Australia/Darwin"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Pandanus Flats Caravan Park",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -14.4521,
+        "lng": 132.2705,
+        "accuracy_m": 10
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "caravan_park",
+        "others": ["dump_point"]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "description": {
+      "value": [
+        {
+          "text": "Shady park on the river side of town with grassed powered sites, a camp kitchen and a pool. Drive-through sites suit long rigs. The dump point is open to non-guests for a small fee.",
+          "lang": "en-AU"
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "opening_hours": {
+      "value": {
+        "always_open": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "reception_hours": {
+      "value": {
+        "weekly": [
+          {
+            "days": ["mo", "tu", "we", "th", "fr"],
+            "opens": "07:30",
+            "closes": "18:00"
+          },
+          {
+            "days": ["sa", "su"],
+            "opens": "08:00",
+            "closes": "12:00"
+          }
+        ],
+        "osm_opening_hours": "Mo-Fr 07:30-18:00; Sa,Su 08:00-12:00",
+        "exceptions": [
+          {
+            "from": "2026-12-25",
+            "to": "2026-12-25",
+            "closed": true
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "prices": {
+      "value": {
+        "charging": "paid",
+        "items": [
+          {
+            "applies_to": "site_unpowered",
+            "amount": 34,
+            "currency": "AUD",
+            "per": "site",
+            "period": "night",
+            "conditions": {
+              "persons_included": 2
+            }
+          },
+          {
+            "applies_to": "site_powered",
+            "amount": 48,
+            "currency": "AUD",
+            "per": "site",
+            "period": "night",
+            "conditions": {
+              "persons_included": 2,
+              "season": {
+                "from": "05-01",
+                "to": "09-30"
+              }
+            }
+          },
+          {
+            "applies_to": "site_powered",
+            "amount": 42,
+            "currency": "AUD",
+            "per": "site",
+            "period": "night",
+            "conditions": {
+              "persons_included": 2,
+              "season": {
+                "from": "10-01",
+                "to": "04-30"
+              }
+            }
+          },
+          {
+            "applies_to": "extra_person",
+            "amount": 12,
+            "currency": "AUD",
+            "per": "person",
+            "period": "night"
+          },
+          {
+            "applies_to": "dump_point",
+            "amount": 10,
+            "currency": "AUD",
+            "per": "vehicle",
+            "period": "use",
+            "conditions": {
+              "notes": [
+                {
+                  "text": "Free for guests.",
+                  "lang": "en-AU"
+                }
+              ]
+            }
+          }
+        ],
+        "payment_methods": ["card", "cash", "online"]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-28",
+        "recorded_at": "2026-08-30T02:02:44Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01KQD421AHHMAWVJBSW9WJR571",
+        "decision_id": "otwd:decision:01KQVYJYFW1VCM2DCPSMF0RHQN",
+        "change_seq": 19304
+      }
+    },
+    "bookings": {
+      "value": {
+        "booking": "recommended",
+        "url": "https://www.example.com/pandanus-flats/book",
+        "phone": "+61855501234",
+        "check_in_from": "14:00",
+        "check_out_by": "10:00",
+        "notes": [
+          {
+            "text": "Book ahead from June to August.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "contact": {
+      "value": {
+        "website": "https://www.example.com/pandanus-flats",
+        "phone": "+61855501234"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "capacity": {
+      "value": {
+        "sites": 96,
+        "powered_sites": 70
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "pets": {
+      "value": {
+        "allowed": "by_arrangement",
+        "notes": [
+          {
+            "text": "Small dogs on powered sites only, outside school holidays.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "accessibility": {
+      "value": {
+        "basis": {
+          "kind": "assessed_to_standard",
+          "standard": "AS 1428.1-2021",
+          "assessed_on": "2026-05-12"
+        },
+        "wheelchair": {
+          "arrival": {
+            "access": "yes"
+          },
+          "toilets": {
+            "access": "no"
+          },
+          "showers": {
+            "access": "yes"
+          },
+          "parking": {
+            "access": "yes"
+          },
+          "paths": {
+            "access": "limited",
+            "notes": [
+              {
+                "text": "Compacted gravel between the powered sites. Sealed path from reception to the amenities block.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "campsites": {
+            "access": "limited"
+          },
+          "cabins": {
+            "access": "yes",
+            "notes": [
+              {
+                "text": "One accessible cabin with a roll-in shower.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "camp_kitchen": {
+            "access": "yes"
+          }
+        },
+        "toilets": {
+          "accessible_count": 2,
+          "ambulant_count": 2,
+          "changing_places": false,
+          "key_required": false
+        },
+        "accessible_parking_spaces": 2,
+        "step_free_access": true,
+        "paths": {
+          "surface": "mixed",
+          "gradient_notes": [
+            {
+              "text": "Gentle slope down to the river sites.",
+              "lang": "en-AU"
+            }
+          ]
+        },
+        "hearing_loop": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "max_length_m": 22,
+        "big_rig_suitable": "yes"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "access": {
+      "value": {
+        "road_surface": "sealed",
+        "four_wd_required": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    }
+  },
+  "facilities": {
+    "toilets": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "kind": "flush",
+          "count": 14
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "showers": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "hot": true,
+          "fee": false,
+          "count": 12
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "drinking_water": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "potable": true,
+          "treated": true,
+          "source": "town_supply",
+          "tank_fill": true
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "power": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "amps": 15,
+          "outlets": 70,
+          "metered": false,
+          "outlet_type": "AS/NZS 3112 15 A"
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "dump_point_access": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "accepts": "cassette_and_tank",
+          "drive_over": true,
+          "rinse_water": true,
+          "guests_only": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "pool": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "heated": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "laundry": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "washers": 4,
+          "dryers": 3,
+          "fee": true
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "camp_kitchen": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "wifi": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "fee": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "drive_through_sites": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "count": 18
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "cabins": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "count": 12
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "ensuite_sites": {
+      "value": {
+        "available": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "tent_sites": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "generators_allowed": {
+      "value": {
+        "available": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    },
+    "bbq": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "fuel": "electric",
+          "fee": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z",
+        "confidence": 0.93,
+        "submission_id": "otwd:submission:01KPKJ4Q462SWAPQNSJV5X96HZ",
+        "decision_id": "otwd:decision:01KQ122B4AEHF6DEY8KR7GCW14",
+        "change_seq": 15120
+      }
+    }
+  }
+}

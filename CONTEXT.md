@@ -63,7 +63,7 @@ A typed detail of a facility, defined with the facility in the governed list, su
 _Avoid_: property, option, sub-field
 
 **Governed list**:
-A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes and vehicle classes, which the community extends by proposal and the steering group approves.
+A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes and key schemes, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
 **Fact**:
@@ -81,6 +81,18 @@ _Avoid_: fire ban, fire danger rating, fire zone
 **Rig limit**:
 A fact that restricts which vehicles can use a site, such as maximum length, height, weight or a ban on towing. Each is the largest vehicle that fits.
 _Avoid_: vehicle restriction, size limit
+
+**Accessibility**:
+Access for people with disability at a site or on a ferry service: wheelchair access per feature (yes, limited or no), accessible and ambulant toilets, Changing Places, the key scheme, accessible parking, step-free access, paths and hearing loops, with its accessibility basis. Not a safety fact, but moderators treat a yes with care, because a wrong yes can strand a traveller.
+_Avoid_: disability access, wheelchair friendly, accessible (as a yes or no flag)
+
+**Accessibility basis**:
+What an accessibility fact rests on: an assessment against a named access standard, signs at the site, the operator's or a seed source's own statement, or a contributor's observation. It sits beside provenance, which says who reported the fact.
+_Avoid_: certification, accessibility rating
+
+**Key scheme**:
+A central key that opens accessible toilets and other facilities for people with disability, from a governed list with the countries each is used in, such as MLAK in Australia and New Zealand.
+_Avoid_: disability key, access key (on its own)
 
 **Description**:
 A short original text about a record, written by a contributor and published under the data licence.

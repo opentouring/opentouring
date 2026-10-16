@@ -44,5 +44,13 @@
   "routing-rule-on-new-record.moderation-decision.json": "a routing rule cannot decide this: new_road_segment is on the always-human list",
   "routing-rule-on-safety-fact.moderation-decision.json": "a routing rule cannot decide this: /facts/location is a safety fact of a road_restriction",
   "routing-rule-on-accepted-vehicle-classes.moderation-decision.json": "/facts/accepted_vehicle_classes is a safety fact of a ferry_service",
-  "routing-rule-on-terminals.moderation-decision.json": "a routing rule cannot decide this: /facts/terminals is a safety fact of a ferry_service"
+  "routing-rule-on-terminals.moderation-decision.json": "a routing rule cannot decide this: /facts/terminals is a safety fact of a ferry_service",
+  "accessibility-assessed-without-standard.site.json": "/facts/accessibility/value/basis: 'standard' is a required property",
+  "accessibility-without-basis.site.json": "/facts/accessibility/value: 'basis' is a required property",
+  "accessible-facilities-in-facilities-map.site.json": "{'required': ['accessible_facilities'], 'properties': {'accessible_facilities': True}}",
+  "unknown-key-scheme.site.json": "unknown key scheme code 'lavkey'",
+  "key-scheme-not-used-in-country.site.json": "key scheme 'radar' is not used in AU",
+  "key-scheme-without-key-required.site.json": "/facts/accessibility/value/toilets/key_required: True was expected",
+  "accessible-toilets-where-wheelchair-toilets-no.site.json": "wheelchair toilets access is no but accessible_count is 2",
+  "campsite-access-on-ferry-service.ferry-service.json": "'campsites' was unexpected"
 }
