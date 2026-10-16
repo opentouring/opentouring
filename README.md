@@ -35,7 +35,12 @@ Details are in [LICENSING.md](LICENSING.md), and full licence texts are in [LICE
 - [docs/adr/](docs/adr/): architecture decision records
 - [docs/roadmap.md](docs/roadmap.md): build order and open questions
 - [docs/contributor-terms-draft.md](docs/contributor-terms-draft.md): draft data contributor terms (not in force)
+- [docs/extending.md](docs/extending.md): how to add a governed list code, fact, record type, seed source, country or endpoint
+- [docs/policies/](docs/policies/): the moderation policy, the privacy policy draft and the takedown process
+- [docs/supported-countries.md](docs/supported-countries.md) and [docs/seed-sources.md](docs/seed-sources.md): where OTWD operates and the open datasets it imports
+- [docs/operations/disaster-recovery.md](docs/operations/disaster-recovery.md): backups and restores
 - [CONTRIBUTING.md](CONTRIBUTING.md): how to contribute code and propose site types and facilities
+- [CHANGELOG.md](CHANGELOG.md): changes to the schema and API from `v1.0.0` on
 - [GOVERNANCE.md](GOVERNANCE.md): who runs the project and how that will change
 - [SECURITY.md](SECURITY.md): how to report a vulnerability
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): expected behaviour in project spaces
