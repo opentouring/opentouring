@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Governed list proposal
+description: Propose adding, changing or retiring a site type, facility, structure, surface, vehicle access class or vehicle class.
+title: "Governed list: add `<proposed_value>`"
+labels: ["governed-list", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check the current list in `schema/` and the open issues first. Change "add" in the title to "change" or "retire" if that is what you propose. The steps after acceptance are in docs/extending.md under "New governed list code".
+  - type: dropdown
+    id: list
+    attributes:
+      label: Governed list
+      options:
+        - Site types
+        - Facilities
+        - Structures
+        - Surfaces
+        - Vehicle access classes
+        - Vehicle classes
+    validations:
+      required: true
+  - type: dropdown
+    id: action
+    attributes:
+      label: Proposal
+      options:
+        - Add a code
+        - Change a code
+        - Retire a code
+    validations:
+      required: true
+  - type: input
+    id: code
+    attributes:
+      label: Code
+      description: The proposed value in snake_case.
+      placeholder: dump_point
+    validations:
+      required: true
+  - type: textarea
+    id: definition
+    attributes:
+      label: Definition
+      description: One sentence saying what the code means.
+    validations:
+      required: true
+  - type: textarea
+    id: attributes
+    attributes:
+      label: Attributes
+      description: Any attributes the code needs, with types and metric units, or "none".
+  - type: textarea
+    id: mappings
+    attributes:
+      label: OpenStreetMap and schema.org mappings
+      description: The matching OSM tags and schema.org type or property, with how close the match is (exact, broader, narrower or related), or "none".
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Real examples
+      description: At least two real examples, from at least two countries if possible.
+    validations:
+      required: true
+  - type: textarea
+    id: nearest
+    attributes:
+      label: Nearest existing code
+      description: How it differs from the closest code already in the list.
+    validations:
+      required: true
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Is it a safety fact?
+      description: A safety fact sends every change to a person and needs steering group approval recorded in an ADR.
+      options:
+        - "No"
+        - "Yes"
+        - Not sure
+    validations:
+      required: true

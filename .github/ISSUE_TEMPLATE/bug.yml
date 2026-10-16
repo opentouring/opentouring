@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Bug
+description: Something in the code, schema, API, website or documentation does not work as described.
+title: "Bug: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for a fault in the project itself. Report a security problem privately as described in SECURITY.md, and wrong data about a record through a submission or by email to hello@opentouring.org.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Schema or validator
+        - API or OpenAPI spec
+        - Website or developer portal
+        - Moderation pipeline
+        - Bulk downloads
+        - Documentation
+        - Tooling and git hooks
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did and what you saw. Include error messages and request IDs, never API keys.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What should have happened, with a link to the document that says so if there is one.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The smallest set of steps, files or requests that shows the problem.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: The commit, schema version or API version you used.
