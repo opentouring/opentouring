@@ -1,0 +1,17 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:decision:01KNDEH3MTQ0CBWRFX1CC4V9F9",
+  "submission_id": "otwd:submission:01KN14T0TC3HKH7E8NFJZQH1AZ",
+  "outcome": "rejected",
+  "decided_by": {
+    "kind": "moderator",
+    "moderator_id": "otwd:contributor:01KKS1RPGCFYJK8VCTP4V7BMX8"
+  },
+  "decided_at": "2026-05-20T05:00:00Z",
+  "reasons": [
+    {
+      "code": "copied_text",
+      "text": "Description matches a commercial guidebook word for word."
+    }
+  ]
+}

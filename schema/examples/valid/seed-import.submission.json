@@ -1,0 +1,46 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "new_site",
+  "seed_record": {
+    "seed_source_id": "otwd:seed_source:au-example-parks-campgrounds",
+    "record_id": "CG-0412",
+    "dataset_version": "2026-07"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-08-02T03:10:00Z"
+  },
+  "contributor_submitted_at": "2026-08-02T03:12:00Z",
+  "proposed": {
+    "facts": {
+      "names": [
+        {
+          "text": "Banksia Hollow Campground",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "location": {
+        "lat": -28.5392,
+        "lng": 152.8807,
+        "accuracy_m": 25
+      },
+      "site_types": {
+        "primary": "national_park_campsite"
+      },
+      "pets": {
+        "allowed": "no"
+      }
+    },
+    "facilities": {
+      "toilets": {
+        "available": true,
+        "attributes": {
+          "kind": "composting",
+          "count": 2
+        }
+      }
+    }
+  }
+}

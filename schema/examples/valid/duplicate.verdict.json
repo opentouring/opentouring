@@ -1,0 +1,45 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:verdict:01KJZDDQFKC9VHYPXC2VGW3JA4",
+  "submission_id": "otwd:submission:01M1Y1A6D57488GYF929K0YA38",
+  "advisory": true,
+  "category": "likely_duplicate",
+  "confidence": 0.71,
+  "reasons": [
+    {
+      "code": "name_matches_nearby_site",
+      "text": "A free camp with a similar name lies 140 m away.",
+      "fields": ["/facts/names", "/facts/location"]
+    },
+    {
+      "code": "site_type_overlap",
+      "text": "Both records describe an overnight stop beside the same creek crossing."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "site",
+      "ref": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ"
+    },
+    {
+      "kind": "fixed_check",
+      "ref": "duplicate_candidates.v1",
+      "note": "Distance 140 m, name similarity 0.68."
+    }
+  ],
+  "duplicate_candidates": [
+    {
+      "site_id": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
+      "distance_m": 140,
+      "name_similarity": 0.68
+    }
+  ],
+  "model": {
+    "provider": "Example AI provider",
+    "identifier": "example-small",
+    "version": "2026-09-01",
+    "tier": "fast"
+  },
+  "prompt_version": "moderation-review-1.3",
+  "created_at": "2026-10-12T21:42:03Z"
+}

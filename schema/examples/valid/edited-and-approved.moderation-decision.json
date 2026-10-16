@@ -1,0 +1,43 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:decision:01KP8M9EHR3RN6WEKMYGB8T07E",
+  "submission_id": "otwd:submission:01KNTJPWN1B65TBMPY64JGFBHR",
+  "outcome": "edited_and_approved",
+  "decided_by": {
+    "kind": "moderator",
+    "moderator_id": "otwd:contributor:01KKS1RPGCFYJK8VCTP4V7BMX8"
+  },
+  "decided_at": "2026-08-21T06:40:00Z",
+  "routing": {
+    "route": "human_review",
+    "policy_version": "routing-1.0",
+    "always_human": true
+  },
+  "reasons": [
+    {
+      "code": "safety_fact_corrected",
+      "text": "Contributor's photo shows 400 m of gravel, not 4 km."
+    }
+  ],
+  "public_note": "Thanks. We corrected the unsealed distance to 0.4 km to match your photo.",
+  "amendments": [
+    {
+      "field": "/facts/access",
+      "submitted": {
+        "road_surface": "gravel",
+        "unsealed_km": 4,
+        "four_wd_required": false
+      },
+      "applied": {
+        "road_surface": "gravel",
+        "unsealed_km": 0.4,
+        "four_wd_required": false,
+        "seasonal": {
+          "affected": true,
+          "wet_weather_closure": true
+        }
+      }
+    }
+  ],
+  "change_seqs": [18877]
+}

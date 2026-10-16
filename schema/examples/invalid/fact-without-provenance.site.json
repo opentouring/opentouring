@@ -1,0 +1,184 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KVF3VB1PKNZC8EZFBGVYH4H8",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-04-20",
+      "recorded_at": "2026-04-22T04:00:00Z",
+      "confidence": 0.85,
+      "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+      "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+      "change_seq": 9001
+    }
+  },
+  "created_at": "2026-04-22T04:00:00Z",
+  "updated_at": "2026-04-22T04:00:00Z",
+  "change_seq": 9001,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-VIC",
+    "locality": "Seymour",
+    "time_zone": "Australia/Melbourne"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Wattle Street Dump Point",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -37.0263,
+        "lng": 145.1391,
+        "accuracy_m": 5
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "dump_point",
+        "others": ["drinking_water_point"]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    },
+    "opening_hours": {
+      "value": {
+        "always_open": true
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    },
+    "prices": {
+      "value": {
+        "charging": "free"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "big_rig_suitable": "yes"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    },
+    "access": {
+      "value": {
+        "road_surface": "sealed"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    }
+  },
+  "facilities": {
+    "dump_point_access": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "accepts": "cassette_and_tank",
+          "drive_over": true,
+          "rinse_water": true,
+          "guests_only": false
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    },
+    "drinking_water": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "potable": true,
+          "treated": true,
+          "source": "town_supply",
+          "tank_fill": true
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-04-20",
+        "recorded_at": "2026-04-22T04:00:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01KTKRY4XTDWZ2BG5PVD07H8N5",
+        "decision_id": "otwd:decision:01KV2HF295630J5RYADAQ6F5B4",
+        "change_seq": 9001
+      }
+    }
+  }
+}

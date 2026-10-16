@@ -1,0 +1,41 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+
+# Open Touring
+
+Open Touring is an open, crowd-contributed database of the places travellers stop at on the road: campsites, caravan parks, free camps, rest areas, dump points, drinking water, toilets, showers, laundries, information centres, attractions and more. The data is free to use under CC BY 4.0. Partner apps read it through an API and send their contributors' new sites and corrections back through moderation, so every app that uses the data can help keep it current.
+
+OTWD, the Open Touring and Waypoint Database, is the technical name for the dataset, the API and the SDKs. Australia comes first, and the schema works for any country.
+
+## Status
+
+Preview: concept build, not yet accepting outside contributions.
+
+The Preview runs the production stack at minimum size with seeded government data and the maintainer's own submissions. Outside contributions open once a not-for-profit host has agreed to take on the project. See [GOVERNANCE.md](GOVERNANCE.md).
+
+## What OTWD offers
+
+Each site is a point (latitude and longitude) with its site types, facilities, prices, opening hours, rig limits, photos and a short description. Every fact records where it came from and when. Site IDs never change.
+
+Partner apps can query sites through the API, download the whole dataset as GeoParquet or GeoJSON, and submit new sites and corrections on behalf of their contributors, the people using the app who choose to send them. Every use needs an API key. The free tier covers reading and bulk downloads, and contributing is always free. Paid tiers add volume, a service level, change feeds and their webhooks, delta files and support. OTWD provides points only: apps draw them on their own maps.
+
+## Licences
+
+| What                                                     | Licence       |
+| -------------------------------------------------------- | ------------- |
+| Data (sites, facts, photos, descriptions)                | CC BY 4.0     |
+| Server code: `services/`, `pipelines/`, `web/`, `infra/` | AGPL-3.0-only |
+| `schema/`, `api/`, `sdks/` and sample clients            | Apache-2.0    |
+
+Details are in [LICENSING.md](LICENSING.md), and full licence texts are in [LICENSES/](LICENSES/).
+
+## Documentation
+
+- [CONTEXT.md](CONTEXT.md): the glossary of terms used everywhere in the project
+- [docs/architecture.md](docs/architecture.md): how the platform works
+- [docs/adr/](docs/adr/): architecture decision records
+- [docs/roadmap.md](docs/roadmap.md): build order and open questions
+- [docs/contributor-terms-draft.md](docs/contributor-terms-draft.md): draft data contributor terms (not in force)
+- [CONTRIBUTING.md](CONTRIBUTING.md): how to contribute code and propose site types and facilities
+- [GOVERNANCE.md](GOVERNANCE.md): who runs the project and how that will change
+- [SECURITY.md](SECURITY.md): how to report a vulnerability
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): expected behaviour in project spaces

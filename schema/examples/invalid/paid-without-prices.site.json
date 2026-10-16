@@ -1,0 +1,281 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KYP4ZPSXSNZC1V4BTVHNQ3ZX",
+  "status": {
+    "value": "temporarily_closed",
+    "reason": [
+      {
+        "text": "Closed to campers during the annual show.",
+        "lang": "en-AU"
+      }
+    ],
+    "reopens_on": "2026-10-28",
+    "provenance": {
+      "source_kind": "partner_app",
+      "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-10-09",
+      "recorded_at": "2026-10-10T22:41:00Z",
+      "confidence": 0.9,
+      "submission_id": "otwd:submission:01KXW8T9Y8JP620BXTW6D6DJBR",
+      "decision_id": "otwd:decision:01KY83HE0AF2E3XCN091S2WBB9",
+      "change_seq": 21944
+    }
+  },
+  "created_at": "2026-07-13T03:00:00Z",
+  "updated_at": "2026-10-10T22:41:00Z",
+  "change_seq": 21944,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-SA",
+    "locality": "Pinnaroo",
+    "time_zone": "Australia/Adelaide"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Mallee Downs Showground",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -35.2648,
+        "lng": 140.9086,
+        "accuracy_m": 30
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "showground",
+        "others": ["dump_point"]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "prices": {
+      "value": {
+        "charging": "paid"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "bookings": {
+      "value": {
+        "booking": "not_accepted",
+        "notes": [
+          {
+            "text": "Pay the caretaker on arrival.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "contact": {
+      "value": {
+        "phone": "+61491570156"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "pets": {
+      "value": {
+        "allowed": "on_leash"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "big_rig_suitable": "yes"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    }
+  },
+  "facilities": {
+    "power": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "amps": 10,
+          "outlets": 24,
+          "metered": false
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "showers": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "hot": true,
+          "fee": true
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "toilets": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "kind": "flush"
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "dump_point_access": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "accepts": "cassette_only",
+          "guests_only": true
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    },
+    "drinking_water": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "potable": true,
+          "source": "rainwater_tank",
+          "treated": false
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-07-11",
+        "recorded_at": "2026-07-13T03:00:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01KX25KYJG9KK89F7110750NBW",
+        "decision_id": "otwd:decision:01KXF338CWXH3AC6A6QHX4M98X",
+        "change_seq": 16002
+      }
+    }
+  }
+}

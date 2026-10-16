@@ -1,0 +1,830 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/values.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD fact values",
+  "description": "The value shapes of every fact a site can carry. A site wraps each value with its provenance. A submission proposes bare values, and OTWD adds provenance when the change is applied. This file defines no document of its own.",
+  "$defs": {
+    "Names": {
+      "description": "The names a site is known by. Exactly one entry has kind primary.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": { "$ref": "#/$defs/NameEntry" },
+      "contains": {
+        "type": "object",
+        "required": ["kind"],
+        "properties": { "kind": { "const": "primary" } }
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "NameEntry": {
+      "type": "object",
+      "required": ["text", "lang", "kind"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "lang": { "$ref": "common.schema.json#/$defs/LanguageTag" },
+        "kind": {
+          "description": "primary: the name shown by default. alternative: another current name. traditional: a name in the language of the traditional owners or First Nations people of the area. former: a name no longer used. short: an abbreviation.",
+          "type": "string",
+          "enum": ["primary", "alternative", "traditional", "former", "short"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Location": {
+      "description": "The coordinates of a site in WGS84 (EPSG:4326), in decimal degrees. For a large site such as a campground this is the entrance or office, where a traveller would drive to.",
+      "type": "object",
+      "required": ["lat", "lng"],
+      "properties": {
+        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lng": { "type": "number", "minimum": -180, "maximum": 180 },
+        "accuracy_m": {
+          "description": "Estimated horizontal accuracy in metres (radius).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      },
+      "additionalProperties": false
+    },
+    "SiteTypes": {
+      "description": "The site's primary site type and any others it also serves as. A showground that is also a dump point has primary showground and others [dump_point].",
+      "type": "object",
+      "required": ["primary"],
+      "properties": {
+        "primary": { "$ref": "common.schema.json#/$defs/SiteTypeCode" },
+        "others": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/SiteTypeCode" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Description": {
+      "description": "A short original description of the site, at most one per language. It must be the contributor's own words, never copied from a website, guidebook or other database.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["text", "lang"],
+        "properties": {
+          "text": { "type": "string", "minLength": 20, "maxLength": 500 },
+          "lang": { "$ref": "common.schema.json#/$defs/LanguageTag" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "Weekday": { "type": "string", "enum": ["mo", "tu", "we", "th", "fr", "sa", "su"] },
+    "OpeningHours": {
+      "description": "When the site can be used. Times are local to the site's time zone. Give always_open, a weekly pattern, an OSM opening_hours string, or a combination. When both weekly and osm_opening_hours are present they describe the same hours and weekly is authoritative.",
+      "type": "object",
+      "properties": {
+        "always_open": {
+          "description": "True for a site open 24 hours a day every day, such as most rest areas.",
+          "type": "boolean"
+        },
+        "weekly": {
+          "description": "The regular weekly pattern. Days with no entry are closed, unless always_open is true.",
+          "type": "array",
+          "maxItems": 21,
+          "items": {
+            "type": "object",
+            "required": ["days", "opens", "closes"],
+            "properties": {
+              "days": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 7,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/Weekday" }
+              },
+              "opens": { "$ref": "common.schema.json#/$defs/LocalTime" },
+              "closes": {
+                "description": "Closing time. A closing time earlier than the opening time means the period ends after midnight.",
+                "$ref": "common.schema.json#/$defs/LocalTime"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "osm_opening_hours": {
+          "description": "The same hours in OpenStreetMap opening_hours syntax, for example \"Mo-Fr 08:00-17:00; Sa 09:00-12:00\". Accepted from contributors who already write in that syntax.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "exceptions": {
+          "description": "Dates that differ from the weekly pattern, such as public holidays.",
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "closed"],
+            "properties": {
+              "from": { "type": "string", "format": "date" },
+              "to": { "type": "string", "format": "date" },
+              "closed": { "type": "boolean" },
+              "opens": { "$ref": "common.schema.json#/$defs/LocalTime" },
+              "closes": { "$ref": "common.schema.json#/$defs/LocalTime" },
+              "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "seasonal_closures": {
+          "description": "Periods the site closes every year, such as a wet season closure.",
+          "type": "array",
+          "maxItems": 12,
+          "items": { "$ref": "#/$defs/AnnualPeriod" }
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": ["always_open"],
+          "properties": { "always_open": true }
+        },
+        {
+          "required": ["weekly"],
+          "properties": { "weekly": true }
+        },
+        {
+          "required": ["osm_opening_hours"],
+          "properties": { "osm_opening_hours": true }
+        }
+      ]
+    },
+    "AnnualPeriod": {
+      "description": "A period that repeats every year, from one day to another inclusive. A period may wrap past the end of the year, for example 11-01 to 03-31.",
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "$ref": "common.schema.json#/$defs/MonthDay" },
+        "to": { "$ref": "common.schema.json#/$defs/MonthDay" },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false
+    },
+    "Prices": {
+      "description": "What it costs to use the site. charging says whether there is a charge at all. items lists the prices.",
+      "type": "object",
+      "required": ["charging"],
+      "properties": {
+        "charging": {
+          "description": "free: no charge. donation: a voluntary payment is invited. paid: a charge applies and items lists it.",
+          "type": "string",
+          "enum": ["free", "donation", "paid"]
+        },
+        "items": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/PriceItem" } },
+        "payment_methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["cash", "card", "online", "honesty_box", "app", "phone"]
+          }
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false,
+      "if": { "properties": { "charging": { "const": "paid" } } },
+      "then": {
+        "required": ["items"],
+        "properties": { "items": { "minItems": 1 } }
+      }
+    },
+    "PriceItem": {
+      "description": "One price. The amount is charged per unit (per) for each period, so per person per night is per=person, period=night.",
+      "type": "object",
+      "required": ["applies_to", "amount", "currency", "per", "period"],
+      "properties": {
+        "applies_to": {
+          "description": "What is being paid for. Use other with notes when none fits.",
+          "type": "string",
+          "enum": [
+            "site_unpowered",
+            "site_powered",
+            "site_ensuite",
+            "tent_site",
+            "cabin",
+            "entry",
+            "shower",
+            "dump_point",
+            "water_fill",
+            "power",
+            "laundry_wash",
+            "laundry_dry",
+            "extra_person",
+            "extra_vehicle",
+            "pet",
+            "other"
+          ]
+        },
+        "amount": {
+          "description": "Amount in major currency units, for example 32.5 for A$32.50.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "currency": { "$ref": "common.schema.json#/$defs/CurrencyCode" },
+        "per": {
+          "type": "string",
+          "enum": ["site", "person", "adult", "child", "family", "vehicle", "pet", "use"]
+        },
+        "period": { "type": "string", "enum": ["night", "day", "hour", "week", "stay", "use"] },
+        "conditions": { "$ref": "#/$defs/PriceConditions" }
+      },
+      "additionalProperties": false
+    },
+    "PriceConditions": {
+      "description": "When a price applies. All given conditions must hold.",
+      "type": "object",
+      "properties": {
+        "persons_included": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "min_nights": { "type": "integer", "minimum": 1, "maximum": 365 },
+        "season": { "$ref": "#/$defs/AnnualPeriod" },
+        "days": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Weekday" }
+        },
+        "valid_from": { "type": "string", "format": "date" },
+        "valid_to": { "type": "string", "format": "date" },
+        "concession": {
+          "description": "True when the price applies only to holders of a concession, seniors or pensioner card.",
+          "type": "boolean"
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false
+    },
+    "FireDistrict": {
+      "description": "Safety fact. The fire authority and fire district the site falls in, with a link to the authority's official live fire ban information. OTWD never stores declared fire bans: they change daily, so apps send travellers to ban_info_url.",
+      "type": "object",
+      "required": ["authority", "district", "ban_info_url"],
+      "properties": {
+        "authority": {
+          "description": "The fire authority's name, for example Country Fire Authority.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "district": {
+          "description": "The fire district, fire area or total fire ban district as the authority names it, for example North Central.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "ban_info_url": {
+          "description": "The authority's official page for current fire bans and fire danger ratings in this district.",
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RigLimits": {
+      "description": "Safety fact. Limits on which vehicles can use the site. A limit that is absent is unknown, not unlimited.",
+      "type": "object",
+      "properties": {
+        "max_length_m": {
+          "description": "Longest total rig, vehicle plus anything towed, that fits, in metres.",
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 60
+        },
+        "max_height_m": {
+          "description": "Lowest overhead clearance on the way in or on site, in metres.",
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10
+        },
+        "max_weight_t": {
+          "description": "Lowest gross mass limit on the way in, such as a bridge or causeway limit, in tonnes.",
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 200
+        },
+        "big_rig_suitable": {
+          "description": "yes: room to enter, turn and park a big rig (roughly 10 m or more combined, or a large motorhome). limited: possible with care or only on some sites. no: unsuitable.",
+          "type": "string",
+          "enum": ["yes", "limited", "no"]
+        },
+        "towing_allowed": {
+          "description": "False when caravans, camper trailers and other towed vehicles are not allowed.",
+          "type": "boolean"
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "Access": {
+      "description": "Safety fact. How a vehicle reaches the site.",
+      "type": "object",
+      "properties": {
+        "road_surface": {
+          "description": "The worst surface on the last stretch to the site.",
+          "type": "string",
+          "enum": ["sealed", "gravel", "dirt", "sand", "mixed"]
+        },
+        "unsealed_km": {
+          "description": "Length of unsealed road from the nearest sealed road, in kilometres.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "four_wd_required": { "type": "boolean" },
+        "high_clearance_recommended": { "type": "boolean" },
+        "seasonal": { "$ref": "#/$defs/SeasonalAccess" },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "SeasonalAccess": {
+      "description": "Whether access depends on the season or the weather.",
+      "type": "object",
+      "required": ["affected"],
+      "properties": {
+        "affected": { "type": "boolean" },
+        "wet_weather_closure": {
+          "description": "True when the road closes or becomes impassable after rain.",
+          "type": "boolean"
+        },
+        "typical_closures": {
+          "type": "array",
+          "maxItems": 12,
+          "items": { "$ref": "#/$defs/AnnualPeriod" }
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false
+    },
+    "Pets": {
+      "description": "The site's pet policy. The facilities pets_allowed and dog_off_leash are read from this fact.",
+      "type": "object",
+      "required": ["allowed"],
+      "properties": {
+        "allowed": {
+          "description": "yes: pets allowed. on_leash: allowed on a leash at all times. by_arrangement: only with prior approval. no: not allowed (assistance animals are covered by law, not by this field).",
+          "type": "string",
+          "enum": ["yes", "on_leash", "by_arrangement", "no"]
+        },
+        "dog_off_leash_area": { "type": "boolean" },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false
+    },
+    "Bookings": {
+      "description": "Whether and how to book.",
+      "type": "object",
+      "required": ["booking"],
+      "properties": {
+        "booking": {
+          "type": "string",
+          "enum": ["required", "recommended", "optional", "not_accepted"]
+        },
+        "url": { "type": "string", "format": "uri", "maxLength": 500 },
+        "phone": { "$ref": "common.schema.json#/$defs/PhoneE164" },
+        "check_in_from": { "$ref": "common.schema.json#/$defs/LocalTime" },
+        "check_out_by": { "$ref": "common.schema.json#/$defs/LocalTime" },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false
+    },
+    "Contact": {
+      "description": "Public contact details of the site's operator. Never a contributor's personal details.",
+      "type": "object",
+      "properties": {
+        "website": { "type": "string", "format": "uri", "maxLength": 500 },
+        "phone": { "$ref": "common.schema.json#/$defs/PhoneE164" },
+        "email": { "type": "string", "format": "email", "maxLength": 254 }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "Capacity": {
+      "description": "How many vehicles or groups the site holds.",
+      "type": "object",
+      "properties": {
+        "sites": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "powered_sites": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "StayLimits": {
+      "description": "Limits on how long a traveller may stay.",
+      "type": "object",
+      "properties": {
+        "max_nights": { "type": "integer", "minimum": 0, "maximum": 365 },
+        "period_days": {
+          "description": "The period over which max_nights applies, for example 2 nights in any 28 days.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 365
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "FacilityValue": {
+      "description": "Whether a site has a facility, and its attributes. available false records that the facility is known to be absent, which is different from the facility being missing from the record (unknown). The attributes allowed for each code are listed in facilities.json and checked by the per-code schemas in this file.",
+      "type": "object",
+      "required": ["available"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "attributes": {
+          "type": "object",
+          "maxProperties": 20,
+          "propertyNames": { "pattern": "^[a-z][a-z0-9_]{0,47}$" }
+        },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      },
+      "additionalProperties": false
+    },
+    "Facilities": {
+      "description": "A map from facility code to facility value. Codes with defined attributes are checked here. Codes not listed are accepted with free-form attributes so that new governed list entries do not break older validators. In stored sites and in submissions the codes pets_allowed, dog_off_leash and big_rig_access are read from the pets and rig_limits facts instead (see StoredFacilities). The compact site form fills them in for convenience.",
+      "type": "object",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/FacilityCode" },
+      "properties": {
+        "toilets": { "$ref": "#/$defs/ToiletsValue" },
+        "showers": { "$ref": "#/$defs/ShowersValue" },
+        "drinking_water": { "$ref": "#/$defs/DrinkingWaterValue" },
+        "non_potable_water": { "$ref": "#/$defs/NonPotableWaterValue" },
+        "power": { "$ref": "#/$defs/PowerValue" },
+        "dump_point_access": { "$ref": "#/$defs/DumpPointAccessValue" },
+        "bbq": { "$ref": "#/$defs/BbqValue" },
+        "fires_allowed": { "$ref": "#/$defs/FiresAllowedValue" },
+        "pool": { "$ref": "#/$defs/PoolValue" },
+        "laundry": { "$ref": "#/$defs/LaundryValue" },
+        "wifi": { "$ref": "#/$defs/WifiValue" },
+        "mobile_coverage": { "$ref": "#/$defs/MobileCoverageValue" },
+        "accessible_facilities": { "$ref": "#/$defs/AccessibleFacilitiesValue" },
+        "generators_allowed": { "$ref": "#/$defs/GeneratorsAllowedValue" },
+        "ensuite_sites": { "$ref": "#/$defs/CountedValue" },
+        "cabins": { "$ref": "#/$defs/CountedValue" },
+        "drive_through_sites": { "$ref": "#/$defs/CountedValue" },
+        "tent_sites": { "$ref": "#/$defs/CountedValue" }
+      },
+      "additionalProperties": { "$ref": "#/$defs/FacilityValue" }
+    },
+    "StoredFacilities": {
+      "description": "Facilities as submitted and stored: the codes read from other facts (pets_allowed, dog_off_leash, big_rig_access) are not allowed.",
+      "$ref": "#/$defs/Facilities",
+      "not": {
+        "anyOf": [
+          {
+            "required": ["pets_allowed"],
+            "properties": { "pets_allowed": true }
+          },
+          {
+            "required": ["dog_off_leash"],
+            "properties": { "dog_off_leash": true }
+          },
+          {
+            "required": ["big_rig_access"],
+            "properties": { "big_rig_access": true }
+          }
+        ]
+      }
+    },
+    "FacilityWithAttributes": {
+      "description": "Helper: a facility value whose attributes object is replaced by a per-code schema.",
+      "type": "object",
+      "required": ["available"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+      }
+    },
+    "ToiletsValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "kind": { "type": "string", "enum": ["flush", "composting", "pit", "chemical"] },
+            "count": { "type": "integer", "minimum": 1, "maximum": 500 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "ShowersValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "hot": { "type": "boolean" },
+            "fee": {
+              "description": "True when the showers cost extra (coins, tokens or a separate charge).",
+              "type": "boolean"
+            },
+            "count": { "type": "integer", "minimum": 1, "maximum": 500 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "WaterSource": {
+      "type": "string",
+      "enum": ["town_supply", "rainwater_tank", "bore", "creek_or_river", "unknown"]
+    },
+    "DrinkingWaterValue": {
+      "description": "Safety fact.",
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "potable": {
+              "description": "True when signed or known to be safe to drink without treatment.",
+              "type": "boolean"
+            },
+            "treated": {
+              "description": "True when the supply is treated (chlorinated, filtered or UV).",
+              "type": "boolean"
+            },
+            "source": { "$ref": "#/$defs/WaterSource" },
+            "tank_fill": {
+              "description": "True when a hose or tap allows filling a vehicle's water tank.",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "NonPotableWaterValue": {
+      "description": "Safety fact.",
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "source": { "$ref": "#/$defs/WaterSource" },
+            "signed_not_for_drinking": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "PowerValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "amps": {
+              "description": "Rated current per outlet, in amperes.",
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 100
+            },
+            "outlets": {
+              "description": "Number of outlets available to travellers.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5000
+            },
+            "metered": {
+              "description": "True when use is metered and charged by consumption.",
+              "type": "boolean"
+            },
+            "outlet_type": {
+              "description": "The socket standard as written on the outlet, for example AS/NZS 3112 15 A.",
+              "type": "string",
+              "maxLength": 60
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "DumpPointAccessValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "accepts": {
+              "type": "string",
+              "enum": ["cassette_and_tank", "cassette_only", "tank_only"]
+            },
+            "drive_over": { "type": "boolean" },
+            "rinse_water": { "type": "boolean" },
+            "guests_only": {
+              "description": "True when only paying guests may use it.",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "BbqValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "fuel": { "type": "string", "enum": ["electric", "gas", "wood"] },
+            "fee": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "FiresAllowedValue": {
+      "description": "Safety fact. The site's standing policy on campfires. Total fire bans and other bans declared by fire authorities always override it and are not recorded in OTWD.",
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "fire_rings_only": { "type": "boolean" },
+            "seasonal_restrictions": {
+              "type": "array",
+              "maxItems": 12,
+              "items": { "$ref": "#/$defs/AnnualPeriod" }
+            },
+            "bring_own_firewood": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "PoolValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": { "heated": { "type": "boolean" } },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "LaundryValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "washers": { "type": "integer", "minimum": 0, "maximum": 200 },
+            "dryers": { "type": "integer", "minimum": 0, "maximum": 200 },
+            "fee": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "WifiValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": { "fee": { "type": "boolean" } },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "MobileCoverageValue": {
+      "description": "Mobile coverage as contributors observed it on site, by carrier. These are observations, not carrier coverage maps. available false means no carrier had any signal when observed.",
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "observations": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "required": ["carrier", "signal", "observed_on"],
+                "properties": {
+                  "carrier": {
+                    "description": "The network the device was on, as the device named it.",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "technology": {
+                    "type": "string",
+                    "enum": ["5g", "4g", "3g", "satellite", "unknown"]
+                  },
+                  "signal": { "type": "string", "enum": ["none", "weak", "fair", "good"] },
+                  "data_usable": { "type": "boolean" },
+                  "observed_on": { "type": "string", "format": "date" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "AccessibleFacilitiesValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "features": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": ["toilet", "shower", "parking", "path", "campsite", "cabin"]
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "GeneratorsAllowedValue": {
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "from": { "$ref": "common.schema.json#/$defs/LocalTime" },
+            "until": { "$ref": "common.schema.json#/$defs/LocalTime" },
+            "designated_area_only": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "CountedValue": {
+      "description": "A facility whose only attribute is how many there are.",
+      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": { "count": { "type": "integer", "minimum": 1, "maximum": 10000 } },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

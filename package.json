@@ -1,0 +1,19 @@
+{
+  "name": "opentouring",
+  "private": true,
+  "description": "Open Touring monorepo tooling. Run npm install to set up the git hooks.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "prepare": "lefthook install",
+    "check:writing": "git ls-files -z | xargs -0 tools/check-writing.sh",
+    "check:schema": "tools/check-schema.sh",
+    "check:api": "redocly lint api/openapi.yaml",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@redocly/cli": "2.64.0",
+    "lefthook": "2.2.2",
+    "prettier": "3.9.10"
+  }
+}

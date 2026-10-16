@@ -1,0 +1,340 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/submission.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD submission",
+  "description": "A proposed change sent by a contributor, as a partner app or the Open Touring website posts it to POST /v1/submissions. A submission never changes live data directly. It enters the submission log, passes fixed checks, AI review and routing, and becomes a change only after an approving moderation decision. Contributors are identified by an OTWD contributor ID or a partner app's pseudonymous ID, never by name or email.",
+  "type": "object",
+  "required": ["schema_version", "kind", "contributor_submitted_at", "consent", "proposed"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/SchemaVersion" },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "new_site",
+        "update_facts",
+        "add_photo",
+        "report_closure",
+        "request_merge",
+        "report_problem"
+      ]
+    },
+    "site_id": {
+      "description": "The site the submission is about. Required for every kind except new_site, where it must be absent.",
+      "$ref": "common.schema.json#/$defs/SiteId"
+    },
+    "base_change_seq": {
+      "description": "The site's change_seq as the contributor last saw it. OTWD compares it with the change_seq of every fact the submission touches and rejects the submission with 409 when one of them changed since. Required for update_facts, report_closure and request_merge.",
+      "$ref": "common.schema.json#/$defs/ChangeSeq"
+    },
+    "contributor": { "$ref": "#/$defs/ContributorClaim" },
+    "seed_record": { "$ref": "#/$defs/SeedRecord" },
+    "partner_app_id": {
+      "description": "The partner app sending the submission. Optional, because OTWD takes it from the API key. When present it must match the key.",
+      "$ref": "common.schema.json#/$defs/PartnerAppId"
+    },
+    "consent": { "$ref": "#/$defs/Consent" },
+    "contributor_submitted_at": {
+      "description": "When the contributor made the submission in the partner app or on the website, which may be long before it reaches OTWD when the device was offline.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "observed_on": {
+      "description": "The date the contributor observed what they report. Defaults to the date of contributor_submitted_at.",
+      "type": "string",
+      "format": "date"
+    },
+    "partner_reference": {
+      "description": "The partner app's own reference for this submission, returned in status responses and webhooks.",
+      "type": "string",
+      "maxLength": 100
+    },
+    "note_to_moderators": {
+      "description": "Optional context for moderators. Not published.",
+      "type": "string",
+      "maxLength": 1000
+    },
+    "proposed": { "description": "The proposed values. The shape depends on kind." }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "description": "A submission comes from a contributor or, for OTWD's own seeding pipeline only, from a seed source record.",
+      "oneOf": [
+        {
+          "required": ["contributor"],
+          "properties": { "contributor": true }
+        },
+        {
+          "required": ["seed_record"],
+          "properties": { "seed_record": true }
+        }
+      ]
+    },
+    {
+      "oneOf": [
+        { "$ref": "#/$defs/NewSiteSubmission" },
+        { "$ref": "#/$defs/UpdateFactsSubmission" },
+        { "$ref": "#/$defs/AddPhotoSubmission" },
+        { "$ref": "#/$defs/ReportClosureSubmission" },
+        { "$ref": "#/$defs/RequestMergeSubmission" },
+        { "$ref": "#/$defs/ReportProblemSubmission" }
+      ]
+    }
+  ],
+  "$defs": {
+    "ContributorClaim": {
+      "description": "Who the contributor is. direct: a direct contributor signed in to Open Touring. pseudonymous: a contributor of the partner app holding the API key, identified by the partner app's stable pseudonymous ID for them.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "contributor_id"],
+          "properties": {
+            "kind": { "const": "direct" },
+            "contributor_id": { "$ref": "common.schema.json#/$defs/ContributorId" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "pseudonymous_id"],
+          "properties": {
+            "kind": { "const": "pseudonymous" },
+            "pseudonymous_id": {
+              "description": "Stable for one contributor within one partner app and meaningless outside it, for example a salted hash of the partner app's internal account number. The character set excludes @ so an email address can never be sent by mistake.",
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._~-]{8,128}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SeedRecord": {
+      "description": "The seed source record a seeding pipeline submission comes from. Accepted only from API keys that belong to OTWD's own pipelines.",
+      "type": "object",
+      "required": ["seed_source_id", "record_id"],
+      "properties": {
+        "seed_source_id": { "$ref": "common.schema.json#/$defs/SeedSourceId" },
+        "record_id": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "dataset_version": { "type": "string", "maxLength": 64 }
+      },
+      "additionalProperties": false
+    },
+    "Consent": {
+      "description": "The contributor terms the contributor accepted. Partner apps must obtain this consent from each contributor before submitting on their behalf.",
+      "type": "object",
+      "required": ["terms_version", "accepted_at"],
+      "properties": {
+        "terms_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+        "accepted_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "SubmittedFacts": {
+      "description": "Proposed fact values, without provenance. OTWD records provenance when the change is applied.",
+      "type": "object",
+      "properties": {
+        "names": { "$ref": "values.schema.json#/$defs/Names" },
+        "location": { "$ref": "values.schema.json#/$defs/Location" },
+        "site_types": { "$ref": "values.schema.json#/$defs/SiteTypes" },
+        "description": { "$ref": "values.schema.json#/$defs/Description" },
+        "opening_hours": { "$ref": "values.schema.json#/$defs/OpeningHours" },
+        "reception_hours": { "$ref": "values.schema.json#/$defs/OpeningHours" },
+        "prices": { "$ref": "values.schema.json#/$defs/Prices" },
+        "rig_limits": { "$ref": "values.schema.json#/$defs/RigLimits" },
+        "access": { "$ref": "values.schema.json#/$defs/Access" },
+        "pets": { "$ref": "values.schema.json#/$defs/Pets" },
+        "bookings": { "$ref": "values.schema.json#/$defs/Bookings" },
+        "contact": { "$ref": "values.schema.json#/$defs/Contact" },
+        "capacity": { "$ref": "values.schema.json#/$defs/Capacity" },
+        "stay_limits": { "$ref": "values.schema.json#/$defs/StayLimits" }
+      },
+      "additionalProperties": false
+    },
+    "NewSiteSubmission": {
+      "properties": {
+        "kind": { "const": "new_site" },
+        "proposed": {
+          "type": "object",
+          "required": ["facts"],
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/SubmittedFacts",
+              "required": ["names", "location", "site_types"],
+              "properties": { "names": true, "location": true, "site_types": true }
+            },
+            "facilities": { "$ref": "values.schema.json#/$defs/StoredFacilities" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": ["site_id"],
+            "properties": { "site_id": true }
+          },
+          {
+            "required": ["base_change_seq"],
+            "properties": { "base_change_seq": true }
+          }
+        ]
+      },
+      "required": ["kind", "proposed"]
+    },
+    "UpdateFactsSubmission": {
+      "properties": {
+        "kind": { "const": "update_facts" },
+        "proposed": {
+          "description": "Facts and facilities to set, and facts or facilities to remove because they are no longer true. To record that a facility is absent, set it with available false rather than removing it.",
+          "type": "object",
+          "properties": {
+            "facts": { "$ref": "#/$defs/SubmittedFacts", "minProperties": 1 },
+            "facilities": {
+              "$ref": "values.schema.json#/$defs/StoredFacilities",
+              "minProperties": 1
+            },
+            "remove": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 50,
+              "uniqueItems": true,
+              "items": {
+                "allOf": [
+                  { "$ref": "common.schema.json#/$defs/FieldPointer" },
+                  { "not": { "enum": ["/facts/names", "/facts/location", "/facts/site_types"] } }
+                ]
+              }
+            }
+          },
+          "additionalProperties": false,
+          "anyOf": [
+            {
+              "required": ["facts"],
+              "properties": { "facts": true }
+            },
+            {
+              "required": ["facilities"],
+              "properties": { "facilities": true }
+            },
+            {
+              "required": ["remove"],
+              "properties": { "remove": true }
+            }
+          ]
+        },
+        "site_id": true,
+        "base_change_seq": true
+      },
+      "required": ["kind", "proposed", "site_id", "base_change_seq"]
+    },
+    "AddPhotoSubmission": {
+      "properties": {
+        "kind": { "const": "add_photo" },
+        "proposed": {
+          "description": "A photo already uploaded through POST /v1/photo-uploads. The photographer licenses it under CC BY 4.0.",
+          "type": "object",
+          "required": ["upload_id", "licence", "attribution"],
+          "properties": {
+            "upload_id": { "$ref": "common.schema.json#/$defs/UploadId" },
+            "sha256": { "$ref": "common.schema.json#/$defs/Sha256" },
+            "caption": { "$ref": "common.schema.json#/$defs/Notes" },
+            "taken_on": { "type": "string", "format": "date" },
+            "licence": { "const": "CC-BY-4.0" },
+            "attribution": {
+              "description": "The credit the photographer wants shown, such as a display name or handle. Never an email address.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[^@]+$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "site_id": true
+      },
+      "required": ["kind", "proposed", "site_id"]
+    },
+    "ReportClosureSubmission": {
+      "properties": {
+        "kind": { "const": "report_closure" },
+        "proposed": {
+          "description": "A report that the site has closed, closed for a time, or reopened (status active).",
+          "type": "object",
+          "required": ["status", "reason"],
+          "properties": {
+            "status": { "type": "string", "enum": ["temporarily_closed", "closed", "active"] },
+            "reason": { "$ref": "common.schema.json#/$defs/Notes" },
+            "reopens_on": { "type": "string", "format": "date" }
+          },
+          "additionalProperties": false
+        },
+        "site_id": true,
+        "base_change_seq": true
+      },
+      "required": ["kind", "proposed", "site_id", "base_change_seq"]
+    },
+    "RequestMergeSubmission": {
+      "properties": {
+        "kind": { "const": "request_merge" },
+        "proposed": {
+          "description": "A request to merge site_id with one or more sites the contributor believes are the same site. A moderator chooses the surviving site.",
+          "type": "object",
+          "required": ["duplicate_site_ids", "reason"],
+          "properties": {
+            "duplicate_site_ids": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "uniqueItems": true,
+              "items": { "$ref": "common.schema.json#/$defs/SiteId" }
+            },
+            "suggested_survivor": { "$ref": "common.schema.json#/$defs/SiteId" },
+            "reason": { "$ref": "common.schema.json#/$defs/Notes" }
+          },
+          "additionalProperties": false
+        },
+        "site_id": true,
+        "base_change_seq": true
+      },
+      "required": ["kind", "proposed", "site_id", "base_change_seq"]
+    },
+    "ReportProblemSubmission": {
+      "properties": {
+        "kind": { "const": "report_problem" },
+        "proposed": {
+          "description": "A problem a moderator should look at that the contributor cannot fix with another kind of submission.",
+          "type": "object",
+          "required": ["category", "details"],
+          "properties": {
+            "category": {
+              "type": "string",
+              "enum": [
+                "wrong_location",
+                "does_not_exist",
+                "safety_hazard",
+                "inappropriate_photo",
+                "copied_content",
+                "private_property",
+                "personal_information",
+                "other"
+              ]
+            },
+            "details": { "type": "string", "minLength": 10, "maxLength": 2000 },
+            "fields": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": { "$ref": "common.schema.json#/$defs/FieldPointer" }
+            },
+            "photo_id": { "$ref": "common.schema.json#/$defs/PhotoId" }
+          },
+          "additionalProperties": false
+        },
+        "site_id": true
+      },
+      "required": ["kind", "proposed", "site_id"]
+    }
+  }
+}

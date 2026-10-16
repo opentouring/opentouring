@@ -1,0 +1,838 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "facilities",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "toilets",
+      "label": "Toilets",
+      "description": "Toilets travellers can use at the site.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "kind",
+          "type": "enum",
+          "description": "How waste is handled.",
+          "values": ["flush", "composting", "pit", "chemical"]
+        },
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "Number of toilets."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["toilets=yes"],
+          "match": "exact"
+        },
+        {
+          "tags": ["toilets:disposal=flush"],
+          "match": "related",
+          "note": "Maps the kind attribute value flush."
+        },
+        {
+          "tags": ["toilets:disposal=pitlatrine"],
+          "match": "related",
+          "note": "Maps the kind attribute value pit. Add composting=yes when the pit toilet composts."
+        },
+        {
+          "tags": ["toilets:disposal=chemical"],
+          "match": "related",
+          "note": "Maps the kind attribute value chemical."
+        },
+        {
+          "tags": ["toilets:disposal=dry_toilet"],
+          "match": "related",
+          "note": "Maps the kind attribute value composting where the toilet dehydrates or composts waste."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Toilets",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "showers",
+      "label": "Showers",
+      "description": "Showers travellers can use at the site.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "hot",
+          "type": "boolean",
+          "description": "True when hot water is available."
+        },
+        {
+          "name": "fee",
+          "type": "boolean",
+          "description": "True when showers cost extra."
+        },
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "Number of showers."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["shower=yes"],
+          "match": "exact"
+        },
+        {
+          "tags": ["hot_water=yes"],
+          "match": "narrower",
+          "note": "Hot water available. Key:shower treats shower=hot as a tagging mistake."
+        },
+        {
+          "tags": ["shower:fee=yes"],
+          "match": "related",
+          "note": "Maps the fee attribute."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Showers",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "drinking_water",
+      "label": "Drinking water",
+      "description": "Water that travellers can drink or fill containers with. A safety fact.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": true,
+      "attributes": [
+        {
+          "name": "potable",
+          "type": "boolean",
+          "description": "True when signed or known to be safe to drink without treatment."
+        },
+        {
+          "name": "treated",
+          "type": "boolean",
+          "description": "True when the supply is treated."
+        },
+        {
+          "name": "source",
+          "type": "enum",
+          "description": "Where the water comes from.",
+          "values": ["town_supply", "rainwater_tank", "bore", "creek_or_river", "unknown"]
+        },
+        {
+          "name": "tank_fill",
+          "type": "boolean",
+          "description": "True when a hose or tap allows filling a vehicle's tank."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["drinking_water=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Drinking water",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "non_potable_water",
+      "label": "Non-potable water",
+      "description": "Water for washing or flushing that is not safe to drink. A safety fact, so travellers know not to drink it.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": true,
+      "attributes": [
+        {
+          "name": "source",
+          "type": "enum",
+          "description": "Where the water comes from.",
+          "values": ["town_supply", "rainwater_tank", "bore", "creek_or_river", "unknown"]
+        },
+        {
+          "name": "signed_not_for_drinking",
+          "type": "boolean",
+          "description": "True when a sign says the water is not for drinking."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["drinking_water=no"],
+          "match": "related",
+          "note": "On the tap or water point, for example man_made=water_tap."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "power",
+      "label": "Power",
+      "description": "Mains power outlets for vehicles or campsites.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "amps",
+          "type": "number",
+          "description": "Rated current per outlet.",
+          "unit": "A"
+        },
+        {
+          "name": "outlets",
+          "type": "integer",
+          "description": "Number of outlets available to travellers."
+        },
+        {
+          "name": "metered",
+          "type": "boolean",
+          "description": "True when use is metered and charged by consumption."
+        },
+        {
+          "name": "outlet_type",
+          "type": "string",
+          "description": "The socket standard as written on the outlet."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["power_supply=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Powered sites",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "dump_point_access",
+      "label": "Dump point access",
+      "description": "A dump point at the site for toilet cassettes or waste water tanks.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "accepts",
+          "type": "enum",
+          "description": "What the dump point takes.",
+          "values": ["cassette_and_tank", "cassette_only", "tank_only"]
+        },
+        {
+          "name": "drive_over",
+          "type": "boolean",
+          "description": "True when a vehicle can drive over it to empty a tank."
+        },
+        {
+          "name": "rinse_water",
+          "type": "boolean",
+          "description": "True when rinse water is provided."
+        },
+        {
+          "name": "guests_only",
+          "type": "boolean",
+          "description": "True when only paying guests may use it."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["sanitary_dump_station=yes"],
+          "match": "exact"
+        },
+        {
+          "tags": ["sanitary_dump_station=customers"],
+          "match": "narrower",
+          "note": "Equivalent to guests_only true."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Dump point",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "bins",
+      "label": "Bins",
+      "description": "General waste bins.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["bin=yes"],
+          "match": "exact",
+          "note": "A bin is available at the camp site or caravan site."
+        },
+        {
+          "tags": ["amenity=waste_basket"],
+          "match": "related",
+          "note": "Small bins, mapped as separate features."
+        },
+        {
+          "tags": ["amenity=waste_disposal"],
+          "match": "related",
+          "note": "Large bins or skips."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Rubbish bins",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "recycling",
+      "label": "Recycling",
+      "description": "Recycling bins or a recycling point.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["amenity=recycling"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Recycling",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "bbq",
+      "label": "Barbecue",
+      "description": "A barbecue travellers can use.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "fuel",
+          "type": "enum",
+          "description": "What the barbecue runs on.",
+          "values": ["electric", "gas", "wood"]
+        },
+        {
+          "name": "fee",
+          "type": "boolean",
+          "description": "True when use costs extra."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["bbq=yes"],
+          "match": "exact"
+        },
+        {
+          "tags": ["amenity=bbq"],
+          "match": "related",
+          "note": "A barbecue mapped as a separate feature."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Barbecue",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "fire_pit",
+      "label": "Fire pit",
+      "description": "A fire ring or fireplace provided at the site. Whether fires may be lit is the separate fires_allowed facility.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["firepit=yes"],
+          "match": "exact",
+          "note": "Key:fireplace is for chimneys and enclosed fireplaces, not fire pits."
+        },
+        {
+          "tags": ["leisure=firepit"],
+          "match": "related",
+          "note": "A fire pit mapped as a separate feature."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Fire pit",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "fires_allowed",
+      "label": "Fires allowed",
+      "description": "The site's standing policy allows campfires. Bans declared by fire authorities always override it and are not recorded in OTWD. A safety fact.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": true,
+      "attributes": [
+        {
+          "name": "fire_rings_only",
+          "type": "boolean",
+          "description": "True when fires are allowed only in provided rings or pits."
+        },
+        {
+          "name": "seasonal_restrictions",
+          "type": "list",
+          "description": "Periods each year when the site itself does not allow fires."
+        },
+        {
+          "name": "bring_own_firewood",
+          "type": "boolean",
+          "description": "True when collecting firewood on site is not allowed."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["openfire=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "shade",
+      "label": "Shade",
+      "description": "Shade from trees or shelters over campsites or tables.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["shade=yes"],
+          "match": "related",
+          "note": "Marks a feature that is in shade. Used mostly on ways and rare on camp sites."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Shade",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "picnic_tables",
+      "label": "Picnic tables",
+      "description": "Picnic tables travellers can use.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["picnic_table=yes"],
+          "match": "exact",
+          "note": "A picnic table is available at the camp site or caravan site."
+        },
+        {
+          "tags": ["leisure=picnic_table"],
+          "match": "related",
+          "note": "Tables mapped as separate features."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Picnic tables",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "playground",
+      "label": "Playground",
+      "description": "A children's playground.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["leisure=playground"],
+          "match": "related",
+          "note": "Mapped as a separate feature."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Playground",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "pool",
+      "label": "Swimming pool",
+      "description": "A swimming pool for guests.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "heated",
+          "type": "boolean",
+          "description": "True when the pool is heated."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["swimming_pool=yes"],
+          "match": "exact"
+        },
+        {
+          "tags": ["leisure=swimming_pool"],
+          "match": "related",
+          "note": "A pool mapped as a separate feature."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Swimming pool",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "laundry",
+      "label": "Laundry",
+      "description": "Washing machines or dryers travellers can use.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "washers",
+          "type": "integer",
+          "description": "Number of washing machines."
+        },
+        {
+          "name": "dryers",
+          "type": "integer",
+          "description": "Number of dryers."
+        },
+        {
+          "name": "fee",
+          "type": "boolean",
+          "description": "True when use costs extra."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["washing_machine=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Laundry",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "wifi",
+      "label": "Wi-Fi",
+      "description": "Wireless internet access provided by the site.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "fee",
+          "type": "boolean",
+          "description": "True when Wi-Fi costs extra."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["internet_access=wlan"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Wi-Fi",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "mobile_coverage",
+      "label": "Mobile coverage",
+      "description": "Mobile phone signal as contributors observed it on site, by carrier. These are observations, not carrier coverage maps.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "observations",
+          "type": "list",
+          "description": "One entry per carrier observation: carrier, technology, signal (none, weak, fair, good), data_usable and observed_on."
+        }
+      ],
+      "osm": [],
+      "schema_org": null
+    },
+    {
+      "code": "pets_allowed",
+      "label": "Pets allowed",
+      "description": "Pets may stay at the site, possibly with conditions. Read from the pets fact.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "stored_as": {
+        "field": "/facts/pets",
+        "rule": "available is true when pets.allowed is yes, on_leash or by_arrangement, false when it is no."
+      },
+      "osm": [
+        {
+          "tags": ["dog=yes"],
+          "match": "narrower",
+          "note": "Dogs only. dog=leashed when pets.allowed is on_leash."
+        }
+      ],
+      "schema_org": {
+        "property": "petsAllowed",
+        "match": "exact",
+        "note": "petsAllowed is defined for LodgingBusiness (so Campground) and Accommodation. RVPark is not a LodgingBusiness, so use amenityFeature there."
+      }
+    },
+    {
+      "code": "dog_off_leash",
+      "label": "Dog off-leash area",
+      "description": "An area where dogs may run off the leash. Read from the pets fact.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "stored_as": {
+        "field": "/facts/pets",
+        "rule": "available is pets.dog_off_leash_area."
+      },
+      "osm": [
+        {
+          "tags": ["leisure=dog_park"],
+          "match": "related"
+        },
+        {
+          "tags": ["dog=unleashed"],
+          "match": "related",
+          "note": "Dogs may be off the lead. Documented on Key:dog."
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Dog off-leash area",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "accessible_facilities",
+      "label": "Accessible facilities",
+      "description": "Facilities designed for people using a wheelchair or with limited mobility.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "features",
+          "type": "list",
+          "description": "Which facilities are accessible.",
+          "values": ["toilet", "shower", "parking", "path", "campsite", "cabin"]
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["wheelchair=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Wheelchair accessible",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "generators_allowed",
+      "label": "Generators allowed",
+      "description": "Travellers may run generators, possibly at set times.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "from",
+          "type": "time",
+          "description": "Earliest time generators may run."
+        },
+        {
+          "name": "until",
+          "type": "time",
+          "description": "Latest time generators may run."
+        },
+        {
+          "name": "designated_area_only",
+          "type": "boolean",
+          "description": "True when generators are allowed only in a set area."
+        }
+      ],
+      "osm": [],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Generators allowed",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "big_rig_access",
+      "label": "Big rig access",
+      "description": "The site suits big rigs. Read from rig_limits.big_rig_suitable. A safety fact.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": true,
+      "stored_as": {
+        "field": "/facts/rig_limits",
+        "rule": "available is true when rig_limits.big_rig_suitable is yes or limited, false when it is no."
+      },
+      "osm": [
+        {
+          "tags": ["maxlength=*"],
+          "match": "related",
+          "note": "Length limits on the access road, not a property of the site."
+        },
+        {
+          "tags": ["maxheight=*"],
+          "match": "related",
+          "note": "Height limits on the access road, not a property of the site."
+        },
+        {
+          "tags": ["maxweight=*"],
+          "match": "related",
+          "note": "Weight limits on the access road, not a property of the site."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "drive_through_sites",
+      "label": "Drive-through sites",
+      "description": "Sites a rig can drive into and out of without reversing.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "Number of drive-through sites."
+        }
+      ],
+      "osm": [],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Drive-through sites",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "ensuite_sites",
+      "label": "Ensuite sites",
+      "description": "Sites with a private bathroom.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "Number of ensuite sites."
+        }
+      ],
+      "osm": [],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Ensuite sites",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "cabins",
+      "label": "Cabins",
+      "description": "Cabins or units available to rent.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "Number of cabins."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["cabins=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Cabins",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "tent_sites",
+      "label": "Tent sites",
+      "description": "Sites where tents are allowed.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "attributes": [
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "Number of tent sites."
+        }
+      ],
+      "osm": [
+        {
+          "tags": ["tents=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Tent sites",
+        "match": "exact"
+      }
+    },
+    {
+      "code": "camp_kitchen",
+      "label": "Camp kitchen",
+      "description": "A shared kitchen for campers.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["kitchen=yes"],
+          "match": "exact"
+        }
+      ],
+      "schema_org": {
+        "property": "amenityFeature",
+        "value": "Camp kitchen",
+        "match": "exact"
+      }
+    }
+  ]
+}

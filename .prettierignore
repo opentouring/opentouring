@@ -1,0 +1,4 @@
+LICENSES/
+package-lock.json
+.tools/
+node_modules/

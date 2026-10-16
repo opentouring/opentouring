@@ -1,0 +1,11 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "seq": 10412,
+  "site_id": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
+  "kind": "site_created",
+  "applied_at": "2026-05-16T01:22:09Z",
+  "changed_fields": ["/facts/names", "/facts/location", "/facts/site_types", "/status", "/derived"],
+  "safety_fact_changed": true,
+  "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+  "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV"
+}

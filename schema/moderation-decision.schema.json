@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/moderation-decision.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD moderation decision",
+  "description": "The recorded outcome for a submission, with who or what decided and why. Decisions are appended to the submission log and never edited. An appeal produces a new decision that refers to the earlier one.",
+  "type": "object",
+  "required": ["id", "submission_id", "outcome", "decided_by", "decided_at", "reasons"],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/DecisionId" },
+    "submission_id": { "$ref": "common.schema.json#/$defs/SubmissionId" },
+    "outcome": {
+      "description": "approved: applied as submitted. edited_and_approved: applied after a moderator corrected it (amendments lists the corrections). rejected: not applied. needs_info: waiting for the contributor to answer the public note.",
+      "type": "string",
+      "enum": ["approved", "edited_and_approved", "rejected", "needs_info"]
+    },
+    "decided_by": { "$ref": "#/$defs/Decider" },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "routing": {
+      "description": "How routing sent the submission to whoever decided it.",
+      "type": "object",
+      "required": ["route", "policy_version"],
+      "properties": {
+        "route": {
+          "description": "human_review: a moderator's queue. auto_approval: approved by a routing rule, never used for the always-human list (new sites, closures, merges, safety facts).",
+          "type": "string",
+          "enum": ["human_review", "auto_approval"]
+        },
+        "policy_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "always_human": {
+          "description": "True when the submission is on the always-human list.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "verdict_ids": {
+      "description": "The verdicts available when the decision was made. A verdict informs a decision and is never one.",
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/VerdictId" }
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "description": "For example confirmed_by_seed_source, duplicate_of_existing_site or copied_text.",
+            "$ref": "common.schema.json#/$defs/ReasonCode"
+          },
+          "text": { "type": "string", "maxLength": 1000 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "public_note": {
+      "description": "The message shown to the contributor and returned to the partner app. Required for rejected and needs_info.",
+      "type": "string",
+      "maxLength": 1000
+    },
+    "amendments": {
+      "description": "For edited_and_approved: each amendment the moderator made before approving, with the submitted and the applied value.",
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": ["field", "submitted", "applied"],
+        "properties": {
+          "field": { "$ref": "common.schema.json#/$defs/FieldPointer" },
+          "submitted": { "description": "The value as submitted." },
+          "applied": {
+            "description": "The value as applied, or null when the moderator dropped the field."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "merge": {
+      "description": "For an approved request_merge: the surviving site and the sites that now redirect to it.",
+      "type": "object",
+      "required": ["surviving_site_id", "merged_site_ids"],
+      "properties": {
+        "surviving_site_id": { "$ref": "common.schema.json#/$defs/SiteId" },
+        "merged_site_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "common.schema.json#/$defs/SiteId" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "change_seqs": {
+      "description": "For approved and edited_and_approved: the changes the decision produced. A merge produces one change per site involved.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/ChangeSeq" }
+    },
+    "appeal_of": {
+      "description": "When this decision answers an appeal: the decision appealed against.",
+      "$ref": "common.schema.json#/$defs/DecisionId"
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "outcome": { "enum": ["rejected", "needs_info"] } } },
+      "then": {
+        "required": ["public_note"],
+        "properties": { "public_note": true },
+        "not": {
+          "required": ["change_seqs"],
+          "properties": { "change_seqs": true }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "outcome": { "const": "edited_and_approved" } } },
+      "then": {
+        "required": ["amendments"],
+        "properties": { "amendments": { "minItems": 1 } }
+      }
+    },
+    {
+      "if": { "properties": { "outcome": { "enum": ["approved", "edited_and_approved"] } } },
+      "then": {
+        "required": ["change_seqs"],
+        "properties": { "change_seqs": true }
+      }
+    },
+    {
+      "description": "Only a moderator may decide a submission on the always-human list, and a routing rule may only approve.",
+      "if": {
+        "properties": { "decided_by": { "properties": { "kind": { "const": "routing_rule" } } } }
+      },
+      "then": {
+        "properties": {
+          "outcome": { "const": "approved" },
+          "routing": {
+            "properties": {
+              "route": { "const": "auto_approval" },
+              "always_human": { "const": false }
+            }
+          }
+        },
+        "required": ["routing"]
+      }
+    }
+  ],
+  "$defs": {
+    "Decider": {
+      "description": "Who or what made the decision. moderator: a person. routing_rule: an automatic approval rule in the fixed routing code, allowed only outside the always-human list. The AI never decides.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "moderator_id"],
+          "properties": {
+            "kind": { "const": "moderator" },
+            "moderator_id": {
+              "description": "Moderators are contributors with moderation rights, so they use contributor IDs.",
+              "$ref": "common.schema.json#/$defs/ContributorId"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "rule_id", "rule_version"],
+          "properties": {
+            "kind": { "const": "routing_rule" },
+            "rule_id": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{1,63}$" },
+            "rule_version": { "type": "string", "minLength": 1, "maxLength": 64 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

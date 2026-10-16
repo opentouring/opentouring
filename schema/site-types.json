@@ -1,0 +1,344 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "site_types",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "free_camp",
+      "label": "Free camp",
+      "description": "An area where travellers may stay overnight at no charge, usually with few or no facilities. Donation sites are recorded here with prices.charging set to donation.",
+      "group": "overnight",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        { "tags": ["tourism=camp_site", "fee=no"], "match": "exact" },
+        {
+          "tags": ["tourism=caravan_site", "fee=no"],
+          "match": "exact",
+          "note": "Used where the area suits self-contained vehicles only."
+        }
+      ],
+      "schema_org": {
+        "type": "Campground",
+        "match": "broader",
+        "note": "Add isAccessibleForFree true."
+      }
+    },
+    {
+      "code": "paid_campground",
+      "label": "Paid campground",
+      "description": "A campground that charges a fee and is not a caravan park, such as a council, private or farm campground.",
+      "group": "overnight",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["tourism=camp_site", "fee=yes"], "match": "exact" }],
+      "schema_org": { "type": "Campground", "match": "exact" }
+    },
+    {
+      "code": "caravan_park",
+      "label": "Caravan park",
+      "description": "A commercial park with powered and unpowered sites for caravans, motorhomes and tents, usually with amenities blocks and often cabins. Called a holiday park or RV park in some places.",
+      "group": "overnight",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        { "tags": ["tourism=caravan_site"], "match": "exact" },
+        {
+          "tags": ["tourism=camp_site", "caravans=yes"],
+          "match": "related",
+          "note": "Some parks are mapped as camp sites."
+        }
+      ],
+      "schema_org": { "type": "RVPark", "match": "exact" }
+    },
+    {
+      "code": "national_park_campsite",
+      "label": "National park campsite",
+      "description": "A campsite inside a national park or similar protected area, managed by the park agency.",
+      "group": "overnight",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["tourism=camp_site"],
+          "match": "broader",
+          "note": "Inside an area tagged boundary=national_park or boundary=protected_area, often with operator set to the park agency."
+        }
+      ],
+      "schema_org": {
+        "type": "Campground",
+        "match": "broader",
+        "note": "Use containedInPlace for the park."
+      }
+    },
+    {
+      "code": "state_forest_campsite",
+      "label": "State forest campsite",
+      "description": "A campsite in a publicly owned production or conservation forest managed by a forestry agency, such as a state forest in Australia.",
+      "group": "overnight",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["tourism=camp_site"],
+          "match": "broader",
+          "note": "Inside an area tagged landuse=forest with a government operator."
+        }
+      ],
+      "schema_org": { "type": "Campground", "match": "broader" }
+    },
+    {
+      "code": "showground",
+      "label": "Showground",
+      "description": "A showground or racecourse that accepts campers outside event days, usually with basic amenities.",
+      "group": "overnight",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["landuse=recreation_ground", "recreation_ground=showground"],
+          "match": "narrower",
+          "note": "The grounds themselves. Documented as in use, not approved. Covers showgrounds but not racecourses."
+        },
+        {
+          "tags": ["tourism=camp_site"],
+          "match": "related",
+          "note": "The camping area, mapped inside the showground."
+        }
+      ],
+      "schema_org": { "type": "Campground", "match": "related" }
+    },
+    {
+      "code": "rest_area",
+      "label": "Rest area",
+      "description": "A roadside stopping place for drivers to rest, often with toilets, tables and bins. Whether overnight stays are allowed is recorded in stay_limits.",
+      "group": "utility",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        { "tags": ["highway=rest_area"], "match": "exact" },
+        {
+          "tags": ["highway=services"],
+          "match": "related",
+          "note": "Rest areas with fuel and food."
+        },
+        {
+          "tags": ["tourism=camp_site", "maxstay=*"],
+          "match": "related",
+          "note": "Australian tagging guidelines: where camping is permitted at a rest area. maxstay gives the time limit."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "dump_point",
+      "label": "Dump point",
+      "description": "A place to empty toilet cassettes and waste water tanks. Dump points inside other sites are also recorded with the dump_point_access facility.",
+      "group": "utility",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["amenity=sanitary_dump_station"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "drinking_water_point",
+      "label": "Drinking water point",
+      "description": "A tap or station where travellers can fill water containers or vehicle tanks with water. Whether it is safe to drink is recorded in the drinking_water facility.",
+      "group": "utility",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": true,
+      "osm": [
+        { "tags": ["amenity=water_point"], "match": "exact" },
+        {
+          "tags": ["amenity=drinking_water"],
+          "match": "narrower",
+          "note": "Drinking fountains, often unsuitable for filling tanks."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "public_toilet",
+      "label": "Public toilet",
+      "description": "A toilet open to the public, not part of a campground or caravan park.",
+      "group": "utility",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["amenity=toilets"], "match": "exact" }],
+      "schema_org": { "type": "PublicToilet", "match": "exact" }
+    },
+    {
+      "code": "public_shower",
+      "label": "Public shower",
+      "description": "A shower open to the public, such as at a beach, pool, truck stop or service station.",
+      "group": "utility",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["amenity=shower"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "laundromat",
+      "label": "Laundromat",
+      "description": "A self-service laundry open to the public.",
+      "group": "utility",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["shop=laundry", "self_service=yes"], "match": "exact" }],
+      "schema_org": { "type": "DryCleaningOrLaundry", "match": "broader" }
+    },
+    {
+      "code": "information_centre",
+      "label": "Information centre",
+      "description": "A staffed visitor information centre.",
+      "group": "services",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        { "tags": ["tourism=information", "information=office"], "match": "exact" },
+        {
+          "tags": ["tourism=information", "information=visitor_centre"],
+          "match": "related",
+          "note": "Centres about one attraction or place of interest rather than a town or region."
+        }
+      ],
+      "schema_org": { "type": "TouristInformationCenter", "match": "exact" }
+    },
+    {
+      "code": "attraction",
+      "label": "Attraction",
+      "description": "A place travellers stop to visit, such as a landmark, museum, historic site or natural feature, when no more specific site type fits.",
+      "group": "attraction",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["tourism=attraction"], "match": "exact" }],
+      "schema_org": { "type": "TouristAttraction", "match": "exact" }
+    },
+    {
+      "code": "lookout",
+      "label": "Lookout",
+      "description": "A viewpoint with a view worth stopping for.",
+      "group": "attraction",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["tourism=viewpoint"], "match": "exact" }],
+      "schema_org": { "type": "TouristAttraction", "match": "broader" }
+    },
+    {
+      "code": "swimming_spot",
+      "label": "Swimming spot",
+      "description": "A natural place to swim, such as a waterhole, river bend, lake shore or beach, or a public pool. Hazards such as crocodiles or currents belong in notes and are safety information for moderators.",
+      "group": "attraction",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        {
+          "tags": ["leisure=swimming_area"],
+          "match": "narrower",
+          "note": "Only an officially designated and marked swimming area within a body of water."
+        },
+        {
+          "tags": ["leisure=bathing_place"],
+          "match": "narrower",
+          "note": "Wild swimming spots with no significant facilities. Documented as in use."
+        },
+        { "tags": ["natural=beach"], "match": "related" },
+        {
+          "tags": ["leisure=swimming_pool", "access=yes"],
+          "match": "related",
+          "note": "Public pools."
+        }
+      ],
+      "schema_org": {
+        "type": "Beach",
+        "match": "related",
+        "note": "Only for beaches. Use PublicSwimmingPool for public pools. schema.org has no general type for natural swimming spots."
+      }
+    },
+    {
+      "code": "boat_ramp",
+      "label": "Boat ramp",
+      "description": "A ramp for launching boats from a trailer.",
+      "group": "attraction",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["leisure=slipway"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "fuel",
+      "label": "Fuel",
+      "description": "A place that sells vehicle fuel. OTWD records the site and its non-fuel facts only.",
+      "group": "services",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "defers_to": "Fuel prices, fuel grades and station brands are outside OTWD. Partner apps get them from fuel price services or government fuel price schemes and can join them to the site by location.",
+      "osm": [{ "tags": ["amenity=fuel"], "match": "exact" }],
+      "schema_org": { "type": "GasStation", "match": "exact" }
+    },
+    {
+      "code": "lpg_refill_swap",
+      "label": "LPG refill or swap",
+      "description": "A place to refill or swap LPG gas bottles, for example for cooking and fridges.",
+      "group": "services",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [
+        { "tags": ["shop=gas"], "match": "exact" },
+        {
+          "tags": ["amenity=fuel", "fuel:lpg=yes"],
+          "match": "related",
+          "note": "Autogas for vehicles, which does not always include bottle refills."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "mechanic",
+      "label": "Mechanic",
+      "description": "A vehicle repair workshop. Workshops that also repair caravans and trailers say so in notes.",
+      "group": "services",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["shop=car_repair"], "match": "exact" }],
+      "schema_org": { "type": "AutoRepair", "match": "exact" }
+    },
+    {
+      "code": "hospital_emergency",
+      "label": "Hospital (emergency)",
+      "description": "A hospital with an emergency department. Smaller clinics and nursing posts without one are not this site type.",
+      "group": "emergency",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": true,
+      "osm": [{ "tags": ["amenity=hospital", "emergency=yes"], "match": "exact" }],
+      "schema_org": {
+        "type": "Hospital",
+        "match": "broader",
+        "note": "Hospital is a subtype of EmergencyService. schema.org has no property for an emergency department."
+      }
+    }
+  ]
+}

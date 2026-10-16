@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Validation tooling for the OTWD JSON Schema. Install with:
+#   python3 -m pip install -r schema/tools/requirements.txt
+# format-nongpl adds the checkers for date, date-time, uri, email and
+# json-pointer without pulling in GPL-licensed packages.
+jsonschema[format-nongpl]>=4.23,<5
+referencing>=0.35
+# IANA time zone data for systems without a zoneinfo database (Windows).
+tzdata>=2024.1

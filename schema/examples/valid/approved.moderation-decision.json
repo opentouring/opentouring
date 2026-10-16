@@ -1,0 +1,23 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:decision:01KQVYJYFW1VCM2DCPSMF0RHQN",
+  "submission_id": "otwd:submission:01KQD421AHHMAWVJBSW9WJR571",
+  "outcome": "approved",
+  "decided_by": {
+    "kind": "moderator",
+    "moderator_id": "otwd:contributor:01KKS1RPGCFYJK8VCTP4V7BMX8"
+  },
+  "decided_at": "2026-08-30T02:02:40Z",
+  "routing": {
+    "route": "human_review",
+    "policy_version": "routing-1.0",
+    "always_human": false
+  },
+  "verdict_ids": ["otwd:verdict:01KKDWVD3XYQJNHQST38MMK124"],
+  "reasons": [
+    {
+      "code": "matches_operator_website"
+    }
+  ],
+  "change_seqs": [19304]
+}

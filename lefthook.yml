@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Git hooks for every contributor. Install with: npm install
+pre-commit:
+  parallel: true
+  commands:
+    writing-rules:
+      run: tools/check-writing.sh {staged_files}
+    schema:
+      glob: "schema/**"
+      run: tools/check-schema.sh
+    openapi:
+      glob: "{api/**,schema/**}"
+      run: npx --no-install redocly lint api/openapi.yaml
+    format:
+      glob: "*.{md,json,yaml,yml}"
+      exclude: "LICENSES/**"
+      run: npx --no-install prettier --check {staged_files}
+commit-msg:
+  commands:
+    dco-sign-off:
+      run: tools/check-dco.sh {1}
+    writing-rules:
+      run: tools/check-writing.sh {1}

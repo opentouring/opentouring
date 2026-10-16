@@ -1,0 +1,163 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KT8M1DS4VDJ9B9M784VF1C1B",
+  "status": "active",
+  "created_at": "2026-08-02T05:00:00Z",
+  "updated_at": "2026-09-08T23:10:00Z",
+  "change_seq": 20211,
+  "name": "Banksia Hollow Campground",
+  "names": [
+    {
+      "text": "Banksia Hollow Campground",
+      "lang": "en",
+      "kind": "primary"
+    },
+    {
+      "text": "Banksia Hollow Camping Area",
+      "lang": "en",
+      "kind": "former"
+    }
+  ],
+  "location": {
+    "lat": -28.5392,
+    "lng": 152.8807,
+    "accuracy_m": 25
+  },
+  "site_types": {
+    "primary": "national_park_campsite"
+  },
+  "opening_hours": {
+    "always_open": true,
+    "seasonal_closures": [
+      {
+        "from": "12-01",
+        "to": "02-28",
+        "notes": [
+          {
+            "text": "Closed in the fire danger period when the park agency declares it.",
+            "lang": "en-AU"
+          }
+        ]
+      }
+    ]
+  },
+  "prices": {
+    "charging": "paid",
+    "items": [
+      {
+        "applies_to": "site_unpowered",
+        "amount": 6.5,
+        "currency": "AUD",
+        "per": "adult",
+        "period": "night"
+      },
+      {
+        "applies_to": "site_unpowered",
+        "amount": 3.5,
+        "currency": "AUD",
+        "per": "child",
+        "period": "night"
+      }
+    ],
+    "payment_methods": ["online"]
+  },
+  "bookings": {
+    "booking": "required",
+    "url": "https://www.example.org/parks/banksia-hollow"
+  },
+  "capacity": {
+    "sites": 14
+  },
+  "pets": {
+    "allowed": "no"
+  },
+  "rig_limits": {
+    "max_length_m": 7,
+    "big_rig_suitable": "no",
+    "notes": [
+      {
+        "text": "Tight turning circle at the creek crossing.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "access": {
+    "road_surface": "gravel",
+    "unsealed_km": 8,
+    "four_wd_required": false,
+    "high_clearance_recommended": true,
+    "seasonal": {
+      "affected": true,
+      "wet_weather_closure": true,
+      "notes": [
+        {
+          "text": "Causeway floods after heavy rain.",
+          "lang": "en-AU"
+        }
+      ]
+    }
+  },
+  "country_code": "AU",
+  "subdivision_code": "AU-NSW",
+  "locality": "Kyogle",
+  "time_zone": "Australia/Sydney",
+  "fire_district": {
+    "authority": "NSW Rural Fire Service",
+    "district": "Far North Coast",
+    "ban_info_url": "https://www.rfs.nsw.gov.au/fire-information/fdr-and-tobans"
+  },
+  "facilities": {
+    "toilets": {
+      "available": true,
+      "attributes": {
+        "kind": "composting",
+        "count": 2
+      }
+    },
+    "drinking_water": {
+      "available": false,
+      "notes": [
+        {
+          "text": "Bring your own water.",
+          "lang": "en-AU"
+        }
+      ]
+    },
+    "fire_pit": {
+      "available": true
+    },
+    "fires_allowed": {
+      "available": true,
+      "attributes": {
+        "fire_rings_only": true,
+        "bring_own_firewood": true
+      }
+    },
+    "picnic_tables": {
+      "available": true
+    },
+    "tent_sites": {
+      "available": true,
+      "attributes": {
+        "count": 14
+      }
+    },
+    "generators_allowed": {
+      "available": false
+    },
+    "pets_allowed": {
+      "available": false
+    },
+    "big_rig_access": {
+      "available": false
+    }
+  },
+  "min_confidence": 0.75,
+  "safety_facts_observed_on": "2026-07-02",
+  "attribution": [
+    "Open Touring contributors, opentouring.org, CC BY 4.0",
+    "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+    "Contains data from Example Fire Boundaries Agency, licensed under CC BY 4.0"
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/verdict.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD verdict",
+  "description": "The AI's structured recommendation on a submission. A verdict is advice and never a decision: it cannot approve, reject, delete or merge anything. Routing, which is fixed code, reads the verdict together with the submission kind and trust scores, and a moderation decision records the outcome. The model receives the submission strictly as data and has no tools that write.",
+  "type": "object",
+  "required": [
+    "id",
+    "submission_id",
+    "advisory",
+    "category",
+    "confidence",
+    "reasons",
+    "model",
+    "created_at"
+  ],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/VerdictId" },
+    "submission_id": { "$ref": "common.schema.json#/$defs/SubmissionId" },
+    "advisory": {
+      "description": "Always true. Marks the record as a recommendation so no consumer mistakes it for a moderation decision.",
+      "const": true
+    },
+    "category": {
+      "description": "plausible: consistent with the evidence and nothing suspicious found. needs_human_judgement: the model cannot tell. likely_duplicate: probably describes an existing site. likely_copied: text or photo appears to be copied from elsewhere. implausible: contradicts the evidence, such as a location at sea or an outlier price. safety_concern: could mislead travellers about a safety fact. spam: advertising or unrelated content. abusive: offensive content or personal information.",
+      "type": "string",
+      "enum": [
+        "plausible",
+        "needs_human_judgement",
+        "likely_duplicate",
+        "likely_copied",
+        "implausible",
+        "safety_concern",
+        "spam",
+        "abusive"
+      ]
+    },
+    "confidence": {
+      "description": "The model's confidence in the category, from 0 to 1. Routing thresholds are calibrated against the evaluation set, not taken at face value.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["code", "text"],
+        "properties": {
+          "code": {
+            "description": "For example name_matches_nearby_site or price_outlier.",
+            "$ref": "common.schema.json#/$defs/ReasonCode"
+          },
+          "text": { "type": "string", "minLength": 1, "maxLength": 1000 },
+          "fields": {
+            "type": "array",
+            "maxItems": 20,
+            "items": { "$ref": "common.schema.json#/$defs/FieldPointer" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence": {
+      "description": "References to what the model compared the submission with. References only: the evidence itself stays where it is.",
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["site", "submission", "photo", "seed_record", "fixed_check", "url"]
+          },
+          "ref": {
+            "description": "An OTWD ID, a seed source record reference (seed source ID, a hash sign, the record ID), a fixed check name, or an HTTPS URL.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "note": { "type": "string", "maxLength": 500 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "duplicate_candidates": {
+      "description": "Existing sites the submission may describe, with the distance between them.",
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["site_id", "distance_m"],
+        "properties": {
+          "site_id": { "$ref": "common.schema.json#/$defs/SiteId" },
+          "distance_m": { "type": "number", "minimum": 0 },
+          "name_similarity": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "model": {
+      "description": "The model that produced the verdict.",
+      "type": "object",
+      "required": ["provider", "identifier", "version", "tier"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "identifier": {
+          "description": "The provider's model name.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "version": {
+          "description": "The exact model version or snapshot.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "tier": {
+          "description": "fast: the small model every submission goes through. strong: the larger model used only for uncertain or high-risk submissions.",
+          "type": "string",
+          "enum": ["fast", "strong"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "prompt_version": {
+      "description": "Version of the review instructions given to the model.",
+      "type": "string",
+      "maxLength": 64
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

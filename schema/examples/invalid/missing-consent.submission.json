@@ -1,0 +1,55 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "new_site",
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "a91f0c3e77d24b6c9e15f0a2"
+  },
+  "contributor_submitted_at": "2026-10-12T07:41:22+10:00",
+  "observed_on": "2026-10-12",
+  "partner_reference": "tt-sub-558213",
+  "proposed": {
+    "facts": {
+      "names": [
+        {
+          "text": "Burdekin Siding Rest Stop",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "location": {
+        "lat": -20.0712,
+        "lng": 146.2734,
+        "accuracy_m": 12
+      },
+      "site_types": {
+        "primary": "rest_area",
+        "others": ["free_camp"]
+      },
+      "prices": {
+        "charging": "free"
+      },
+      "stay_limits": {
+        "max_nights": 1
+      },
+      "rig_limits": {
+        "big_rig_suitable": "yes"
+      }
+    },
+    "facilities": {
+      "toilets": {
+        "available": true,
+        "attributes": {
+          "kind": "flush"
+        }
+      },
+      "bins": {
+        "available": true
+      },
+      "drinking_water": {
+        "available": false
+      }
+    }
+  }
+}

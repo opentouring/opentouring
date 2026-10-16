@@ -1,0 +1,28 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "add_photo",
+  "site_id": "otwd:site:01KZWYZTN0MXX9EQGP27KYAH36",
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "u_7f3d2a9b41c8"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-13T16:20:00+11:00",
+  "proposed": {
+    "upload_id": "otwd:upload:01KJK8W2CAWJC5J54FT58K4JGM",
+    "sha256": "9f2c4e6a8b0d1f3e5c7a9b1d3f5e7c9a1b3d5f7e9c1a3b5d7f9e1c3a5b7d9f1e",
+    "caption": [
+      {
+        "text": "Car park and track to the platform.",
+        "lang": "en-AU"
+      }
+    ],
+    "taken_on": "2026-10-13",
+    "licence": "CC-BY-4.0",
+    "attribution": "Southern Rambler"
+  }
+}
