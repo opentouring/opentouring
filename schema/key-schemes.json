@@ -8,10 +8,10 @@
     {
       "code": "mlak",
       "label": "MLAK",
-      "description": "Master Locksmiths Access Key: one key that opens accessible toilets, Changing Places and other facilities for people with disability. Sold to people who need it on proof of need.",
+      "description": "Master Locksmiths Access Key: one key that opens accessible toilets, Changing Places and other facilities for people with disability in Australia. Sold to people who need it on proof of need.",
       "status": "active",
       "introduced_in": "1.0.0",
-      "countries": ["AU", "NZ"],
+      "countries": ["AU"],
       "osm": [{ "tags": ["centralkey=mlak"], "match": "exact" }],
       "schema_org": null
     },
@@ -34,10 +34,10 @@
     {
       "code": "eurokey",
       "label": "Eurokey",
-      "description": "The Eurokey (Euroschlüssel) that opens accessible toilets and other facilities for people with disability, mainly in Germany, Austria and Switzerland.",
+      "description": "The Eurokey (Euroschlüssel, Euroklíč in Czechia) that opens accessible toilets and other facilities for people with disability, in Germany, Austria, Switzerland and Czechia. Other European countries have some locks, but no source names them.",
       "status": "active",
       "introduced_in": "1.0.0",
-      "countries": ["DE", "AT", "CH"],
+      "countries": ["DE", "AT", "CH", "CZ"],
       "osm": [{ "tags": ["centralkey=eurokey"], "match": "exact" }],
       "schema_org": null
     }
