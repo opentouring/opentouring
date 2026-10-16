@@ -66,6 +66,14 @@ _Avoid_: property, option, sub-field
 A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes and vehicle classes, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
+**Reference language**:
+The language the project writes governed list labels and descriptions and its documentation in: en-AU. Every other language is a translation of it, and missing text falls back to it.
+_Avoid_: default language, master language
+
+**Translation**:
+The labels and descriptions of one governed list in one language other than the reference language, keyed by code and reviewed like any governed list change. It never changes what a code means. A machine translation an app shows is marked as one and is never a fact.
+_Avoid_: locale file, localisation (for the file)
+
 **Fact**:
 One field value about a record, such as a facility, a price, opening hours, a rig limit or a vertical clearance, carrying its own provenance.
 _Avoid_: property, field (when the value is meant)

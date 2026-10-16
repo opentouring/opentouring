@@ -89,7 +89,7 @@
       "additionalProperties": false
     },
     "Description": {
-      "description": "A short original description of the site, at most one per language. It must be the contributor's own words, never copied from a website, guidebook or other database.",
+      "description": "A short original description of the site, at most one per language, each in the language its contributor wrote it in. It must be the contributor's own words, never copied from a website, guidebook or other database, and never a machine translation of another description.",
       "type": "array",
       "minItems": 1,
       "maxItems": 10,

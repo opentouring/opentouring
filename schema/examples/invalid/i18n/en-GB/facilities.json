@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "facilities",
+  "language": "en-US",
+  "reference_version": "1.0.0",
+  "entries": {
+    "bins": {
+      "label": "Trash cans"
+    }
+  }
+}

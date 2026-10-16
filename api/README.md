@@ -41,6 +41,12 @@ Until version 1.0.0 is released, the schema and the API are a draft. Release mea
 
 The major version is in the path (`/v1`). Within v1, changes are additive only: new endpoints, new optional query parameters, new optional response fields, and new governed list codes. Clients must ignore response fields and codes they do not recognise. A breaking change ships as `/v2` with schema version 2, and `/v1` keeps running alongside it for at least 12 months after `/v2` is released. Each response body that is a record carries its `schema_version`.
 
+## Languages
+
+The governed list endpoints (`/v1/site-types`, `/v1/facilities`, `/v1/structures`, `/v1/surfaces`, `/v1/vehicle-access-classes` and `/v1/vehicle-classes`) honour `Accept-Language` ([ADR 0031](../docs/adr/0031-governed-lists-and-the-api-are-translatable.md)). Labels and descriptions are written in en-AU, the reference language, and translated by contributors in `schema/i18n`. The API picks the best match for the header, and a label or description with no translation falls back from the requested tag to its base language (de-AT to de) and then to en-AU, so nothing is blank. The response's `language` field and `Content-Language` header name the language served, an entry that fell back names its own language in `label_lang` or `description_lang`, and `Vary: Accept-Language` keeps caches apart. Without the header the lists are served in en-AU.
+
+Record responses, the change feed and webhooks are the same in every language. They carry codes, which you label from the governed lists in the traveller's language, and free text (names, descriptions, notes) as `LocalisedText` in the language the contributor wrote, with its `lang` tag. If your app shows a machine translation of free text, mark it as machine translated, and never send it back in a submission: a description must be the contributor's own words.
+
 ## Compact and full forms
 
 Record endpoints return the compact form (`view=compact`, the default): plain values plus an `attribution` list, `min_confidence` and `safety_facts_observed_on`. Add `view=full` to get every fact with its provenance. `../schema/README.md` explains the two forms.

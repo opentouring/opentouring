@@ -43,6 +43,18 @@ info:
     support. Contributing is free on every tier, and that includes the submissionDecided webhook,
     which reports the outcome of a partner app's own submissions.
 
+    ## Languages
+
+    Governed list endpoints honour `Accept-Language`. Labels and descriptions are written in en-AU,
+    the reference language, and translated by contributors. A missing translation falls back from
+    the requested tag to its base language and then to en-AU, so a label is never blank. The
+    response carries `Content-Language` and `Vary: Accept-Language`.
+
+    Record responses are not translated. They carry codes, which apps label from the governed
+    lists in the traveller's language, and free text such as names, descriptions and notes in the
+    language the contributor wrote, with its `lang` tag. An app that shows a machine translation
+    of free text marks it as machine translated, and never submits it back as a fact.
+
     ## Attribution
 
     OTWD data is licensed under the Creative Commons Attribution 4.0 International licence
@@ -252,9 +264,10 @@ paths:
       tags: [Governed lists]
       operationId: listSiteTypes
       summary: List site types
-      description: Returns the governed list of site types, with labels, descriptions and OSM and schema.org mappings. The list changes rarely, so cache it and revalidate with If-None-Match.
+      description: Returns the governed list of site types, with labels, descriptions and OSM and schema.org mappings. Labels and descriptions are in the language asked for in Accept-Language, with en-AU as the fallback. The list changes rarely, so cache it and revalidate with If-None-Match.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           description: The site type list.
@@ -263,6 +276,10 @@ paths:
               $ref: "#/components/headers/ETag"
             Cache-Control:
               $ref: "#/components/headers/CacheControl"
+            Content-Language:
+              $ref: "#/components/headers/ContentLanguage"
+            Vary:
+              $ref: "#/components/headers/Vary"
           content:
             application/json:
               schema:
@@ -282,6 +299,7 @@ paths:
       description: Returns the governed list of facilities, with their attributes, safety fact flags and OSM and schema.org mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           description: The facility list.
@@ -290,6 +308,10 @@ paths:
               $ref: "#/components/headers/ETag"
             Cache-Control:
               $ref: "#/components/headers/CacheControl"
+            Content-Language:
+              $ref: "#/components/headers/ContentLanguage"
+            Vary:
+              $ref: "#/components/headers/Vary"
           content:
             application/json:
               schema:
@@ -700,6 +722,7 @@ paths:
       description: Returns the governed list of structures found at road restrictions, with the passages each allows and OSM mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -718,6 +741,7 @@ paths:
       description: Returns the governed list of road segment surfaces, with OSM surface and tracktype mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -736,6 +760,7 @@ paths:
       description: Returns the governed list of vehicle access classes in rank order, from 2WD to closed to vehicles, with OSM mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -754,6 +779,7 @@ paths:
       description: Returns the governed list of vehicle classes used by ferry services, with OSM access mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -1291,6 +1317,14 @@ components:
       description: An ETag from an earlier response. The response is 304 when it still matches.
       schema:
         type: string
+    AcceptLanguage:
+      name: Accept-Language
+      in: header
+      description: The languages the reader prefers, as in RFC 9110, for example de-AT, de;q=0.8. Governed list labels and descriptions are served in the best match. A missing translation falls back from the tag to its base language (de-AT to de) and then to en-AU, the reference language, and the entry names the language it fell back to in label_lang or description_lang. Without this header the list is served in en-AU.
+      schema:
+        type: string
+        maxLength: 200
+      example: de-AT, de;q=0.8, en;q=0.5
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -1343,6 +1377,16 @@ components:
       description: Entity tag of the representation. For a record it changes whenever change_seq changes.
       schema:
         type: string
+    ContentLanguage:
+      description: The language the governed list was served in, the same as its language field. Entries with no translation in it say so in label_lang or description_lang.
+      schema:
+        type: string
+      example: de
+    Vary:
+      description: Accept-Language for governed lists, so caches keep one copy per language. The ETag differs between languages.
+      schema:
+        type: string
+      example: Accept-Language
     LastModified:
       description: The record's updated_at, in HTTP date form.
       schema:
@@ -1417,6 +1461,10 @@ components:
           $ref: "#/components/headers/ETag"
         Cache-Control:
           $ref: "#/components/headers/CacheControl"
+        Content-Language:
+          $ref: "#/components/headers/ContentLanguage"
+        Vary:
+          $ref: "#/components/headers/Vary"
       content:
         application/json:
           schema:

@@ -86,7 +86,7 @@ flowchart LR
 
 **Identity.** A self-hosted OIDC provider (Zitadel or Keycloak) signs in direct contributors and moderators. Contributors who come through a partner app are known only by the pseudonymous ID the partner app sends.
 
-**Website.** An Astro site that uses only the public API, with its own API key. Site pages at `/sites/<state>/<slug>-<id>` are rendered on demand and cached at the CDN with stale-while-revalidate, then purged when a change touches the site. The map is a MapLibre GL island on a free OSM-based basemap. The developer portal is Starlight, with API reference generated from the OpenAPI spec. Contribute and moderate pages are signed-in islands that call the API.
+**Website.** An Astro site that uses only the public API, with its own API key. Site pages at `/sites/<state>/<slug>-<id>` are rendered on demand and cached at the CDN with stale-while-revalidate, then purged when a change touches the site. The map is a MapLibre GL island on a free OSM-based basemap. The developer portal is Starlight, with API reference generated from the OpenAPI spec. Contribute and moderate pages are signed-in islands that call the API. Per-language routes will come later, with governed list labels in the reader's language and contributors' free text in the language it was written in.
 
 **Cache.** Valkey, run as a Linode managed service outside the cluster ([ADR 0019](adr/0019-valkey-for-cache-and-rate-limits.md)), holds hot responses and the gateway's rate-limit counters.
 

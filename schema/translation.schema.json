@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD governed list translation",
+  "description": "The labels and descriptions of one governed list in one language other than en-AU, the reference language. It lives at schema/i18n/<language>/<list file>, for example schema/i18n/de/facilities.json. It holds text only, keyed by code: codes, safety flags, attributes, ranks, passages and mappings stay in the reference list, so a translation can never change what a code means. Every code it names must exist in the reference list, and a code it leaves out falls back to the base language and then to en-AU.",
+  "type": "object",
+  "required": ["$schema", "list", "language", "reference_version", "entries"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "$comment": {
+      "type": "string"
+    },
+    "list": {
+      "description": "The governed list this file translates. The file name is the list's file name.",
+      "$ref": "vocabulary.schema.json#/$defs/ListName"
+    },
+    "language": {
+      "description": "The BCP 47 tag of the language the text is in. It matches the name of the folder the file is in, and it is never en-AU.",
+      "$ref": "common.schema.json#/$defs/LanguageTag"
+    },
+    "reference_version": {
+      "description": "The version of the reference list the text was translated from. Entries added to the reference list after it show in en-AU until the translation catches up.",
+      "$ref": "vocabulary.schema.json#/$defs/ListVersion"
+    },
+    "entries": {
+      "description": "The translated text, keyed by the code it belongs to.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "common.schema.json#/$defs/Code"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/TranslatedEntry"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "TranslatedEntry": {
+      "description": "The text of one entry in the translation's language. Give the label, the description or both. Anything left out falls back.",
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "attributes": {
+          "description": "Descriptions of the entry's facility attributes, keyed by attribute name. Each name must be an attribute of the entry in the reference list.",
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]{0,47}$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": ["label"]
+        },
+        {
+          "required": ["description"]
+        }
+      ]
+    }
+  }
+}

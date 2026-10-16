@@ -44,5 +44,8 @@
   "routing-rule-on-new-record.moderation-decision.json": "a routing rule cannot decide this: new_road_segment is on the always-human list",
   "routing-rule-on-safety-fact.moderation-decision.json": "a routing rule cannot decide this: /facts/location is a safety fact of a road_restriction",
   "routing-rule-on-accepted-vehicle-classes.moderation-decision.json": "/facts/accepted_vehicle_classes is a safety fact of a ferry_service",
-  "routing-rule-on-terminals.moderation-decision.json": "a routing rule cannot decide this: /facts/terminals is a safety fact of a ferry_service"
+  "routing-rule-on-terminals.moderation-decision.json": "a routing rule cannot decide this: /facts/terminals is a safety fact of a ferry_service",
+  "i18n/en-US/vehicle-classes.json": "/entries/fifth_wheel: code 'fifth_wheel' is not in vehicle-classes.json",
+  "i18n/en-GB/facilities.json": "/language: is en-US but the folder is en-GB",
+  "i18n/en-NZ/facilities.json": "'safety_fact' was unexpected"
 }
