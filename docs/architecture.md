@@ -76,7 +76,7 @@ flowchart LR
 
 **API.** The query and submit API is written in Rust and runs as WebAssembly on Spin, scheduled by SpinKube. Instances hold no state, so they start and stop with demand. Query endpoints read from replicas. Submit endpoints write only to the submission log and the outbox, in one transaction. There is no endpoint that changes a site in place.
 
-**Database.** Postgres with PostGIS holds live data for every record type (point and line geometry), the submission log, moderation decisions, trust scores and the outbox. It is Linode's managed Postgres with PostGIS in Sydney, outside the cluster ([ADR 0017](adr/0017-postgres-with-postgis.md)). CloudNativePG in the cluster is kept only as a fallback. Connections from the many short-lived API instances go through the managed service's built-in connection pool, and PgBouncer is added only if that pool proves not enough. Heavy reads go to replicas.
+**Database.** Postgres with PostGIS holds live data for every record type (point and line geometry), the submission log, moderation decisions, trust scores and the outbox. It is Linode's managed Postgres with PostGIS in Sydney, outside the cluster ([ADR 0017](adr/0017-postgres-with-postgis.md)). CloudNativePG in the cluster is kept only as a fallback. Connections from the many short-lived API instances go through the managed service's built-in connection pool, and PgBouncer is added only if that pool proves not enough. Heavy reads go to replicas. Every instant is stored as `timestamptz` and sent in UTC, while opening hours and other local schedules are stored as local times with the record's IANA time zone ([ADR 0032](adr/0032-utc-for-instants-local-time-for-schedules.md)).
 
 **Event bus.** NATS JetStream carries events between components. Services never publish directly: they write an outbox row in the same transaction as the data, and the outbox relay publishes it. Consumers are idempotent because an event can arrive more than once.
 
@@ -92,7 +92,7 @@ flowchart LR
 
 **Storage and edge.** Bulk download files and photos are stored in Bunny Storage in Sydney, behind Bunny CDN, which serves them and caches website pages ([ADR 0021](adr/0021-bunny-cdn-and-crowdsec-instead-of-cloudflare.md)). The cache purger removes stale pages and download indexes when changes arrive. Photos reach Bunny Storage only through the API: a contributor's app uploads to an upload URL on the API host, and the API checks the file and strips EXIF location before writing it to storage ([ADR 0029](adr/0029-object-storage-deferred-singapore-bucket-for-infrastructure-state-only.md)).
 
-**Observability.** OpenTelemetry traces and metrics from every service, Prometheus and Grafana for metrics and dashboards, Loki for logs, and a Sentry-compatible error tracker.
+**Observability.** OpenTelemetry traces and metrics from every service, Prometheus and Grafana for metrics and dashboards, Loki for logs, and a Sentry-compatible error tracker. Every service logs in UTC.
 
 ## Moderation pipeline
 

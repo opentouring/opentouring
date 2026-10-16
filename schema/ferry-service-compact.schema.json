@@ -29,11 +29,12 @@
             "$ref": "ferry-service.schema.json#/$defs/RequiredFacts"
           }
         ],
-        "required": ["name", "country_codes", "time_zone", "length_km"],
+        "required": ["name", "country_codes", "time_zone", "time_zones", "length_km"],
         "properties": {
           "name": true,
           "country_codes": true,
           "time_zone": true,
+          "time_zones": true,
           "length_km": true
         }
       }

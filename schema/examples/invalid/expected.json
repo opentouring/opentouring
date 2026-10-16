@@ -47,5 +47,7 @@
   "routing-rule-on-terminals.moderation-decision.json": "a routing rule cannot decide this: /facts/terminals is a safety fact of a ferry_service",
   "i18n/en-US/vehicle-classes.json": "/entries/fifth_wheel: code 'fifth_wheel' is not in vehicle-classes.json",
   "i18n/en-GB/facilities.json": "/language: is en-US but the folder is en-GB",
-  "i18n/en-NZ/facilities.json": "'safety_fact' was unexpected"
+  "i18n/en-NZ/facilities.json": "'safety_fact' was unexpected",
+  "timestamp-with-offset.site.json": "/updated_at: '2026-09-09T09:10:00+10:00' does not match",
+  "schedule-zone-not-on-line.road-segment.json": "Australia/Perth is not one of the record's time zones"
 }

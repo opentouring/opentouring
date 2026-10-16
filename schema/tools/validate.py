@@ -28,7 +28,9 @@ The script runs three stages:
 2. Each document is validated against its schema with format checking on
    (date, date-time, uri, email, json-pointer).
 3. Rules that JSON Schema cannot express, and that the API also enforces,
-   are checked: governed list codes, ISO 3166-2 prefixes, IANA time zones,
+   are checked: governed list codes, ISO 3166-2 prefixes, IANA time zones
+   (a line's time_zones start with its time_zone and hold every schedule's own
+   time_zone),
    lowest figures, the always-human list derived from the schema's safety
    fact markers, ferry terminals, translations that name only codes and
    attributes of the reference list from a folder named for their language,
@@ -440,11 +442,24 @@ class SemanticChecker:
                     where, f"subdivision {subdivision} is not in country {' or '.join(countries)}"
                 )
         time_zone = values.get("time_zone")
-        if time_zone:
+        zones = values.get("time_zones", [time_zone] if time_zone else [])
+        for zone in dict.fromkeys(filter(None, [time_zone, *zones])):
             try:
-                zoneinfo.ZoneInfo(time_zone)
+                zoneinfo.ZoneInfo(zone)
             except (zoneinfo.ZoneInfoNotFoundError, ValueError):
-                self.fail(where, f"unknown IANA time zone {time_zone!r}")
+                self.fail(where, f"unknown IANA time zone {zone!r}")
+        if zones and time_zone and zones[0] != time_zone:
+            self.fail(where, f"time_zones starts with {zones[0]}, not time_zone {time_zone}")
+
+    def schedule_zones(self, values: dict, zones: list[str], where: str, suffix: str) -> None:
+        """A schedule's own time_zone is one of the zones the record lies in."""
+        for name, fact in values.items():
+            zone = fact.get("time_zone") if isinstance(fact, dict) else None
+            if zone and zones and zone not in zones:
+                self.fail(
+                    f"{where}/{name}{suffix}/time_zone",
+                    f"{zone} is not one of the record's time zones ({', '.join(zones)})",
+                )
 
     def same_type(self, record_id: str, others: list[str], where: str) -> None:
         """Records merged together, or named as duplicates, share one record type and differ."""
@@ -475,6 +490,9 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
     else:
         derived, where, suffix, values, facts_where = document, "/", "", document, ""
     checker.derived(derived, where)
+    time_zone = derived.get("time_zone")
+    zones = derived.get("time_zones", [time_zone] if time_zone else [])
+    checker.schedule_zones(values, zones, facts_where, suffix)
     checker.facts(values, facts_where, suffix)
     checker.facilities(document.get("facilities", {}), "/facilities")
     if document.get("redirect_to") == document["id"]:

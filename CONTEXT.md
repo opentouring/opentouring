@@ -235,8 +235,16 @@ A published correspondence between OTWD terms and another vocabulary, such as Op
 _Avoid_: crosswalk, conversion
 
 **Derived value**:
-A value OTWD computes from a record's location or geometry rather than receives from a contributor: country, subdivision, locality, time zone and, for a line, its length. The fire district is computed from the location too, but it is a fact with provenance, because its boundaries come from a seed source.
+A value OTWD computes from a record's location or geometry rather than receives from a contributor: country, subdivision, locality, time zone and, for a line, every time zone it passes through and its length. The fire district is computed from the location too, but it is a fact with provenance, because its boundaries come from a seed source.
 _Avoid_: inferred field, calculated location
+
+**Timestamp**:
+An instant OTWD records, such as when a fact was recorded or a change applied, always in UTC with the Z suffix.
+_Avoid_: local timestamp, datetime (for an instant)
+
+**Local schedule**:
+Opening hours, ferry operating hours, check-in times, seasonal closures and other periods given as local clock times and dates, read in the record's IANA time zone or a schedule's own time zone, and never converted to UTC.
+_Avoid_: UTC schedule, timetable (for the stored hours)
 
 **Confirmation**:
 A later report that an existing fact is still true, recorded as provenance without changing the value.

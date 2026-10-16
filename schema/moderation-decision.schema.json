@@ -22,8 +22,7 @@
       "$ref": "#/$defs/Decider"
     },
     "decided_at": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "common.schema.json#/$defs/Timestamp"
     },
     "routing": {
       "description": "How routing sent the submission to whoever decided it, with what routing read from the submission: its kind, its record type and the fields it touches. The fixed checks derive whether the submission is on the always-human list from these, using the creation kinds, closures, merges and the safety fact markers (x-otwd-safety-fact) in the record type's schema, so a routing rule cannot approve one by declaring always_human false.",

@@ -47,6 +47,10 @@ The governed list endpoints (`/v1/site-types`, `/v1/facilities`, `/v1/structures
 
 Record responses, the change feed and webhooks are the same in every language. They carry codes, which you label from the governed lists in the traveller's language, and free text (names, descriptions, notes) as `LocalisedText` in the language the contributor wrote, with its `lang` tag. If your app shows a machine translation of free text, mark it as machine translated, and never send it back in a submission: a description must be the contributor's own words.
 
+## Time
+
+Every instant the API sends or accepts, in records, the change feed, webhook payloads and query parameters such as `updated_since`, is RFC 3339 in UTC with the `Z` suffix (`Timestamp`), and any other offset is rejected ([ADR 0032](../docs/adr/0032-utc-for-instants-local-time-for-schedules.md)). Show instants in the reader's own time zone. Opening hours, ferry operating hours, check-in times and seasonal closures are local clock times and dates, read in the record's `time_zone`, or in the schedule's own `time_zone` when a line record crosses into another zone. Never convert them to UTC for storage: convert them for a given date when you need to compare them with an instant.
+
 ## Compact and full forms
 
 Record endpoints return the compact form (`view=compact`, the default): plain values plus an `attribution` list, `min_confidence` and `safety_facts_observed_on`. Add `view=full` to get every fact with its provenance. `../schema/README.md` explains the two forms.

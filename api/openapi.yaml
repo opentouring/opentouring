@@ -1207,10 +1207,9 @@ components:
     UpdatedSince:
       name: updated_since
       in: query
-      description: Returns only records changed at or after this time. For reliable incremental sync on paid tiers, follow the change feed instead.
+      description: Returns only records changed at or after this instant, in UTC with the Z suffix. For reliable incremental sync on paid tiers, follow the change feed instead.
       schema:
-        type: string
-        format: date-time
+        $ref: "#/components/schemas/Timestamp"
     RigLengthM:
       name: rig_length_m
       in: query
@@ -1345,7 +1344,7 @@ components:
       name: webhook-timestamp
       in: header
       required: true
-      description: Unix time in seconds when the delivery was signed.
+      description: Unix time in seconds when the delivery was signed, which counts from the epoch in UTC.
       schema:
         type: integer
     WebhookSignature:
@@ -1388,7 +1387,7 @@ components:
         type: string
       example: Accept-Language
     LastModified:
-      description: The record's updated_at, in HTTP date form.
+      description: The record's updated_at, in HTTP date form, which is always GMT.
       schema:
         type: string
     CacheControl:
@@ -1477,6 +1476,9 @@ components:
             $ref: "#/components/schemas/Problem"
 
   schemas:
+    Timestamp:
+      description: An instant in RFC 3339 form in UTC with the Z suffix, for example 2026-09-08T23:10:00Z. Every time the API sends or accepts as an instant uses it, including the change feed and webhook payloads. Offsets other than Z are rejected. Opening hours, timetables and other local schedules are local clock times, never Timestamps.
+      $ref: "../schema/common.schema.json#/$defs/Timestamp"
     Problem:
       description: RFC 9457 problem details. The type URI identifies the problem and links to its documentation.
       type: object
@@ -1772,8 +1774,7 @@ components:
           type: string
           format: uri
         expires_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         size_bytes:
           type: integer
           minimum: 0
@@ -1781,8 +1782,7 @@ components:
           description: SHA-256 of the file.
           $ref: "../schema/common.schema.json#/$defs/Sha256"
         generated_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         schema_version:
           type: string
           example: "1.0"
@@ -1840,8 +1840,7 @@ components:
           type: string
           format: uri
         received_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         partner_reference:
           type: string
     SubmissionStatus:
@@ -1874,11 +1873,9 @@ components:
           type: string
           enum: [received, checking, in_review, needs_info, approved, edited_and_approved, rejected]
         received_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         updated_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         decision:
           $ref: "#/components/schemas/DecisionSummary"
     DecisionSummary:
@@ -1892,8 +1889,7 @@ components:
           type: string
           enum: [approved, edited_and_approved, rejected, needs_info]
         decided_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         decided_by_kind:
           type: string
           enum: [moderator, routing_rule]
@@ -1909,8 +1905,7 @@ components:
             $ref: "../schema/common.schema.json#/$defs/ChangeSeq"
         appealable_until:
           description: Last moment the contributor can appeal through the Open Touring website.
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
     PhotoUploadRequest:
       type: object
       required: [content_type, size_bytes, sha256]
@@ -1944,8 +1939,7 @@ components:
           additionalProperties:
             type: string
         expires_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
     ChangeAppliedEvent:
       type: object
       required: [type, created_at, data]
@@ -1953,8 +1947,7 @@ components:
         type:
           const: change.applied
         created_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         data:
           $ref: "../schema/change.schema.json"
     SubmissionDecidedEvent:
@@ -1964,7 +1957,6 @@ components:
         type:
           const: submission.decided
         created_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         data:
           $ref: "#/components/schemas/SubmissionStatus"
