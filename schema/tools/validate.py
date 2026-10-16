@@ -44,7 +44,10 @@ The script runs three stages:
    key identifiers, which it must never carry (ADR 0038).
 
 A top-level "$comment" in a document (the SPDX header of the example files)
-is removed before validation against the schema.
+is removed before validation against the schema. A document that holds "$base"
+and "$patch" is built from the document "$base" names, relative to its own
+file, with the JSON Patch operations add, replace and remove in "$patch"
+applied in order. Invalid examples use it to state only what makes them invalid.
 
 Open enumerations (x-otwd-known-values) and record types (x-otwd-registry, checked
 against record-types.json) are checked strictly, as for a producer: OTWD never
@@ -79,6 +82,8 @@ SCHEMA_DIR = Path(__file__).resolve().parent.parent
 EXAMPLES = SCHEMA_DIR / "examples"
 BASE = "https://schema.opentouring.org/otwd/v1/"
 COMMENT_KEY = "$comment"
+BASE_KEY = "$base"
+PATCH_KEY = "$patch"
 SPDX_COMMENT = "SPDX-License-Identifier: Apache-2.0"
 SAFETY_MARKER = "x-otwd-safety-fact"
 # Open enumerations list the values known at this schema version, and record IDs and record
@@ -106,6 +111,8 @@ STRUCTURES = "structures.json"
 SURFACES = "surfaces.json"
 ACCESS_CLASSES = "vehicle-access-classes.json"
 VEHICLE_CLASSES = "vehicle-classes.json"
+KEY_SCHEMES = "key-schemes.json"
+PET_SPECIES = "pet-species.json"
 
 # Every governed list file, with the name its codes go by in error messages.
 GOVERNED_LISTS = {
@@ -115,6 +122,8 @@ GOVERNED_LISTS = {
     SURFACES: "surface",
     ACCESS_CLASSES: "vehicle access class",
     VEHICLE_CLASSES: "vehicle class",
+    KEY_SCHEMES: "key scheme",
+    PET_SPECIES: "pet species",
 }
 
 # Submission kinds on the always-human list for every record type, besides the
@@ -232,6 +241,46 @@ RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_T
 def without_comment(document: Any) -> Any:
     if isinstance(document, dict):
         return {key: value for key, value in document.items() if key != COMMENT_KEY}
+    return document
+
+
+def pointer_parts(path: str) -> list[str]:
+    """The reference tokens of a JSON Pointer, with ~1 and ~0 decoded."""
+    return [part.replace("~1", "/").replace("~0", "~") for part in path.split("/")[1:]]
+
+
+def apply_patch(document: Any, operations: list[dict]) -> Any:
+    """Apply JSON Patch add, replace and remove operations (RFC 6902) to a copy of a document."""
+    document = json.loads(json.dumps(document))
+    for operation in operations:
+        *parents, last = pointer_parts(operation["path"])
+        target = document
+        for part in parents:
+            target = target[int(part)] if isinstance(target, list) else target[part]
+        op = operation["op"]
+        if isinstance(target, list):
+            index = len(target) if last == "-" else int(last)
+            if op == "remove":
+                del target[index]
+            elif op == "add":
+                target.insert(index, operation["value"])
+            else:
+                target[index] = operation["value"]
+        elif op == "remove":
+            del target[last]
+        elif op in ("add", "replace"):
+            target[last] = operation["value"]
+        else:
+            raise SystemExit(f"unsupported JSON Patch operation {op!r}")
+    return document
+
+
+def load_document(path: Path) -> Any:
+    """A document without its $comment, built from its $base and $patch when it has them."""
+    document = without_comment(load_json(path))
+    if isinstance(document, dict) and BASE_KEY in document:
+        base = load_document((path.parent / document[BASE_KEY]).resolve())
+        document = apply_patch(base, document.get(PATCH_KEY, []))
     return document
 
 
@@ -361,7 +410,7 @@ class Context:
         for path in paths:
             kind = DocumentKind.for_path(path)
             if kind and kind.stem in ("site", "site-compact"):
-                document = load_json(path)
+                document = load_document(path)
                 types = site_types_of(document)
                 if types is not None:
                     sites[document["id"]] = types
@@ -399,6 +448,48 @@ def site_types_of(document: dict) -> set[str] | None:
     return {value["primary"], *value.get("others", [])}
 
 
+def toilets_of(accessibility: dict) -> dict:
+    """The accessible toilets of an accessibility value, or an empty object."""
+    return accessibility.get("toilets", {})
+
+
+def wheelchair_of(accessibility: dict) -> dict[str, str]:
+    """Wheelchair access by feature name, for the features an accessibility value records."""
+    return {name: item["access"] for name, item in accessibility.get("wheelchair", {}).items()}
+
+
+def accessible_facilities_from(accessibility: dict) -> dict | None:
+    """The accessible_facilities value the compact site form derives from the accessibility fact.
+
+    Absent with no recorded feature. Not available when arrival is no or every recorded
+    feature is no. Otherwise wheelchair is yes only when arrival is yes and every recorded
+    feature is yes, and limited in every other case, including an unknown arrival.
+    """
+    access = wheelchair_of(accessibility)
+    if not access:
+        return None
+    values = set(access.values())
+    if access.get("arrival") == "no" or values == {"no"}:
+        return {"available": False}
+    all_yes = access.get("arrival") == "yes" and values == {"yes"}
+    attributes: dict[str, Any] = {"wheelchair": "yes" if all_yes else "limited"}
+    features = sorted(name for name, value in access.items() if value == "yes")
+    if features:
+        attributes["features"] = features
+    return {"available": True, "attributes": attributes}
+
+
+def facility_summary(value: dict | None) -> str:
+    """A short description of an accessible_facilities value for error messages."""
+    if value is None:
+        return "absent"
+    if not value["available"]:
+        return "not available"
+    attributes = value.get("attributes", {})
+    features = ", ".join(sorted(attributes.get("features", []))) or "none"
+    return f"wheelchair {attributes.get('wheelchair')} with features {features}"
+
+
 class SemanticChecker:
     """Rules JSON Schema cannot express. The API applies the same rules."""
 
@@ -407,6 +498,10 @@ class SemanticChecker:
         self.vocab = context.vocab
         self.rejects_deprecated = rejects_deprecated
         self.errors: list[str] = []
+        # The record's countries and time zones, for rules that depend on them.
+        # Submissions have none.
+        self.countries: list[str] = []
+        self.zones: list[str] = []
         # One table for every record type and for submissions: fact names do not
         # repeat with different meanings across record types.
         self.fact_checks: dict[str, Callable[[Any, str], None]] = {
@@ -424,6 +519,11 @@ class SemanticChecker:
             "vehicle_limits": self.vehicle_limits,
             "fares": self.fares,
             "terminals": self.terminals,
+            "accessibility": self.accessibility,
+            "pets": self.pets,
+            "pet_policy": self.pet_policy,
+            "pet_transit": self.pet_transit,
+            "bait_notices": self.bait_notices,
         }
 
     def fail(self, where: str, message: str) -> None:
@@ -508,6 +608,97 @@ class SemanticChecker:
                     self.fail(f"{where}/{index}", f"{site_id} is not a known site")
             elif "ferry_terminal" not in types:
                 self.fail(f"{where}/{index}", f"{site_id} is not a ferry_terminal site")
+
+    def accessibility(self, value: dict, where: str) -> None:
+        """A known key scheme used in the record's country, and counts that agree with access."""
+        toilets = toilets_of(value)
+        if "key_scheme" in toilets:
+            self.code(KEY_SCHEMES, toilets["key_scheme"], f"{where}/toilets/key_scheme")
+            self.key_scheme_country(toilets["key_scheme"], where)
+        if wheelchair_of(value).get("toilets") == "no" and toilets.get("accessible_count", 0) > 0:
+            self.fail(
+                f"{where}/toilets/accessible_count",
+                f"wheelchair toilets access is no but accessible_count is "
+                f"{toilets['accessible_count']}",
+            )
+        if "ambulant" in toilets and "ambulant_count" in toilets:
+            if toilets["ambulant"] != (toilets["ambulant_count"] > 0):
+                self.fail(
+                    f"{where}/toilets/ambulant",
+                    f"is {str(toilets['ambulant']).lower()} but ambulant_count is "
+                    f"{toilets['ambulant_count']}",
+                )
+
+    def key_scheme_country(self, scheme: str, where: str) -> None:
+        """A key scheme is one used in the record's country."""
+        entry = self.vocab.lists[KEY_SCHEMES].get(scheme)
+        if entry and self.countries and not set(self.countries) & set(entry["countries"]):
+            self.fail(
+                f"{where}/toilets/key_scheme",
+                f"key scheme {scheme!r} is not used in {' or '.join(self.countries)}",
+            )
+
+    def accessible_facilities(self, values: dict, facilities: dict, where: str) -> None:
+        """The compact form's accessible_facilities matches what the accessibility fact gives."""
+        accessibility = values.get("accessibility", {})
+        given = facility_summary(facilities.get("accessible_facilities"))
+        expected = facility_summary(accessible_facilities_from(accessibility))
+        if given != expected:
+            arrival_no = wheelchair_of(accessibility).get("arrival") == "no"
+            self.fail(
+                f"{where}/accessible_facilities",
+                f"is {given} but the accessibility fact gives {expected}"
+                + (" (arrival is no)" if arrival_no else ""),
+            )
+
+    def species_list(self, codes: list[str], where: str, suffix: str = "") -> None:
+        for index, code in enumerate(codes):
+            self.code(PET_SPECIES, code, f"{where}/{index}{suffix}")
+
+    def listed_once(self, names: list[str], where: str, label: str) -> None:
+        """Each name appears once in a list of rules or arrangements."""
+        seen: set[str] = set()
+        for index, name in enumerate(names):
+            if name in seen:
+                self.fail(f"{where}/{index}", f"{label} {name} is listed twice")
+            seen.add(name)
+
+    def pets(self, value: dict, where: str) -> None:
+        """Known species, each listed once, and no species allowed when pets are not."""
+        rules = value.get("species", [])
+        codes = [rule["species"] for rule in rules]
+        self.species_list(codes, f"{where}/species", "/species")
+        self.listed_once(codes, f"{where}/species", "species")
+        if value["allowed"] == "no":
+            for index, rule in enumerate(rules):
+                if rule["allowed"] != "no":
+                    self.fail(
+                        f"{where}/species/{index}/allowed",
+                        f"pets.allowed is no but species {rule['species']} is {rule['allowed']}",
+                    )
+
+    def pet_policy(self, value: dict, where: str) -> None:
+        """Known species, and each arrangement listed once."""
+        arrangements = value.get("arrangements", [])
+        for index, item in enumerate(arrangements):
+            self.species_list(item.get("species", []), f"{where}/arrangements/{index}/species")
+        names = [item["arrangement"] for item in arrangements]
+        self.listed_once(names, f"{where}/arrangements", "arrangement")
+
+    def pet_transit(self, value: dict, where: str) -> None:
+        self.species_list(value.get("species", []), f"{where}/species")
+
+    def bait_notices(self, value: list, where: str) -> None:
+        """Notices end after they start, read in one of the record's time zones."""
+        for index, notice in enumerate(value):
+            if "to" in notice and notice["to"] < notice["from"]:
+                self.fail(f"{where}/{index}/to", "is before from")
+            zone = notice.get("time_zone")
+            if zone and self.zones and zone not in self.zones:
+                self.fail(
+                    f"{where}/{index}/time_zone",
+                    f"{zone} is not one of the record's time zones ({', '.join(self.zones)})",
+                )
 
     def facts(self, values: dict, where: str, suffix: str) -> None:
         """Check plain fact values. suffix is /value when the facts came from the full form."""
@@ -654,8 +845,14 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
         derived, where, suffix, values, facts_where = document, "/", "", document, ""
     checker.derived(derived, where)
     checker.schedule_zones(values, record_zones(derived), facts_where, suffix)
+    checker.zones = record_zones(derived)
+    checker.countries = derived.get("country_codes") or list(
+        filter(None, [derived.get("country_code")])
+    )
     checker.facts(values, facts_where, suffix)
     checker.facilities(document.get("facilities", {}), "/facilities")
+    if not full and record_type_of(document["id"]).code == "site":
+        checker.accessible_facilities(values, document.get("facilities", {}), "/facilities")
     status = document["status"]["value"] if full else document["status"]
     target = document.get("redirect_to")
     if target == document["id"]:
@@ -864,7 +1061,7 @@ def check_document(path: Path, context: Context) -> list[str]:
             f"or a translation at {I18N}/<language>/<list file>)"
         ]
     raw = load_json(path)
-    document = without_comment(raw)
+    document = load_document(path)
     schema_errors = list(context.validator(kind.schema).iter_errors(document))
     if schema_errors:
         return all_errors(schema_errors)
@@ -1058,10 +1255,11 @@ def check_facilities(context: Context) -> list[str]:
     values = "values.schema.json"
     per_code = context.definition(values, "Facilities")["properties"]
     site_facilities = context.definition("site.schema.json", "FacilityFacts")["properties"]
-    if site_facilities.keys() != per_code.keys():
-        difference = sorted(site_facilities.keys() ^ per_code.keys())
+    stored = per_code.keys() - context.vocab.stored_elsewhere
+    if site_facilities.keys() != stored:
+        difference = sorted(site_facilities.keys() ^ stored)
         problems.append(
-            f"site.schema.json FacilityFacts and {values} list different codes: {difference}"
+            f"site.schema.json FacilityFacts and {values} list different stored codes: {difference}"
         )
     marked = {code for code, fact in site_facilities.items() if fact.get(SAFETY_MARKER)}
     listed_safety = {
@@ -1088,13 +1286,17 @@ def check_facilities(context: Context) -> list[str]:
             )
     for code in per_code.keys() - context.vocab.facilities.keys():
         problems.append(f"{values} defines facility {code!r} that is not in facilities.json")
-    excluded = context.definition(values, "StoredFacilities")["not"]["anyOf"]
-    excluded_codes = {item["required"][0] for item in excluded}
-    if excluded_codes != context.vocab.stored_elsewhere:
-        problems.append(
-            f"StoredFacilities excludes {sorted(excluded_codes)} but facilities.json marks "
-            f"{sorted(context.vocab.stored_elsewhere)} as stored_as"
-        )
+    exclusions = {
+        f"{values} StoredFacilities": context.definition(values, "StoredFacilities"),
+        "site.schema.json FacilityFacts": context.definition("site.schema.json", "FacilityFacts"),
+    }
+    for name, definition in exclusions.items():
+        excluded_codes = {item["required"][0] for item in definition["not"]["anyOf"]}
+        if excluded_codes != context.vocab.stored_elsewhere:
+            problems.append(
+                f"{name} excludes {sorted(excluded_codes)} but facilities.json marks "
+                f"{sorted(context.vocab.stored_elsewhere)} as stored_as"
+            )
     return problems
 
 

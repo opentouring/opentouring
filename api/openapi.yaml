@@ -115,7 +115,7 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The record type registry, and the site types, facilities, structures, surfaces, vehicle access classes and vehicle classes records are described with.
+    description: The record type registry, and the site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species records are described with.
   - name: Seed sources
     description: The external open datasets OTWD imports, with their licences, credits and latest sync.
   - name: Bulk downloads
@@ -175,7 +175,7 @@ paths:
               $ref: "../schema/common.schema.json#/$defs/SiteTypeCode"
         - name: facility
           in: query
-          description: Facility codes that must all be available. Codes read from other facts (pets_allowed, dog_off_leash, big_rig_access) work here too.
+          description: Facility codes that must all be available. Codes read from other facts (pets_allowed, dog_off_leash, big_rig_access, accessible_facilities) work here too.
           style: form
           explode: false
           schema:
@@ -191,6 +191,76 @@ paths:
         - name: big_rig
           in: query
           description: When true, returns only sites whose big_rig_suitable is yes or limited.
+          schema:
+            type: boolean
+        - name: wheelchair
+          in: query
+          description: Wheelchair access values to include. With `wheelchair_feature`, each listed feature's access in the accessibility fact must be one of them. Without it, the site's overall value is compared, as accessible_facilities derives it - no when arrival is no or every recorded feature is no, yes when arrival is yes and every recorded feature is yes, and limited otherwise, including when arrival is not recorded.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              $ref: "../schema/values.schema.json#/$defs/WheelchairAccess"
+          example: [yes, limited]
+        - name: wheelchair_feature
+          in: query
+          description: Accessibility features that must all have one of the `wheelchair` values, for example toilets,showers. A site with no recorded access for a listed feature stays in unless `accessibility_known=true`.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 8
+            items:
+              $ref: "../schema/values.schema.json#/$defs/SiteAccessFeature"
+        - name: key_scheme
+          in: query
+          description: Key scheme codes. Returns sites whose accessible toilets open with one of them.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 10
+            items:
+              $ref: "../schema/common.schema.json#/$defs/KeySchemeCode"
+          example: [mlak]
+        - name: accessibility_known
+          in: query
+          description: When true, excludes records with no accessibility fact, and records with no recorded access for a feature the request filters on (`wheelchair_feature` here). The ferry service list applies the same rule with `wheelchair_boarding`.
+          schema:
+            type: boolean
+            default: false
+        - name: pets
+          in: query
+          description: Values of pets.allowed to include, for example yes,on_leash to leave out sites that take pets only by arrangement or not at all.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 4
+            items:
+              $ref: "../schema/values.schema.json#/$defs/PetAllowed"
+        - name: pet_species
+          in: query
+          description: Pet species codes that must all be allowed. A species is allowed when its rule in pets.species is anything but no, or, with no rule for it, when pets.allowed is. Use with `pets` to require yes or on_leash.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 10
+            items:
+              $ref: "../schema/common.schema.json#/$defs/PetSpeciesCode"
+          example: [dog]
+        - name: pets_known
+          in: query
+          description: When true, excludes sites with no recorded pet policy.
+          schema:
+            type: boolean
+            default: false
+        - name: has_bait_notice
+          in: query
+          description: When true, returns only sites with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the site's time zone. When false, only sites without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
           schema:
             type: boolean
         - $ref: "#/components/parameters/Status"
@@ -580,6 +650,28 @@ paths:
           description: When true, returns only segments with a recorded seasonal closure. When false, only segments without one.
           schema:
             type: boolean
+        - name: pet_transit
+          in: query
+          description: Pet transit values to include, for example yes,in_vehicle_only to leave out roads where pets are not allowed even in a vehicle.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [yes, in_vehicle_only, no]
+        - name: pet_transit_known
+          in: query
+          description: When true, excludes segments with no recorded pet transit rule.
+          schema:
+            type: boolean
+            default: false
+        - name: has_bait_notice
+          in: query
+          description: When true, returns only segments with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the segment's time zone, or in the notice's own time_zone when it has one. When false, only segments without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
+          schema:
+            type: boolean
         - $ref: "#/components/parameters/RigLengthM"
         - $ref: "#/components/parameters/RigWeightT"
         - $ref: "#/components/parameters/RigAxleLoadT"
@@ -710,6 +802,39 @@ paths:
             items:
               $ref: "../schema/common.schema.json#/$defs/VehicleClassCode"
           example: [car_towing]
+        - name: wheelchair_boarding
+          in: query
+          description: Wheelchair access values to include for boarding, from the accessibility fact, for example yes,limited.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              $ref: "../schema/values.schema.json#/$defs/WheelchairAccess"
+        - name: accessibility_known
+          in: query
+          description: When true, excludes records with no accessibility fact, and records with no recorded access for a feature the request filters on (boarding, with `wheelchair_boarding`). The site list applies the same rule with `wheelchair_feature`.
+          schema:
+            type: boolean
+            default: false
+        - name: pet_arrangement
+          in: query
+          description: Pet arrangements from pet_policy. Returns services that carry pets with at least one of them, for example in_vehicle,kennel.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 5
+            items:
+              type: string
+              enum: [in_vehicle, kennel, pet_friendly_cabin, on_deck_on_leash, in_carrier]
+        - name: pet_policy_known
+          in: query
+          description: When true, excludes services with no recorded pet policy.
+          schema:
+            type: boolean
+            default: false
         - $ref: "#/components/parameters/RigLengthM"
         - $ref: "#/components/parameters/RigHeightM"
         - $ref: "#/components/parameters/RigWidthM"
@@ -882,6 +1007,42 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
+  /v1/key-schemes:
+    get:
+      tags: [Governed lists]
+      operationId: listKeySchemes
+      summary: List key schemes
+      description: Returns the governed list of central key schemes that open accessible toilets, such as MLAK, with the countries each is used in and OSM centralkey mappings.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/pet-species:
+    get:
+      tags: [Governed lists]
+      operationId: listPetSpecies
+      summary: List pet species
+      description: Returns the governed list of pet species that pet policies name, with OSM mappings.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
   /v1/seed-sources:
     get:
       tags: [Seed sources]
@@ -905,7 +1066,7 @@ paths:
           description: Only seed sources with this status.
           schema:
             type: string
-            enum: [planned, active, retired]
+            enum: [candidate, active, blocked, retired]
         - $ref: "#/components/parameters/IfNoneMatch"
       responses:
         "200":
@@ -937,7 +1098,7 @@ paths:
       tags: [Seed sources]
       operationId: getSeedSource
       summary: Get a seed source
-      description: Returns one seed source by its ID, such as otwd:seed_source:au-vic-vicmap-transport.
+      description: Returns one seed source by its ID, such as otwd:seed_source:au-vic-road-line.
       parameters:
         - name: seed_source_id
           in: path

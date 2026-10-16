@@ -34,9 +34,7 @@
         "dataset_name",
         "publisher",
         "licence",
-        "licence_url",
         "attribution",
-        "changes",
         "dataset_url",
         "record_types",
         "status",
@@ -102,9 +100,9 @@
           }
         },
         "status": {
-          "description": "planned: listed, not yet imported. active: imported and synced. retired: no longer synced. Facts it supplied keep their provenance. Open: a reader treats a status it does not know as retired.",
+          "description": "candidate: the licence reads as compatible and the source is planned, nothing imported. active: imported and re-synced on its schedule. blocked: not imported until the question in its licence review is answered. retired: no longer imported, and facts it supplied keep their provenance. The same statuses as docs/seed-sources.md. Open: a reader treats a status it does not know as retired.",
           "$ref": "common.schema.json#/$defs/EnumCode",
-          "x-otwd-known-values": ["planned", "active", "retired"]
+          "x-otwd-known-values": ["candidate", "active", "blocked", "retired"]
         },
         "licence_review": {
           "description": "Whether a maintainer has confirmed, from the publisher's own record, the licence, the attribution it requires and that it is compatible with publishing under CC BY 4.0. An active source has a confirmed review.",
@@ -156,7 +154,26 @@
             }
           }
         }
-      }
+      },
+      "allOf": [
+        {
+          "description": "A source under a CC BY licence links the licence and states the changes OTWD makes, as AttributionEntry requires.",
+          "if": {
+            "properties": {
+              "licence": {
+                "pattern": "^CC-BY-"
+              }
+            }
+          },
+          "then": {
+            "required": ["licence_url", "changes"],
+            "properties": {
+              "licence_url": true,
+              "changes": true
+            }
+          }
+        }
+      ]
     }
   }
 }

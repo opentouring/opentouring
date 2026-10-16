@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Moderation policy change
+description: Propose a change to the published moderation policy.
+title: "Moderation policy: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The policy is docs/policies/moderation.md. Changes are made by pull request and approved by the steering group (the maintainer until it exists), as ADR 0040 sets out. Appeals about a single decision go through the appeal process, not this form.
+  - type: input
+    id: section
+    attributes:
+      label: Section
+      description: The section of the policy the change touches.
+      placeholder: Automatic approval
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What goes wrong under the current rule, with examples. Do not include contributors' identities.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed rule
+      description: The new or changed wording.
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome-change
+    attributes:
+      label: Does it change where a submission goes or what outcome it can get?
+      description: If yes, it is a major version of the policy.
+      options:
+        - "Yes"
+        - "No, it clarifies wording"
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: Effect on safety facts
+      description: Whether the change could let a wrong safety fact reach travellers, and how that is prevented.
+    validations:
+      required: true

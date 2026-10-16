@@ -115,6 +115,24 @@
             }
           }
         },
+        "accessibility": {
+          "description": "Access for people with disability on board. Not a safety fact, but a change that raises access to yes goes to a person all the same (the accessibility_raised fixed check), because a wrong yes can strand a traveller who relied on it.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FerryServiceAccessibility"
+            }
+          }
+        },
+        "pet_policy": {
+          "description": "Whether and how the ferry service carries pets. Not a safety fact: a wrong policy costs a traveller a detour or a wait, not their pet's life.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FerryPetPolicy"
+            }
+          }
+        },
         "seasonal_closure": {
           "description": "Safety fact.",
           "x-otwd-safety-fact": true,
@@ -174,6 +192,12 @@
         },
         "crossing": {
           "$ref": "values.schema.json#/$defs/Crossing"
+        },
+        "accessibility": {
+          "$ref": "values.schema.json#/$defs/FerryServiceAccessibility"
+        },
+        "pet_policy": {
+          "$ref": "values.schema.json#/$defs/FerryPetPolicy"
         },
         "seasonal_closure": {
           "$ref": "values.schema.json#/$defs/SeasonalClosure"

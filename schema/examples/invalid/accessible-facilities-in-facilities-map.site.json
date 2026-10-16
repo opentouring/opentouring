@@ -1,0 +1,25 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/caravan-park-nt.site.json",
+  "$patch": [
+    {
+      "op": "add",
+      "path": "/facilities/accessible_facilities",
+      "value": {
+        "value": {
+          "available": true,
+          "attributes": {
+            "wheelchair": "yes"
+          }
+        },
+        "provenance": {
+          "source_kind": "contributor",
+          "observed_on": "2026-07-02",
+          "recorded_at": "2026-07-04T00:15:00Z",
+          "confidence": 0.93,
+          "change_seq": 15120
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/vehicle-ferry-vic.ferry-service.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/facts/pet_policy/value/carried",
+      "value": "no"
+    }
+  ]
+}

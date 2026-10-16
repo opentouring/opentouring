@@ -10,7 +10,7 @@ Open Touring is an open, crowd-contributed database of places travellers stop at
 
 ## Decisions
 
-Before changing architecture, licensing, moderation or data handling, read the ADRs in `docs/adr/` that touch it. Work that contradicts an ADR needs a new ADR that supersedes it. `docs/architecture.md` describes how the components connect.
+Before changing architecture, licensing, moderation or data handling, read the ADRs in `docs/adr/` that touch it. Work that contradicts an ADR needs a new ADR that supersedes it. `docs/architecture.md` describes how the components connect. `docs/extending.md` lists, for each kind of change, the files to touch, the review, who approves and whether an ADR is needed. Moderation rules live in `docs/policies/moderation.md` and change only by the process it describes.
 
 ## Writing rules
 
@@ -34,7 +34,7 @@ Sign off every commit with `git commit -s` (DCO). No CLA. The git hooks (run `np
 
 ## Schema and vocabulary changes
 
-Site types, facilities, structures, surfaces, vehicle access classes and vehicle classes are governed lists. A new or changed value starts as a "Governed list:" issue in the format in `CONTRIBUTING.md`, with OSM and schema.org mappings, and lands in `schema/` and `CONTEXT.md` together.
+Site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species are governed lists. A new or changed value starts as a "Governed list:" issue in the format in `CONTRIBUTING.md`, with OSM and schema.org mappings, and lands in `schema/` and `CONTEXT.md` together.
 
 ## Agent skills
 

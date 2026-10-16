@@ -13,6 +13,9 @@ Open Touring is built as a working concept before a host is approached, so that 
 - [ ] Architecture overview (docs/architecture.md)
 - [ ] Licensing, governance, contributing, security and code of conduct documents
 - [ ] Draft data contributor terms for legal review
+- [ ] Moderation policy, privacy policy draft and takedown process (docs/policies/)
+- [ ] Extension guide, supported countries and seed source registry
+- [ ] Disaster recovery runbook, with the first quarterly restore test
 - [ ] JSON Schema v1 (schema/)
 - [ ] OpenAPI spec (api/)
 
@@ -54,6 +57,8 @@ One site end to end, on infrastructure as code.
 
 - [ ] Host agreement (MOU) signed and assets transferred
 - [ ] Contributor terms reviewed by a lawyer and put in force
+- [ ] Privacy policy and takedown process reviewed by a lawyer and put in force, with the AI model provider named
+- [ ] Moderation policy figures for automatic approval confirmed by the steering group
 - [ ] Steering group formed
 - [ ] Release the schema and API as `v1.0.0` (tag) before any outside partner app integrates ([ADR 0030](adr/0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md))
 - [ ] Outside contributions switched on in production

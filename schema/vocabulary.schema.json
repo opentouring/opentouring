@@ -3,7 +3,7 @@
   "$id": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD governed list",
-  "description": "The format of the governed lists (site-types.json, facilities.json, structures.json, surfaces.json, vehicle-access-classes.json and vehicle-classes.json) and of the API responses that serve them. Codes are stable: a code is never renamed or reused. A code that is no longer wanted is marked deprecated and keeps its meaning.",
+  "description": "The format of the governed lists (site-types.json, facilities.json, structures.json, surfaces.json, vehicle-access-classes.json, vehicle-classes.json, key-schemes.json and pet-species.json) and of the API responses that serve them. Codes are stable: a code is never renamed or reused. A code that is no longer wanted is marked deprecated and keeps its meaning.",
   "type": "object",
   "required": ["$schema", "list", "version", "language", "entries"],
   "properties": {
@@ -75,7 +75,7 @@
       "if": {
         "properties": {
           "list": {
-            "enum": ["surfaces", "vehicle_classes"]
+            "enum": ["surfaces", "vehicle_classes", "pet_species"]
           }
         }
       },
@@ -111,6 +111,24 @@
       "if": {
         "properties": {
           "list": {
+            "const": "key_schemes"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/KeySchemeEntry"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "list": {
             "const": "vehicle_access_classes"
           }
         }
@@ -136,7 +154,9 @@
         "structures",
         "surfaces",
         "vehicle_access_classes",
-        "vehicle_classes"
+        "vehicle_classes",
+        "key_schemes",
+        "pet_species"
       ]
     },
     "ListVersion": {
@@ -342,7 +362,7 @@
       "unevaluatedProperties": false
     },
     "PlainEntry": {
-      "description": "An entry in a list whose codes carry no attributes: surfaces and vehicle classes.",
+      "description": "An entry in a list whose codes carry no attributes: surfaces, vehicle classes and pet species.",
       "$ref": "#/$defs/Entry",
       "unevaluatedProperties": false
     },
@@ -361,6 +381,22 @@
         }
       },
       "required": ["passages"],
+      "unevaluatedProperties": false
+    },
+    "KeySchemeEntry": {
+      "description": "An entry in the key scheme list: a central key that opens accessible toilets and other facilities for people with disability. countries lists where the scheme is used, and a site's key scheme must be used in the site's country.",
+      "$ref": "#/$defs/Entry",
+      "properties": {
+        "countries": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/CountryCode"
+          }
+        }
+      },
+      "required": ["countries"],
       "unevaluatedProperties": false
     },
     "RankedEntry": {

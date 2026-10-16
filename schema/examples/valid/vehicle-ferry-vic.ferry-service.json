@@ -308,6 +308,65 @@
         "confidence": 0.85,
         "change_seq": 31003
       }
+    },
+    "accessibility": {
+      "value": {
+        "basis": {
+          "kind": "contributor_observation"
+        },
+        "wheelchair": {
+          "boarding": {
+            "access": "limited",
+            "notes": [
+              {
+                "text": "The ramp is steep at low tide. Crew help on request.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "seating": {
+            "access": "yes"
+          }
+        },
+        "step_free_access": false
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "change_seq": 31003
+      }
+    },
+    "pet_policy": {
+      "value": {
+        "carried": "yes",
+        "arrangements": [
+          {
+            "arrangement": "in_vehicle",
+            "booking_required": false
+          },
+          {
+            "arrangement": "on_deck_on_leash",
+            "species": ["dog"],
+            "notes": [
+              {
+                "text": "Dogs on a short leash on the open deck only.",
+                "lang": "en-AU"
+              }
+            ]
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "change_seq": 31003
+      }
     }
   }
 }

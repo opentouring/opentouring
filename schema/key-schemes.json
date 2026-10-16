@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "key_schemes",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "mlak",
+      "label": "MLAK",
+      "description": "Master Locksmiths Access Key: one key that opens accessible toilets, Changing Places and other facilities for people with disability in Australia. Sold to people who need it on proof of need.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "countries": ["AU"],
+      "osm": [{ "tags": ["centralkey=mlak"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "radar",
+      "label": "RADAR key",
+      "description": "The National Key Scheme key, known as the RADAR key, that opens accessible toilets in the United Kingdom.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "countries": ["GB"],
+      "osm": [
+        {
+          "tags": ["centralkey=nks"],
+          "match": "exact",
+          "note": "OSM names the scheme nks (National Key Scheme)."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "eurokey",
+      "label": "Eurokey",
+      "description": "The Eurokey (Euroschlüssel, Euroklíč in Czechia) that opens accessible toilets and other facilities for people with disability, in Germany, Austria, Switzerland and Czechia. Other European countries have some locks, but no source names them.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "countries": ["DE", "AT", "CH", "CZ"],
+      "osm": [{ "tags": ["centralkey=eurokey"], "match": "exact" }],
+      "schema_org": null
+    }
+  ]
+}

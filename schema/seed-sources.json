@@ -4,20 +4,88 @@
   "version": "1.0.0",
   "entries": [
     {
-      "id": "otwd:seed_source:au-vic-vicmap-transport",
-      "dataset_name": "Vicmap Transport",
+      "id": "otwd:seed_source:au-vic-recreation-sites",
+      "dataset_name": "Recreation Sites (State Forest)",
+      "publisher": "Department of Energy, Environment and Climate Action (Victoria)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Recreation Sites (State Forest) data, Department of Energy, Environment and Climate Action (Victoria)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://discover.data.vic.gov.au/dataset/recreation-sites",
+      "record_types": ["site"],
+      "subdivisions": ["AU-VIC"],
+      "status": "candidate",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-vic-recreation-assets",
+      "dataset_name": "Recreation Assets (State Forest)",
+      "publisher": "Department of Energy, Environment and Climate Action (Victoria)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Recreation Assets (State Forest) data, Department of Energy, Environment and Climate Action (Victoria)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://discover.data.vic.gov.au/dataset/recreation-assets",
+      "record_types": ["site"],
+      "subdivisions": ["AU-VIC"],
+      "status": "candidate",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-vic-features-of-interest",
+      "dataset_name": "Vicmap Features of Interest",
       "publisher": "Department of Transport and Planning (Victoria)",
       "licence": "CC-BY-4.0",
       "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-      "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria)",
+      "attribution": "Contains Vicmap Features of Interest data, Department of Transport and Planning (Victoria)",
       "changes": "Mapped to OTWD codes and combined with contributor reports.",
-      "dataset_url": "https://discover.data.vic.gov.au/api/3/action/package_show?id=vicmap-transport-road-line",
-      "record_types": ["road_restriction", "road_segment", "ferry_service"],
+      "dataset_url": "https://discover.data.vic.gov.au/dataset/vicmap-features-of-interest-rest-api",
+      "record_types": ["site"],
       "subdivisions": ["AU-VIC"],
-      "status": "planned",
+      "status": "candidate",
       "licence_review": {
         "status": "pending",
-        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-vic-road-infrastructure",
+      "dataset_name": "Vicmap Transport, Road Infrastructure Point",
+      "publisher": "Department of Transport and Planning (Victoria)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Vicmap Transport, Road Infrastructure Point data, Department of Transport and Planning (Victoria)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://discover.data.vic.gov.au/api/3/action/package_show?id=vicmap-transport-road-infrastructure-point",
+      "record_types": ["road_restriction"],
+      "subdivisions": ["AU-VIC"],
+      "status": "candidate",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-vic-road-line",
+      "dataset_name": "Vicmap Transport, Road Line",
+      "publisher": "Department of Transport and Planning (Victoria)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Vicmap Transport, Road Line data, Department of Transport and Planning (Victoria)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://discover.data.vic.gov.au/api/3/action/package_show?id=vicmap-transport-road-line",
+      "record_types": ["road_segment", "ferry_service"],
+      "subdivisions": ["AU-VIC"],
+      "status": "candidate",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
       }
     },
     {
@@ -31,14 +99,31 @@
       "dataset_url": "https://discover.data.vic.gov.au/api/3/action/package_show?id=road-bridges",
       "record_types": ["road_restriction"],
       "subdivisions": ["AU-VIC"],
-      "status": "planned",
+      "status": "candidate",
       "licence_review": {
         "status": "pending",
-        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
       }
     },
     {
-      "id": "otwd:seed_source:au-nsw-state-roads-vertical-clearances",
+      "id": "otwd:seed_source:au-vic-recreation-tracks",
+      "dataset_name": "Recreation Tracks",
+      "publisher": "Publisher to be confirmed from the catalogue record",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Recreation Tracks data (Victoria)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://discover.data.vic.gov.au/api/3/action/package_show?id=recreation-tracks",
+      "record_types": ["road_segment"],
+      "subdivisions": ["AU-VIC"],
+      "status": "candidate",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-nsw-vertical-clearances",
       "dataset_name": "NSW State Roads Vertical Clearances",
       "publisher": "Transport for NSW",
       "licence": "CC-BY-3.0-AU",
@@ -48,14 +133,14 @@
       "dataset_url": "https://data.gov.au/data/dataset/nsw-2-nsw-state-roads-vertical-clearances",
       "record_types": ["road_restriction"],
       "subdivisions": ["AU-NSW"],
-      "status": "planned",
+      "status": "candidate",
       "licence_review": {
         "status": "pending",
-        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
       }
     },
     {
-      "id": "otwd:seed_source:au-wa-mrwa-drive-under-structures",
+      "id": "otwd:seed_source:au-wa-drive-under-structures",
       "dataset_name": "Drive Under Structures",
       "publisher": "Main Roads Western Australia",
       "licence": "CC-BY-3.0-AU",
@@ -66,14 +151,14 @@
       "dataset_url": "https://data.gov.au/data/dataset/mrwa-drive-under-structures",
       "record_types": ["road_restriction"],
       "subdivisions": ["AU-WA"],
-      "status": "planned",
+      "status": "candidate",
       "licence_review": {
         "status": "pending",
-        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
       }
     },
     {
-      "id": "otwd:seed_source:au-tas-low-bridge-clearances",
+      "id": "otwd:seed_source:au-tas-low-bridges",
       "dataset_name": "Tasmanian Low Bridge Clearances",
       "publisher": "Department of State Growth (Tasmania)",
       "licence": "CC-BY-4.0",
@@ -83,10 +168,39 @@
       "dataset_url": "https://data.gov.au/data/dataset/tasmanian-low-bridge-clearances",
       "record_types": ["road_restriction"],
       "subdivisions": ["AU-TAS"],
-      "status": "planned",
+      "status": "candidate",
       "licence_review": {
         "status": "pending",
-        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+        "notes": "Licence from the research notes in docs/research. Copy the publisher's attribution word for word from its catalogue page before the first import (docs/seed-sources.md)."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-national-toilet-map",
+      "dataset_name": "National Public Toilet Map",
+      "publisher": "Department of Health, Disability and Ageing",
+      "licence": "LicenseRef-unconfirmed",
+      "attribution": "Contains National Public Toilet Map data",
+      "dataset_url": "https://data.gov.au/data/dataset/national-public-toilet-map",
+      "record_types": ["site"],
+      "status": "blocked",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Blocked: bespoke terms on the catalogue page conflict with its CC BY 3.0 AU licence field. Waiting on written confirmation from the Department."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-vic-structure-height",
+      "dataset_name": "VicRoads Structure Height Clearance",
+      "publisher": "Department of Transport and Planning (Victoria)",
+      "licence": "LicenseRef-unconfirmed",
+      "attribution": "Contains VicRoads Structure Height Clearance data, Department of Transport and Planning (Victoria)",
+      "dataset_url": "https://discover.data.vic.gov.au/dataset/structure-height-clearance",
+      "record_types": ["road_restriction"],
+      "subdivisions": ["AU-VIC"],
+      "status": "blocked",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Blocked: delisted, licence unconfirmed."
       }
     }
   ]

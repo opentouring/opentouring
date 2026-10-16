@@ -494,21 +494,6 @@
         "change_seq": 15120
       }
     },
-    "accessible_facilities": {
-      "value": {
-        "available": true,
-        "attributes": {
-          "features": ["toilet", "shower", "parking"]
-        }
-      },
-      "provenance": {
-        "source_kind": "contributor",
-        "observed_on": "2026-07-02",
-        "recorded_at": "2026-07-04T00:15:00Z",
-        "confidence": 0.93,
-        "change_seq": 15120
-      }
-    },
     "generators_allowed": {
       "value": {
         "available": false

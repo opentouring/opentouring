@@ -1,0 +1,12 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "seq": 19304,
+  "record_id": "otwd:road_segment:01M32FADW05SWY4J87AKN7XP34",
+  "kind": "facts_updated",
+  "origin": "submission",
+  "applied_at": "2026-08-30T02:02:44Z",
+  "previous_seq": 15120,
+  "changed_fields": ["/facts/bait_notices"],
+  "safety_fact_changed": false,
+  "decision_id": "otwd:decision:01KQVYJYFW1VCM2DCPSMF0RHQN"
+}

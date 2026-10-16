@@ -28,6 +28,7 @@ Test applied to each dataset: can OTWD redistribute it under CC BY 4.0? Usable m
 - Format: CSV (12.1 MB, 25,624 rows read), resource dated 2026-09-30. Published at the start of each month per https://toiletmap.gov.au/copyright.
 - Direct file: https://data.gov.au/data/dataset/553b3049-2b8b-46a2-95e6-640d7986a8c1/resource/34076296-6692-4e30-b627-67b7c4eb1027/download/toiletmapexport_261001_074429.csv
 - Fields (read from the CSV header): FacilityID, URL, Name, FacilityType, Address1, Town, State, AddressNote, Latitude, Longitude, Parking, ParkingAccessible, ParkingNote, KeyRequired, MLAK24, PaymentRequired, AccessNote, ChangingPlaces, BabyChange, DumpPoint, DPWashout, DPAfterHours, DumpPointNote, OpeningHours, OpeningHoursNote, Male, Female, Unisex, Ambulant, Accessible, ToiletNote, SharpsDisposal, DrinkingWater, SanitaryDisposal, Shower. No rig size limits. Fee is a boolean (PaymentRequired) with no amount.
+- Accessibility fields (Accessible, Ambulant, ChangingPlaces, MLAK24, KeyRequired, ParkingAccessible, AccessNote) are booleans except AccessNote. Their mapping to the accessibility fact is in `schema/README.md`.
 - Counts per state (my tally of the CSV):
 
 | State | Facilities                    | Dump point = True | Drinking water = True | Shower = True |
@@ -53,6 +54,7 @@ Test applied to each dataset: can OTWD redistribute it under CC BY 4.0? Usable m
 - Format: CSV (https://aueprod01ckanstg.blob.core.windows.net/public-catalogue/public/abdbf139-d8dc-41ab-b89a-8a54412d8695/nra.csv) and an ArcGIS FeatureServer. Resource dated 2026-09-27, refreshed quarterly per the item description.
 - Records: 5,036 (NSW 855, QLD 1,197, WA 1,650, VIC 651, NT 211, SA 391, TAS 81).
 - Fields: state, type, provider_type, name, road_name, locality, direction_of_travel, heavy_vehicle_area, paved, toilet, disabled_toilet, lighting, shelter, water, bin, table_or_chair, bbq, shade, power, latitude, longitude. The columns off_the_road and waste_water are empty in every row.
+- The disabled_toilet field says whether there is an accessible toilet, with no count. Its mapping to the accessibility fact, for use only if a licence is confirmed, is in `schema/README.md`.
 - Useful as a map of which state sources exist. The per-state input catalogue entries are https://catalogue.data.infrastructure.gov.au/dataset/rest-areas-state-maintained-qld (licence CC BY 3.0 AU), -vic (CC BY 4.0), -nt (licence not specified), -nsw, -sa (CC BY 4.0), -tas (CC BY 3.0 AU) and -wa. The NSW and WA entries show "Creative Commons Attribution 4.1", which is not a real CC version, so treat those two as unclear and use the state portals.
 
 ### Other national or cross-state sources checked

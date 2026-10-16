@@ -1,0 +1,13 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/vehicle-ferry-vic.ferry-service.json",
+  "$patch": [
+    {
+      "op": "add",
+      "path": "/facts/accessibility/value/wheelchair/pitches",
+      "value": {
+        "access": "yes"
+      }
+    }
+  ]
+}

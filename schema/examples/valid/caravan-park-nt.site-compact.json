@@ -143,12 +143,113 @@
   },
   "pets": {
     "allowed": "by_arrangement",
+    "species": [
+      {
+        "species": "dog",
+        "allowed": "by_arrangement",
+        "max_number": 2
+      },
+      {
+        "species": "cat",
+        "allowed": "no"
+      }
+    ],
+    "conditions": {
+      "max_pets": 2,
+      "size_or_breed_restrictions": [
+        {
+          "text": "Small dogs under 10 kg only.",
+          "lang": "en-AU"
+        }
+      ],
+      "fee": {
+        "amount": 5,
+        "currency": "AUD",
+        "period": "night"
+      },
+      "areas": ["designated_pitches"],
+      "not_allowed_periods": [
+        {
+          "from": "12-15",
+          "to": "01-31",
+          "notes": [
+            {
+              "text": "Summer school holidays.",
+              "lang": "en-AU"
+            }
+          ]
+        }
+      ]
+    },
     "notes": [
       {
         "text": "Small dogs on powered sites only, outside school holidays.",
         "lang": "en-AU"
       }
     ]
+  },
+  "accessibility": {
+    "basis": {
+      "kind": "assessed_to_standard",
+      "standard": "AS 1428.1-2021",
+      "assessed_on": "2026-05-12"
+    },
+    "wheelchair": {
+      "arrival": {
+        "access": "yes"
+      },
+      "toilets": {
+        "access": "yes"
+      },
+      "showers": {
+        "access": "yes"
+      },
+      "parking": {
+        "access": "yes"
+      },
+      "paths": {
+        "access": "limited",
+        "notes": [
+          {
+            "text": "Compacted gravel between the powered sites. Sealed path from reception to the amenities block.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "pitches": {
+        "access": "limited"
+      },
+      "cabins": {
+        "access": "yes",
+        "notes": [
+          {
+            "text": "One accessible cabin with a roll-in shower.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "camp_kitchen": {
+        "access": "yes"
+      }
+    },
+    "toilets": {
+      "accessible_count": 2,
+      "ambulant_count": 2,
+      "changing_places": false,
+      "key_required": false
+    },
+    "accessible_parking_spaces": 2,
+    "step_free_access": true,
+    "paths": {
+      "path_surface": "mixed",
+      "gradient_notes": [
+        {
+          "text": "Gentle slope down to the river sites.",
+          "lang": "en-AU"
+        }
+      ]
+    },
+    "hearing_loop": true
   },
   "rig_limits": {
     "max_length_m": 22,
@@ -249,7 +350,8 @@
     "accessible_facilities": {
       "available": true,
       "attributes": {
-        "features": ["toilet", "shower", "parking"]
+        "wheelchair": "limited",
+        "features": ["arrival", "toilets", "showers", "parking", "cabins", "camp_kitchen"]
       }
     },
     "generators_allowed": {

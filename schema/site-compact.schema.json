@@ -3,7 +3,7 @@
   "$id": "https://schema.opentouring.org/otwd/v1/site-compact.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD site, compact form",
-  "description": "A site with plain values and no per-fact provenance: the default form served by the API (view=compact) and the column layout of GeoParquet bulk downloads. It is derived from the full form (site.schema.json) by replacing each fact with its value. The attribution list carries every credit the facts require, so a partner app that shows this form can still meet the CC BY 4.0 attribution terms. Facilities pets_allowed, dog_off_leash and big_rig_access are filled in from the pets and rig_limits facts.",
+  "description": "A site with plain values and no per-fact provenance: the default form served by the API (view=compact) and the column layout of GeoParquet bulk downloads. It is derived from the full form (site.schema.json) by replacing each fact with its value. The attribution list carries every credit the facts require, so a partner app that shows this form can still meet the CC BY 4.0 attribution terms. Facilities pets_allowed, dog_off_leash, big_rig_access and accessible_facilities are filled in from the pets, rig_limits and accessibility facts.",
   "type": "object",
   "allOf": [
     {
