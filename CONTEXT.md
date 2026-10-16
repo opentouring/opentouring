@@ -42,6 +42,10 @@ _Avoid_: entity type, layer, collection
 Any place a traveller stops at that OTWD records, such as a campsite, caravan park, rest area, dump point, ferry terminal or attraction. A point record.
 _Avoid_: POI, place, listing, location
 
+**Pitch**:
+An individual camping spot within a site, for one rig or one tent, powered or unpowered.
+_Avoid_: site, campsite, bay, lot (for one camping spot)
+
 **Location**:
 The latitude and longitude of a site or road restriction, and nothing more.
 _Avoid_: address, site (when only the coordinates are meant)
@@ -83,7 +87,7 @@ A fact that restricts which vehicles can use a site, such as maximum length, hei
 _Avoid_: vehicle restriction, size limit
 
 **Accessibility**:
-Access for people with disability at a site or on a ferry service: wheelchair access per feature (yes, limited or no), accessible and ambulant toilets, Changing Places, the key scheme, accessible parking, step-free access, paths and hearing loops, with its accessibility basis. Not a safety fact, but moderators treat a yes with care, because a wrong yes can strand a traveller.
+Access for people with disability at a site or on a ferry service: wheelchair access per feature (yes, limited or no), accessible and ambulant toilets, Changing Places, the key scheme, accessible parking, step-free access, paths and hearing loops, with its accessibility basis. Not a safety fact, but a change that raises access to yes goes to a person, because a wrong yes can strand a traveller.
 _Avoid_: disability access, wheelchair friendly, accessible (as a yes or no flag)
 
 **Accessibility basis**:
@@ -91,7 +95,7 @@ What an accessibility fact rests on: an assessment against a named access standa
 _Avoid_: certification, accessibility rating
 
 **Key scheme**:
-A central key that opens accessible toilets and other facilities for people with disability, from a governed list with the countries each is used in, such as MLAK in Australia and New Zealand.
+A central key that opens accessible toilets and other facilities for people with disability, from a governed list with the countries each is used in, such as MLAK in Australia.
 _Avoid_: disability key, access key (on its own)
 
 **Pet policy**:

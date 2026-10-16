@@ -54,6 +54,7 @@ Test applied to each dataset: can OTWD redistribute it under CC BY 4.0? Usable m
 - Format: CSV (https://aueprod01ckanstg.blob.core.windows.net/public-catalogue/public/abdbf139-d8dc-41ab-b89a-8a54412d8695/nra.csv) and an ArcGIS FeatureServer. Resource dated 2026-09-27, refreshed quarterly per the item description.
 - Records: 5,036 (NSW 855, QLD 1,197, WA 1,650, VIC 651, NT 211, SA 391, TAS 81).
 - Fields: state, type, provider_type, name, road_name, locality, direction_of_travel, heavy_vehicle_area, paved, toilet, disabled_toilet, lighting, shelter, water, bin, table_or_chair, bbq, shade, power, latitude, longitude. The columns off_the_road and waste_water are empty in every row.
+- The disabled_toilet field says whether there is an accessible toilet, with no count. Its mapping to the accessibility fact, for use only if a licence is confirmed, is in `schema/README.md`.
 - Useful as a map of which state sources exist. The per-state input catalogue entries are https://catalogue.data.infrastructure.gov.au/dataset/rest-areas-state-maintained-qld (licence CC BY 3.0 AU), -vic (CC BY 4.0), -nt (licence not specified), -nsw, -sa (CC BY 4.0), -tas (CC BY 3.0 AU) and -wa. The NSW and WA entries show "Creative Commons Attribution 4.1", which is not a real CC version, so treat those two as unclear and use the state portals.
 
 ### Other national or cross-state sources checked
