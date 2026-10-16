@@ -339,6 +339,17 @@
         "match": "broader",
         "note": "Hospital is a subtype of EmergencyService. schema.org has no property for an emergency department."
       }
+    },
+    {
+      "code": "ferry_terminal",
+      "label": "Ferry terminal",
+      "description": "A place where a vehicle or passenger ferry loads and unloads, from a small river crossing to a port terminal. The crossings between terminals are ferry services, which record the vehicle classes carried, vehicle limits and fares.",
+      "group": "transport",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "safety_fact": false,
+      "osm": [{ "tags": ["amenity=ferry_terminal"], "match": "exact" }],
+      "schema_org": { "type": "BoatTerminal", "match": "exact" }
     }
   ]
 }

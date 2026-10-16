@@ -55,4 +55,5 @@ One site end to end, on infrastructure as code.
 - [ ] Host agreement (MOU) signed and assets transferred
 - [ ] Contributor terms reviewed by a lawyer and put in force
 - [ ] Steering group formed
+- [ ] Release the schema and API as `v1.0.0` (tag) before any outside partner app integrates ([ADR 0030](adr/0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md))
 - [ ] Outside contributions switched on in production

@@ -2,7 +2,7 @@
 
 # Open Touring
 
-Open Touring is an open, crowd-contributed database of the places travellers stop at on the road: campsites, caravan parks, free camps, rest areas, dump points, drinking water, toilets, showers, laundries, information centres, attractions and more. The data is free to use under CC BY 4.0. Partner apps read it through an API and send their contributors' new sites and corrections back through moderation, so every app that uses the data can help keep it current.
+Open Touring is an open, crowd-contributed database of the places travellers stop at on the road: campsites, caravan parks, free camps, rest areas, dump points, drinking water, toilets, showers, laundries, information centres, ferry terminals, attractions and more. It also records what stands between a traveller and those places: low bridges and other road restrictions, roads and tracks by surface and vehicle access, and vehicle ferries. The data is free to use under CC BY 4.0. Partner apps read it through an API and send their contributors' new sites and corrections back through moderation, so every app that uses the data can help keep it current.
 
 OTWD, the Open Touring and Waypoint Database, is the technical name for the dataset, the API and the SDKs. Australia comes first, and the schema works for any country.
 
@@ -14,15 +14,15 @@ The Preview runs the production stack at minimum size with seeded government dat
 
 ## What OTWD offers
 
-Each site is a point (latitude and longitude) with its site types, facilities, prices, opening hours, rig limits, photos and a short description. Every fact records where it came from and when. Site IDs never change.
+Each site is a point (latitude and longitude) with its site types, facilities, prices, opening hours, rig limits, photos and a short description. Road restrictions are points too, with their structure and their vertical clearance, width, weight and length limits. Road segments are lines with their surface, vehicle access class (2WD to 4WD only), whether towing is permitted and seasonal closures. Ferry services are lines between two ferry terminals with the vehicle classes they carry, vehicle limits, fares and hours. Every fact records where it came from and when. Public IDs never change.
 
-Partner apps can query sites through the API, download the whole dataset as GeoParquet or GeoJSON, and submit new sites and corrections on behalf of their contributors, the people using the app who choose to send them. Every use needs an API key. The free tier covers reading and bulk downloads, and contributing is always free. Paid tiers add volume, a service level, change feeds and their webhooks, delta files and support. OTWD provides points only: apps draw them on their own maps.
+Partner apps can query records through the API, by area or along a route, download the whole dataset as GeoParquet or GeoJSON, and submit new records and corrections on behalf of their contributors, the people using the app who choose to send them. Every use needs an API key. The free tier covers reading and bulk downloads, and contributing is always free. Paid tiers add volume, a service level, change feeds and their webhooks, delta files and support. OTWD provides no map tiles: apps draw its points and lines on their own maps.
 
 ## Licences
 
 | What                                                     | Licence       |
 | -------------------------------------------------------- | ------------- |
-| Data (sites, facts, photos, descriptions)                | CC BY 4.0     |
+| Data (records, facts, photos, descriptions)              | CC BY 4.0     |
 | Server code: `services/`, `pipelines/`, `web/`, `infra/` | AGPL-3.0-only |
 | `schema/`, `api/`, `sdks/` and sample clients            | Apache-2.0    |
 

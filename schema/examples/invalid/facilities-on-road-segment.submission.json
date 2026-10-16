@@ -1,0 +1,36 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "update_facts",
+  "record_id": "otwd:road_segment:01M32FADW05SWY4J87AKN7XP34",
+  "base_change_seq": 30702,
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "fo-7Qm2xK9pLr4T"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-12T14:45:00+11:00",
+  "observed_on": "2026-10-11",
+  "proposed": {
+    "facts": {
+      "surface": {
+        "code": "dirt",
+        "condition": "very_poor",
+        "notes": [
+          {
+            "text": "A washout 2 km past the gate has left a deep gutter across the track.",
+            "lang": "en-AU"
+          }
+        ]
+      }
+    },
+    "facilities": {
+      "toilets": {
+        "available": true
+      }
+    }
+  }
+}

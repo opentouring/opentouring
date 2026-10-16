@@ -31,6 +31,7 @@ A site type maps to a schema.org type. The Open Touring website marks up each si
 | `lpg_refill_swap`        | none                       |         |                                                                                                                       |
 | `mechanic`               | `AutoRepair`               | exact   |                                                                                                                       |
 | `hospital_emergency`     | `Hospital`                 | broader | Hospital is a subtype of EmergencyService. schema.org has no property for an emergency department.                    |
+| `ferry_terminal`         | `BoatTerminal`             | exact   |                                                                                                                       |
 
 ## Facilities
 
@@ -110,3 +111,7 @@ A caravan park page carries markup like this:
   ]
 }
 ```
+
+## Record types
+
+Road restrictions and road segments have no schema.org equivalent and are left out of structured data. A ferry service maps to `BoatTrip` (related: a BoatTrip is one sailing, and a ferry service is the crossing it runs on), with `departureBoatTerminal` and `arrivalBoatTerminal` naming the two ferry terminals. Three vehicle classes map to schema.org types: `car` to `Car` (broader), `motorcycle` to `Motorcycle` and `bus` to `BusOrCoach`. Structures, surfaces and vehicle access classes have no schema.org equivalent.

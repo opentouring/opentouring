@@ -1,0 +1,27 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+  "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+  "outcome": "approved",
+  "decided_by": {
+    "kind": "routing_rule",
+    "rule_id": "auto_approve.operator_website_match",
+    "rule_version": "1"
+  },
+  "decided_at": "2026-05-16T01:22:09Z",
+  "routing": {
+    "route": "auto_approval",
+    "policy_version": "routing-1.0",
+    "submission_kind": "update_facts",
+    "record_type": "ferry_service",
+    "fields": ["/facts/accepted_vehicle_classes"],
+    "always_human": false
+  },
+  "verdict_ids": ["otwd:verdict:01KKS1RPGCFYJK8VCTP4V7BMX8"],
+  "reasons": [
+    {
+      "code": "matches_operator_website"
+    }
+  ],
+  "change_seqs": [10412]
+}

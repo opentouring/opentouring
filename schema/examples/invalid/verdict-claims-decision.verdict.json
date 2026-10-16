@@ -7,7 +7,7 @@
   "confidence": 0.71,
   "reasons": [
     {
-      "code": "name_matches_nearby_site",
+      "code": "name_matches_nearby_record",
       "text": "A free camp with a similar name lies 140 m away.",
       "fields": ["/facts/names", "/facts/location"]
     },
@@ -18,7 +18,7 @@
   ],
   "evidence": [
     {
-      "kind": "site",
+      "kind": "record",
       "ref": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ"
     },
     {
@@ -29,7 +29,7 @@
   ],
   "duplicate_candidates": [
     {
-      "site_id": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
+      "record_id": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
       "distance_m": 140,
       "name_similarity": 0.68
     }

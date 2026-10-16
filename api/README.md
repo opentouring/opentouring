@@ -12,19 +12,40 @@ npx @redocly/cli lint api/openapi.yaml
 
 Redocly resolves the relative references into `../schema/`. To produce a single self-contained file for tools that cannot follow them, run `npx @redocly/cli bundle api/openapi.yaml -o openapi.bundled.yaml`.
 
+## Record types
+
+The API serves four record types with the same conventions: sites (`/v1/sites`), road restrictions (`/v1/road-restrictions`), road segments (`/v1/road-segments`) and ferry services (`/v1/ferry-services`). Each has a list endpoint and a get endpoint by public ID, the compact and full views, ETags, 301 redirects for merged records, closures, photos, bulk downloads, change feed coverage and submissions, and the sections below describe them for every record type. Sites and road restrictions are points, and road segments and ferry services are lines. OTWD serves no map tiles.
+
+## Finding records along a route
+
+The road restriction, road segment and ferry service lists take `route`, the route's geometry encoded in Google's Encoded Polyline Algorithm Format (precision 5), and `corridor_m`, the corridor either side of it to search (30 m by default, 5,000 m at most). Results are ordered by how far along the route they are first met, and `route_positions_km` gives that distance for each record. Simplify a route to about 50 m tolerance before encoding it, and split a route that is too long for one query string into legs. OTWD never stores a route. `bbox` and `near` work as they do for sites.
+
+## Rig filters
+
+`rig_length_m`, `rig_height_m`, `rig_width_m`, `rig_weight_t` and `rig_axle_load_t` describe the rig the same way on every list endpoint, and each is compared with the record type's matching limit. A vertical clearance or width limit is compared using `lowest_m`, the lowest figure of any basis, so a measured figure below the sign counts.
+
+| Endpoint                             | Question it answers               | A recorded limit below the rig | No recorded limit                                                |
+| ------------------------------------ | --------------------------------- | ------------------------------ | ---------------------------------------------------------------- |
+| Sites, road segments, ferry services | Which of these can my rig use?    | Left out                       | Kept, unless `rig_limits_known=true`                             |
+| Road restrictions                    | Which of these would stop my rig? | Returned                       | Not returned, so an empty result is not proof the route is clear |
+
+Road restrictions answer the opposite question because they are the obstacles themselves. Other filters follow one pattern: a filter on a fact keeps records where the fact is unknown, and the matching `_known` parameter (`rig_limits_known`, `vehicle_access_class_known`, `towing_permitted_known`) leaves them out. On road segments, `vehicle_access_class` keeps segments a vehicle of that class can use, `towing_permitted` keeps segments with one of the listed values and `has_seasonal_closure` keeps segments with or without a seasonal closure. On ferry services, `vehicle_class` keeps services that carry every listed class.
+
 ## Authentication
 
 Every request carries an API key in the `OTWD-API-Key` header, including bulk downloads and the governed lists. Keys are free from the developer portal. The key identifies the partner app, so submissions do not repeat it, and it sets the tier: the change feed, the `changeApplied` webhook and delta files need a paid tier, and a free key gets 403 with problem type `tier-required`. Submitting is free on every tier, and so is the `submissionDecided` webhook that reports the outcome of your own submissions. During the Preview, keys outside the maintainers' own get 403 with problem type `contributions-closed` on the submission endpoints.
 
 ## Versioning
 
-The major version is in the path (`/v1`). Within v1, changes are additive only: new endpoints, new optional query parameters, new optional response fields, and new site type and facility codes. Clients must ignore response fields and codes they do not recognise. A breaking change ships as `/v2` with schema version 2, and `/v1` keeps running alongside it for at least 12 months after `/v2` is released. Each response body that is a site carries its `schema_version`.
+Until version 1.0.0 is released, the schema and the API are a draft. Release means a `v1.0.0` tag on this repository, made before any partner app outside the project integrates ([ADR 0030](../docs/adr/0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md)). Before that tag, any field, code or endpoint can change or be removed without a new major version, and documents carry `schema_version` `1.0`. From the tag on, the rules below apply.
 
-## Compact and full sites
+The major version is in the path (`/v1`). Within v1, changes are additive only: new endpoints, new optional query parameters, new optional response fields, and new governed list codes. Clients must ignore response fields and codes they do not recognise. A breaking change ships as `/v2` with schema version 2, and `/v1` keeps running alongside it for at least 12 months after `/v2` is released. Each response body that is a record carries its `schema_version`.
 
-Site endpoints return the compact form (`view=compact`, the default): plain values plus an `attribution` list, `min_confidence` and `safety_facts_observed_on`. Add `view=full` to get every fact with its provenance. `../schema/README.md` explains the two forms.
+## Compact and full forms
 
-`GET /v1/sites` also answers `Accept: application/geo+json` with a GeoJSON FeatureCollection of compact sites, ready for a map layer.
+Record endpoints return the compact form (`view=compact`, the default): plain values plus an `attribution` list, `min_confidence` and `safety_facts_observed_on`. Add `view=full` to get every fact with its provenance. `../schema/README.md` explains the two forms.
+
+Every list endpoint also answers `Accept: application/geo+json` with a GeoJSON FeatureCollection of compact records, ready for a map layer: Point features for sites and road restrictions, LineString or MultiLineString features for road segments and ferry services.
 
 ## Pagination
 
@@ -34,11 +55,11 @@ The change feed pages by sequence number instead of a cursor, because the sequen
 
 ## Caching and ETags
 
-Site, governed list and download list responses carry `Cache-Control` and an `ETag`. A site's ETag changes exactly when its `change_seq` changes. Send the ETag back in `If-None-Match` and the API answers 304 with no body when nothing changed. Responses may be served by the CDN, stale for a short while during revalidation (`stale-while-revalidate`), and change events purge them.
+Record, governed list and download list responses carry `Cache-Control` and an `ETag`. A record's ETag changes exactly when its `change_seq` changes. Send the ETag back in `If-None-Match` and the API answers 304 with no body when nothing changed. Responses may be served by the CDN, stale for a short while during revalidation (`stale-while-revalidate`), and change events purge them.
 
-## Merged sites
+## Merged records
 
-`GET /v1/sites/{site_id}` for a merged site answers 301 with `Location` set to the surviving site and the same query string, plus a small JSON body naming `redirect_to`. Update the ID you store when you follow it. The change feed also announces every merge as a `site_merged` change with `merged_into`.
+The get endpoint of every record type answers 301 for a merged record, with `Location` set to the surviving record and the same query string, plus a small JSON body naming `redirect_to`. Update the ID you store when you follow it. The change feed also announces every merge as a `record_merged` change with `merged_into`.
 
 ## Submissions
 
@@ -46,7 +67,9 @@ Site, governed list and download list responses carry `Cache-Control` and an `ET
 
 Before submitting for a contributor, a partner app must have their acceptance of the contributor terms and send it in `consent`. Identify the contributor with a stable pseudonymous ID that means nothing outside your app (`contributor.kind` pseudonymous), or with their OTWD contributor ID if they signed in to Open Touring (`contributor.kind` direct). Never send names or email addresses: the schema rejects an `@` in a pseudonymous ID.
 
-Photos are uploaded first. `POST /v1/photo-uploads` returns a short-lived upload URL and an `upload_id`. Upload the file, then send an `add_photo` submission naming the `upload_id`.
+Each record type has its own creation kind: `new_site`, `new_road_restriction`, `new_road_segment` and `new_ferry_service`. The kinds that change an existing record (`update_facts`, `add_photo`, `report_closure`, `request_merge`, `report_problem`) name it in `record_id`, and the facts allowed depend on its record type, which the ID's kind segment gives. New records of every type, closures, merges and changes to safety facts always go to a moderator.
+
+Photos are uploaded first, and a photo can be of any record, such as a site or the clearance sign at a road restriction. `POST /v1/photo-uploads` returns a short-lived upload URL on the API host and an `upload_id`. PUT the file to that URL: the API checks its size, type and SHA-256 and strips EXIF location data before it writes the file to storage, and the URL is never a presigned storage URL. Then send an `add_photo` submission naming the `upload_id`.
 
 ### Idempotency keys
 
@@ -54,19 +77,19 @@ Photos are uploaded first. `POST /v1/photo-uploads` returns a short-lived upload
 
 ### Conflicts and base_change_seq
 
-Every site has a `change_seq`: the sequence number of the latest change applied to it, and every fact records the `change_seq` that last set it. Submissions that edit a site (`update_facts`, `report_closure`, `request_merge`) must send `base_change_seq`, the site's `change_seq` as the contributor saw it.
+Every record has a `change_seq`: the sequence number of the latest change applied to it, and every fact records the `change_seq` that last set it. Submissions that edit a record (`update_facts`, `report_closure`, `request_merge`) must send `base_change_seq`, the record's `change_seq` as the contributor saw it.
 
-The check is per fact. When every fact the submission touches is unchanged since `base_change_seq`, it is accepted even if other facts on the site changed in the meantime. When a touched fact did change, the API answers 409 with `current_change_seq` and `conflicting_fields` (JSON Pointers such as `/facts/prices`). Fetch the site again, show the contributor the newer values, and submit again with the new `base_change_seq` if they still want the change. This keeps two contributors from overwriting each other without either of them seeing the other's report.
+The check is per fact. When every fact the submission touches is unchanged since `base_change_seq`, it is accepted even if other facts on the record changed in the meantime. When a touched fact did change, the API answers 409 with `current_change_seq` and `conflicting_fields` (JSON Pointers such as `/facts/prices`). Fetch the record again, show the contributor the newer values, and submit again with the new `base_change_seq` if they still want the change. This keeps two contributors from overwriting each other without either of them seeing the other's report.
 
 ## Change feed and webhooks
 
-`GET /v1/changes` lists changes in sequence order after `after_seq`. Sequence numbers are global and only increase, but they may have gaps, so never count on seq + 1. Each change gives the site's `previous_seq`: when it differs from the `change_seq` you hold for that site, you missed a change and should fetch the site again. When `after_seq` is older than the retained feed the response is 410, and you should restart from the latest full bulk download, whose `to_seq` tells you where to resume.
+`GET /v1/changes` lists changes to every record type in sequence order after `after_seq`. Each change names its record in `record_id`. Filter with `record_id` or `record_type`. Sequence numbers are global and only increase, but they may have gaps, so never count on seq + 1. Each change gives the record's `previous_seq`: when it differs from the `change_seq` you hold for that record, you missed a change and should fetch the record again. When `after_seq` is older than the retained feed the response is 410, and you should restart from the latest full bulk download, whose `to_seq` tells you where to resume.
 
 Any key can register a webhook endpoint in the developer portal for `submissionDecided`, which is free on every tier because it belongs to the contribute path. `changeApplied` needs a paid tier, like the change feed it mirrors. Deliveries follow the Standard Webhooks scheme: headers `webhook-id`, `webhook-timestamp` and `webhook-signature`, an HMAC-SHA256 signature over the ID, timestamp and raw body, at-least-once delivery with retries for 3 days, and the same `webhook-id` on every retry so you can deduplicate. Verify the signature and reject timestamps more than 5 minutes old. The change feed stays the source of truth for anything a webhook missed.
 
 ## Bulk downloads
 
-`GET /v1/downloads` lists the files available to the key: full downloads (GeoParquet in the compact form, GeoJSON and GeoJSON Text Sequences in the full form) and, on paid tiers, delta files covering the changes between `from_seq` and `to_seq`. URLs are signed for the key and expire, and every file has a `sha256` to verify. Load the latest full download, then follow the change feed or apply delta files from its `to_seq`.
+`GET /v1/downloads` lists the files available to the key, one record type per file (filter with `record_type`): full downloads (GeoParquet in the compact form, GeoJSON and GeoJSON Text Sequences in the full form) and, on paid tiers, delta files covering the changes between `from_seq` and `to_seq`. URLs are signed for the key and expire, and every file has a `sha256` to verify. Load the latest full download, then follow the change feed or apply delta files from its `to_seq`.
 
 ## Rate limits
 
@@ -78,4 +101,4 @@ Errors use RFC 9457 problem details with content type `application/problem+json`
 
 ## Attribution and licences
 
-OTWD data is CC BY 4.0. Show "Data: Open Touring contributors, opentouring.org, CC BY 4.0" wherever OTWD data appears, plus every credit in a site's `attribution` list and each photo's own `attribution`. The spec itself and the JSON Schema are Apache-2.0.
+OTWD data is CC BY 4.0. Show "Data: Open Touring contributors, opentouring.org, CC BY 4.0" wherever OTWD data appears, plus every credit in a record's `attribution` list and each photo's own `attribution`. The spec itself and the JSON Schema are Apache-2.0.

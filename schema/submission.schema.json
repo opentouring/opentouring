@@ -3,15 +3,20 @@
   "$id": "https://schema.opentouring.org/otwd/v1/submission.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD submission",
-  "description": "A proposed change sent by a contributor, as a partner app or the Open Touring website posts it to POST /v1/submissions. A submission never changes live data directly. It enters the submission log, passes fixed checks, AI review and routing, and becomes a change only after an approving moderation decision. Contributors are identified by an OTWD contributor ID or a partner app's pseudonymous ID, never by name or email.",
+  "description": "A proposed change to a record (a site, road restriction, road segment or ferry service) sent by a contributor, as a partner app or the Open Touring website posts it to POST /v1/submissions. Each record type has its own kind for creating a record. The kinds that change an existing record work for every record type and name it in record_id, whose kind segment gives the record type. A submission never changes live data directly. It enters the submission log, passes fixed checks, AI review and routing, and becomes a change only after an approving moderation decision. Contributors are identified by an OTWD contributor ID or a partner app's pseudonymous ID, never by name or email.",
   "type": "object",
   "required": ["schema_version", "kind", "contributor_submitted_at", "consent", "proposed"],
   "properties": {
-    "schema_version": { "$ref": "common.schema.json#/$defs/SchemaVersion" },
+    "schema_version": {
+      "$ref": "common.schema.json#/$defs/SchemaVersion"
+    },
     "kind": {
       "type": "string",
       "enum": [
         "new_site",
+        "new_road_restriction",
+        "new_road_segment",
+        "new_ferry_service",
         "update_facts",
         "add_photo",
         "report_closure",
@@ -19,21 +24,27 @@
         "report_problem"
       ]
     },
-    "site_id": {
-      "description": "The site the submission is about. Required for every kind except new_site, where it must be absent.",
-      "$ref": "common.schema.json#/$defs/SiteId"
+    "record_id": {
+      "description": "The record the submission is about, of any record type. Every kind that changes an existing record names it here. Absent for the kinds that create a record.",
+      "$ref": "common.schema.json#/$defs/RecordId"
     },
     "base_change_seq": {
-      "description": "The site's change_seq as the contributor last saw it. OTWD compares it with the change_seq of every fact the submission touches and rejects the submission with 409 when one of them changed since. Required for update_facts, report_closure and request_merge.",
+      "description": "The record's change_seq as the contributor last saw it. OTWD compares it with the change_seq of every fact the submission touches and rejects the submission with 409 when one of them changed since. Required for update_facts, report_closure and request_merge.",
       "$ref": "common.schema.json#/$defs/ChangeSeq"
     },
-    "contributor": { "$ref": "#/$defs/ContributorClaim" },
-    "seed_record": { "$ref": "#/$defs/SeedRecord" },
+    "contributor": {
+      "$ref": "#/$defs/ContributorClaim"
+    },
+    "seed_record": {
+      "$ref": "#/$defs/SeedRecord"
+    },
     "partner_app_id": {
       "description": "The partner app sending the submission. Optional, because OTWD takes it from the API key. When present it must match the key.",
       "$ref": "common.schema.json#/$defs/PartnerAppId"
     },
-    "consent": { "$ref": "#/$defs/Consent" },
+    "consent": {
+      "$ref": "#/$defs/Consent"
+    },
     "contributor_submitted_at": {
       "description": "When the contributor made the submission in the partner app or on the website, which may be long before it reaches OTWD when the device was offline.",
       "type": "string",
@@ -54,7 +65,9 @@
       "type": "string",
       "maxLength": 1000
     },
-    "proposed": { "description": "The proposed values. The shape depends on kind." }
+    "proposed": {
+      "description": "The proposed values. The shape depends on kind."
+    }
   },
   "additionalProperties": false,
   "allOf": [
@@ -63,22 +76,69 @@
       "oneOf": [
         {
           "required": ["contributor"],
-          "properties": { "contributor": true }
+          "properties": {
+            "contributor": true
+          }
         },
         {
           "required": ["seed_record"],
-          "properties": { "seed_record": true }
+          "properties": {
+            "seed_record": true
+          }
         }
       ]
     },
     {
+      "description": "towing_permitted comes from contributors, so a seeding pipeline submission never proposes it.",
+      "if": {
+        "required": ["seed_record"],
+        "properties": {
+          "seed_record": true
+        }
+      },
+      "then": {
+        "properties": {
+          "proposed": {
+            "properties": {
+              "facts": {
+                "properties": {
+                  "towing_permitted": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "oneOf": [
-        { "$ref": "#/$defs/NewSiteSubmission" },
-        { "$ref": "#/$defs/UpdateFactsSubmission" },
-        { "$ref": "#/$defs/AddPhotoSubmission" },
-        { "$ref": "#/$defs/ReportClosureSubmission" },
-        { "$ref": "#/$defs/RequestMergeSubmission" },
-        { "$ref": "#/$defs/ReportProblemSubmission" }
+        {
+          "$ref": "#/$defs/NewSiteSubmission"
+        },
+        {
+          "$ref": "#/$defs/NewRoadRestrictionSubmission"
+        },
+        {
+          "$ref": "#/$defs/NewRoadSegmentSubmission"
+        },
+        {
+          "$ref": "#/$defs/NewFerryServiceSubmission"
+        },
+        {
+          "$ref": "#/$defs/UpdateFactsSubmission"
+        },
+        {
+          "$ref": "#/$defs/AddPhotoSubmission"
+        },
+        {
+          "$ref": "#/$defs/ReportClosureSubmission"
+        },
+        {
+          "$ref": "#/$defs/RequestMergeSubmission"
+        },
+        {
+          "$ref": "#/$defs/ReportProblemSubmission"
+        }
       ]
     }
   ],
@@ -90,8 +150,12 @@
           "type": "object",
           "required": ["kind", "contributor_id"],
           "properties": {
-            "kind": { "const": "direct" },
-            "contributor_id": { "$ref": "common.schema.json#/$defs/ContributorId" }
+            "kind": {
+              "const": "direct"
+            },
+            "contributor_id": {
+              "$ref": "common.schema.json#/$defs/ContributorId"
+            }
           },
           "additionalProperties": false
         },
@@ -99,7 +163,9 @@
           "type": "object",
           "required": ["kind", "pseudonymous_id"],
           "properties": {
-            "kind": { "const": "pseudonymous" },
+            "kind": {
+              "const": "pseudonymous"
+            },
             "pseudonymous_id": {
               "description": "Stable for one contributor within one partner app and meaningless outside it, for example a salted hash of the partner app's internal account number. The character set excludes @ so an email address can never be sent by mistake.",
               "type": "string",
@@ -115,9 +181,18 @@
       "type": "object",
       "required": ["seed_source_id", "record_id"],
       "properties": {
-        "seed_source_id": { "$ref": "common.schema.json#/$defs/SeedSourceId" },
-        "record_id": { "type": "string", "minLength": 1, "maxLength": 200 },
-        "dataset_version": { "type": "string", "maxLength": 64 }
+        "seed_source_id": {
+          "$ref": "common.schema.json#/$defs/SeedSourceId"
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "dataset_version": {
+          "type": "string",
+          "maxLength": 64
+        }
       },
       "additionalProperties": false
     },
@@ -126,71 +201,194 @@
       "type": "object",
       "required": ["terms_version", "accepted_at"],
       "properties": {
-        "terms_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
-        "accepted_at": { "type": "string", "format": "date-time" }
+        "terms_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "accepted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
       "additionalProperties": false
     },
-    "SubmittedFacts": {
-      "description": "Proposed fact values, without provenance. OTWD records provenance when the change is applied.",
-      "type": "object",
+    "SiteFacts": {
+      "description": "Proposed site facts, as plain values without provenance. OTWD records provenance when the change is applied. fire_district is computed from the location, so it is never submitted.",
+      "$ref": "site.schema.json#/$defs/FactValues",
       "properties": {
-        "names": { "$ref": "values.schema.json#/$defs/Names" },
-        "location": { "$ref": "values.schema.json#/$defs/Location" },
-        "site_types": { "$ref": "values.schema.json#/$defs/SiteTypes" },
-        "description": { "$ref": "values.schema.json#/$defs/Description" },
-        "opening_hours": { "$ref": "values.schema.json#/$defs/OpeningHours" },
-        "reception_hours": { "$ref": "values.schema.json#/$defs/OpeningHours" },
-        "prices": { "$ref": "values.schema.json#/$defs/Prices" },
-        "rig_limits": { "$ref": "values.schema.json#/$defs/RigLimits" },
-        "access": { "$ref": "values.schema.json#/$defs/Access" },
-        "pets": { "$ref": "values.schema.json#/$defs/Pets" },
-        "bookings": { "$ref": "values.schema.json#/$defs/Bookings" },
-        "contact": { "$ref": "values.schema.json#/$defs/Contact" },
-        "capacity": { "$ref": "values.schema.json#/$defs/Capacity" },
-        "stay_limits": { "$ref": "values.schema.json#/$defs/StayLimits" }
+        "fire_district": false
       },
-      "additionalProperties": false
+      "unevaluatedProperties": false
+    },
+    "RoadRestrictionFacts": {
+      "description": "Proposed road restriction facts, as plain values without provenance. OTWD records provenance when the change is applied.",
+      "$ref": "road-restriction.schema.json#/$defs/FactValues",
+      "unevaluatedProperties": false
+    },
+    "RoadSegmentFacts": {
+      "description": "Proposed road segment facts, as plain values without provenance. OTWD records provenance when the change is applied.",
+      "$ref": "road-segment.schema.json#/$defs/FactValues",
+      "unevaluatedProperties": false
+    },
+    "FerryServiceFacts": {
+      "description": "Proposed ferry service facts, as plain values without provenance. OTWD records provenance when the change is applied.",
+      "$ref": "ferry-service.schema.json#/$defs/FactValues",
+      "unevaluatedProperties": false
+    },
+    "NoTarget": {
+      "description": "A submission that creates a record names no existing record and has no base_change_seq.",
+      "not": {
+        "anyOf": [
+          {
+            "required": ["record_id"],
+            "properties": {
+              "record_id": true
+            }
+          },
+          {
+            "required": ["base_change_seq"],
+            "properties": {
+              "base_change_seq": true
+            }
+          }
+        ]
+      }
+    },
+    "ExistingRecordTarget": {
+      "description": "A submission about an existing record names it in record_id.",
+      "required": ["record_id"],
+      "properties": {
+        "record_id": true
+      }
     },
     "NewSiteSubmission": {
       "properties": {
-        "kind": { "const": "new_site" },
+        "kind": {
+          "const": "new_site"
+        },
         "proposed": {
           "type": "object",
           "required": ["facts"],
           "properties": {
             "facts": {
-              "$ref": "#/$defs/SubmittedFacts",
-              "required": ["names", "location", "site_types"],
-              "properties": { "names": true, "location": true, "site_types": true }
+              "$ref": "#/$defs/SiteFacts",
+              "allOf": [
+                {
+                  "$ref": "site.schema.json#/$defs/RequiredFacts"
+                }
+              ]
             },
-            "facilities": { "$ref": "values.schema.json#/$defs/StoredFacilities" }
+            "facilities": {
+              "$ref": "values.schema.json#/$defs/StoredFacilities"
+            }
           },
           "additionalProperties": false
         }
       },
-      "not": {
-        "anyOf": [
-          {
-            "required": ["site_id"],
-            "properties": { "site_id": true }
+      "allOf": [
+        {
+          "$ref": "#/$defs/NoTarget"
+        }
+      ],
+      "required": ["kind", "proposed"]
+    },
+    "NewRoadRestrictionSubmission": {
+      "properties": {
+        "kind": {
+          "const": "new_road_restriction"
+        },
+        "proposed": {
+          "type": "object",
+          "required": ["facts"],
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/RoadRestrictionFacts",
+              "allOf": [
+                {
+                  "$ref": "road-restriction.schema.json#/$defs/RequiredFacts"
+                }
+              ]
+            }
           },
-          {
-            "required": ["base_change_seq"],
-            "properties": { "base_change_seq": true }
-          }
-        ]
+          "additionalProperties": false
+        }
       },
+      "allOf": [
+        {
+          "$ref": "#/$defs/NoTarget"
+        }
+      ],
+      "required": ["kind", "proposed"]
+    },
+    "NewRoadSegmentSubmission": {
+      "properties": {
+        "kind": {
+          "const": "new_road_segment"
+        },
+        "proposed": {
+          "type": "object",
+          "required": ["facts"],
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/RoadSegmentFacts",
+              "allOf": [
+                {
+                  "$ref": "road-segment.schema.json#/$defs/RequiredFacts"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/NoTarget"
+        }
+      ],
+      "required": ["kind", "proposed"]
+    },
+    "NewFerryServiceSubmission": {
+      "properties": {
+        "kind": {
+          "const": "new_ferry_service"
+        },
+        "proposed": {
+          "type": "object",
+          "required": ["facts"],
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/FerryServiceFacts",
+              "allOf": [
+                {
+                  "$ref": "ferry-service.schema.json#/$defs/RequiredFacts"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/NoTarget"
+        }
+      ],
       "required": ["kind", "proposed"]
     },
     "UpdateFactsSubmission": {
       "properties": {
-        "kind": { "const": "update_facts" },
+        "kind": {
+          "const": "update_facts"
+        },
         "proposed": {
-          "description": "Facts and facilities to set, and facts or facilities to remove because they are no longer true. To record that a facility is absent, set it with available false rather than removing it.",
+          "description": "Facts and facilities to set, and facts or facilities to remove because they are no longer true. To record that a facility is absent, set it with available false rather than removing it. Which facts are allowed depends on the record type named by record_id, and only sites have facilities.",
           "type": "object",
           "properties": {
-            "facts": { "$ref": "#/$defs/SubmittedFacts", "minProperties": 1 },
+            "facts": {
+              "type": "object",
+              "minProperties": 1
+            },
             "facilities": {
               "$ref": "values.schema.json#/$defs/StoredFacilities",
               "minProperties": 1
@@ -201,10 +399,7 @@
               "maxItems": 50,
               "uniqueItems": true,
               "items": {
-                "allOf": [
-                  { "$ref": "common.schema.json#/$defs/FieldPointer" },
-                  { "not": { "enum": ["/facts/names", "/facts/location", "/facts/site_types"] } }
-                ]
+                "$ref": "common.schema.json#/$defs/FieldPointer"
               }
             }
           },
@@ -212,36 +407,186 @@
           "anyOf": [
             {
               "required": ["facts"],
-              "properties": { "facts": true }
+              "properties": {
+                "facts": true
+              }
             },
             {
               "required": ["facilities"],
-              "properties": { "facilities": true }
+              "properties": {
+                "facilities": true
+              }
             },
             {
               "required": ["remove"],
-              "properties": { "remove": true }
+              "properties": {
+                "remove": true
+              }
             }
           ]
         },
-        "site_id": true,
+        "record_id": true,
         "base_change_seq": true
       },
-      "required": ["kind", "proposed", "site_id", "base_change_seq"]
+      "required": ["kind", "proposed", "base_change_seq"],
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ],
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SiteFactsUpdate"
+        },
+        {
+          "$ref": "#/$defs/RoadRestrictionFactsUpdate"
+        },
+        {
+          "$ref": "#/$defs/RoadSegmentFactsUpdate"
+        },
+        {
+          "$ref": "#/$defs/FerryServiceFactsUpdate"
+        }
+      ]
+    },
+    "SiteFactsUpdate": {
+      "description": "update_facts on a site: site facts and facilities. The facts every site has cannot be removed.",
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/SiteId"
+        },
+        "proposed": {
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/SiteFacts"
+            },
+            "remove": {
+              "items": {
+                "not": {
+                  "enum": ["/facts/names", "/facts/location", "/facts/site_types"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "RoadRestrictionFactsUpdate": {
+      "description": "update_facts on a road restriction. The facts every road restriction has cannot be removed, and there are no facilities.",
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/RoadRestrictionId"
+        },
+        "proposed": {
+          "$ref": "#/$defs/RecordFactsOnly",
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/RoadRestrictionFacts"
+            },
+            "remove": {
+              "items": {
+                "not": {
+                  "enum": ["/facts/location", "/facts/structure"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "RoadSegmentFactsUpdate": {
+      "description": "update_facts on a road segment. The facts every road segment has cannot be removed, and there are no facilities.",
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/RoadSegmentId"
+        },
+        "proposed": {
+          "$ref": "#/$defs/RecordFactsOnly",
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/RoadSegmentFacts"
+            },
+            "remove": {
+              "items": {
+                "not": {
+                  "enum": ["/facts/geometry"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "FerryServiceFactsUpdate": {
+      "description": "update_facts on a ferry service. The facts every ferry service has cannot be removed, and there are no facilities.",
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/FerryServiceId"
+        },
+        "proposed": {
+          "$ref": "#/$defs/RecordFactsOnly",
+          "properties": {
+            "facts": {
+              "$ref": "#/$defs/FerryServiceFacts"
+            },
+            "remove": {
+              "items": {
+                "not": {
+                  "enum": [
+                    "/facts/names",
+                    "/facts/geometry",
+                    "/facts/terminals",
+                    "/facts/accepted_vehicle_classes"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "RecordFactsOnly": {
+      "description": "The proposed changes for a record that is not a site: facts only, never facilities.",
+      "properties": {
+        "remove": {
+          "items": {
+            "pattern": "^/facts/"
+          }
+        }
+      },
+      "not": {
+        "required": ["facilities"],
+        "properties": {
+          "facilities": true
+        }
+      }
     },
     "AddPhotoSubmission": {
       "properties": {
-        "kind": { "const": "add_photo" },
+        "kind": {
+          "const": "add_photo"
+        },
         "proposed": {
-          "description": "A photo already uploaded through POST /v1/photo-uploads. The photographer licenses it under CC BY 4.0.",
+          "description": "A photo already uploaded through POST /v1/photo-uploads, of any record type, such as a site, the clearance sign at a road restriction or the towing sign on a road segment. The photographer licenses it under CC BY 4.0.",
           "type": "object",
           "required": ["upload_id", "licence", "attribution"],
           "properties": {
-            "upload_id": { "$ref": "common.schema.json#/$defs/UploadId" },
-            "sha256": { "$ref": "common.schema.json#/$defs/Sha256" },
-            "caption": { "$ref": "common.schema.json#/$defs/Notes" },
-            "taken_on": { "type": "string", "format": "date" },
-            "licence": { "const": "CC-BY-4.0" },
+            "upload_id": {
+              "$ref": "common.schema.json#/$defs/UploadId"
+            },
+            "sha256": {
+              "$ref": "common.schema.json#/$defs/Sha256"
+            },
+            "caption": {
+              "$ref": "common.schema.json#/$defs/Notes"
+            },
+            "taken_on": {
+              "type": "string",
+              "format": "date"
+            },
+            "licence": {
+              "const": "CC-BY-4.0"
+            },
             "attribution": {
               "description": "The credit the photographer wants shown, such as a display name or handle. Never an email address.",
               "type": "string",
@@ -252,57 +597,102 @@
           },
           "additionalProperties": false
         },
-        "site_id": true
+        "record_id": true
       },
-      "required": ["kind", "proposed", "site_id"]
+      "required": ["kind", "proposed"],
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ]
     },
     "ReportClosureSubmission": {
       "properties": {
-        "kind": { "const": "report_closure" },
+        "kind": {
+          "const": "report_closure"
+        },
         "proposed": {
-          "description": "A report that the site has closed, closed for a time, or reopened (status active).",
+          "description": "A report that the record has closed, closed for a time, or reopened (status active). For a road restriction, closed means the limit no longer applies, such as when the structure was replaced.",
           "type": "object",
           "required": ["status", "reason"],
           "properties": {
-            "status": { "type": "string", "enum": ["temporarily_closed", "closed", "active"] },
-            "reason": { "$ref": "common.schema.json#/$defs/Notes" },
-            "reopens_on": { "type": "string", "format": "date" }
+            "status": {
+              "type": "string",
+              "enum": ["temporarily_closed", "closed", "active"]
+            },
+            "reason": {
+              "$ref": "common.schema.json#/$defs/Notes"
+            },
+            "reopens_on": {
+              "type": "string",
+              "format": "date"
+            },
+            "closed_on": {
+              "type": "string",
+              "format": "date"
+            },
+            "closure_authority": {
+              "$ref": "common.schema.json#/$defs/ClosureAuthority"
+            },
+            "closure_info_url": {
+              "$ref": "common.schema.json#/$defs/ClosureInfoUrl"
+            }
           },
           "additionalProperties": false
         },
-        "site_id": true,
+        "record_id": true,
         "base_change_seq": true
       },
-      "required": ["kind", "proposed", "site_id", "base_change_seq"]
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ],
+      "required": ["kind", "proposed", "base_change_seq"]
     },
     "RequestMergeSubmission": {
       "properties": {
-        "kind": { "const": "request_merge" },
+        "kind": {
+          "const": "request_merge"
+        },
         "proposed": {
-          "description": "A request to merge site_id with one or more sites the contributor believes are the same site. A moderator chooses the surviving site.",
+          "description": "A request to merge the submission's record with one or more records of the same record type that the contributor believes are the same thing. A moderator chooses the surviving record.",
           "type": "object",
-          "required": ["duplicate_site_ids", "reason"],
+          "required": ["duplicate_record_ids", "reason"],
           "properties": {
-            "duplicate_site_ids": {
+            "duplicate_record_ids": {
               "type": "array",
               "minItems": 1,
               "maxItems": 10,
               "uniqueItems": true,
-              "items": { "$ref": "common.schema.json#/$defs/SiteId" }
+              "items": {
+                "$ref": "common.schema.json#/$defs/RecordId"
+              }
             },
-            "suggested_survivor": { "$ref": "common.schema.json#/$defs/SiteId" },
-            "reason": { "$ref": "common.schema.json#/$defs/Notes" }
+            "suggested_survivor": {
+              "$ref": "common.schema.json#/$defs/RecordId"
+            },
+            "reason": {
+              "$ref": "common.schema.json#/$defs/Notes"
+            }
           },
           "additionalProperties": false
         },
-        "site_id": true,
+        "record_id": true,
         "base_change_seq": true
       },
-      "required": ["kind", "proposed", "site_id", "base_change_seq"]
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ],
+      "required": ["kind", "proposed", "base_change_seq"]
     },
     "ReportProblemSubmission": {
       "properties": {
-        "kind": { "const": "report_problem" },
+        "kind": {
+          "const": "report_problem"
+        },
         "proposed": {
           "description": "A problem a moderator should look at that the contributor cannot fix with another kind of submission.",
           "type": "object",
@@ -321,20 +711,33 @@
                 "other"
               ]
             },
-            "details": { "type": "string", "minLength": 10, "maxLength": 2000 },
+            "details": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 2000
+            },
             "fields": {
               "type": "array",
               "maxItems": 20,
               "uniqueItems": true,
-              "items": { "$ref": "common.schema.json#/$defs/FieldPointer" }
+              "items": {
+                "$ref": "common.schema.json#/$defs/FieldPointer"
+              }
             },
-            "photo_id": { "$ref": "common.schema.json#/$defs/PhotoId" }
+            "photo_id": {
+              "$ref": "common.schema.json#/$defs/PhotoId"
+            }
           },
           "additionalProperties": false
         },
-        "site_id": true
+        "record_id": true
       },
-      "required": ["kind", "proposed", "site_id"]
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ],
+      "required": ["kind", "proposed"]
     }
   }
 }

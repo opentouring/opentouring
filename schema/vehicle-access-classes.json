@@ -1,0 +1,83 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "vehicle_access_classes",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "two_wd",
+      "label": "2WD",
+      "description": "A conventional two-wheel-drive car can use it in normal conditions.",
+      "rank": 1,
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["4wd_only=no"],
+          "match": "related",
+          "note": "Rarely tagged. Most OSM roads without 4wd_only are passable by 2WD vehicles, but OSM does not say so."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "awd",
+      "label": "AWD",
+      "description": "Needs an all-wheel-drive vehicle, or a two-wheel-drive vehicle with good ground clearance, but not low range.",
+      "rank": 2,
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [],
+      "schema_org": null
+    },
+    {
+      "code": "four_wd_high_clearance",
+      "label": "4WD high clearance",
+      "description": "Needs a four-wheel-drive vehicle with high ground clearance. Not signed as 4WD only.",
+      "rank": 3,
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["4wd_only=recommended"],
+          "match": "related",
+          "note": "A 4WD is advised but not required by sign."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "four_wd_only",
+      "label": "4WD only",
+      "description": "Signed or declared 4WD only by the road authority or land manager. Expect low range, steep grades, deep ruts or water crossings.",
+      "rank": 4,
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["4wd_only=yes"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "closed_to_vehicles",
+      "label": "Closed to vehicles",
+      "description": "Closed to private motor vehicles, such as a management track open only to walkers, cyclists or authorised vehicles.",
+      "rank": 5,
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        { "tags": ["motor_vehicle=no"], "match": "exact" },
+        {
+          "tags": ["access=no"],
+          "match": "broader",
+          "note": "Closed to everyone, including walkers and cyclists."
+        },
+        {
+          "tags": ["motor_vehicle=private"],
+          "match": "narrower",
+          "note": "Only authorised vehicles, such as a management track."
+        }
+      ],
+      "schema_org": null
+    }
+  ]
+}

@@ -6,21 +6,25 @@ Usage:
     python3 schema/tools/validate.py              # check everything
     python3 schema/tools/validate.py FILE...      # check documents of your own
 
-A document's schema is chosen from its file name suffix:
-    *.site.json, *.site-compact.json, *.submission.json, *.verdict.json,
-    *.moderation-decision.json, *.change.json
+A document's schema is chosen from its file name suffix: *.site.json is checked
+against site.schema.json, *.site-compact.json against site-compact.schema.json,
+and so on for every record type, submission, verdict, moderation decision and
+change (see DOCUMENT_KINDS).
 
 The script runs three stages:
 
 1. Every *.schema.json file is checked against the JSON Schema 2020-12
-   metaschema, and the governed lists (site-types.json, facilities.json)
-   are checked against vocabulary.schema.json and against the per-facility
-   schemas in values.schema.json.
+   metaschema, the governed lists against vocabulary.schema.json and
+   facilities.json against the per-facility schemas in values.schema.json.
+   For each record type in RECORD_TYPES it checks that the full form,
+   FactValues, the compact form and the submissions name the same facts with
+   the same value shapes and share one set of required facts.
 2. Each document is validated against its schema with format checking on
    (date, date-time, uri, email, json-pointer).
 3. Rules that JSON Schema cannot express, and that the API also enforces,
-   are checked: governed list codes, ISO 3166-2 prefixes, IANA time zones
-   and a few cross-field rules.
+   are checked: governed list codes, ISO 3166-2 prefixes, IANA time zones,
+   lowest figures, the always-human list derived from the schema's safety
+   fact markers, ferry terminals and a few cross-field rules.
 
 A top-level "$comment" in a document (the SPDX header of the example files)
 is removed before validation.
@@ -37,9 +41,9 @@ import json
 import sys
 import zoneinfo
 from dataclasses import dataclass
-from enum import Enum
+from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
@@ -50,15 +54,77 @@ SCHEMA_DIR = Path(__file__).resolve().parent.parent
 EXAMPLES = SCHEMA_DIR / "examples"
 BASE = "https://schema.opentouring.org/otwd/v1/"
 COMMENT_KEY = "$comment"
+SAFETY_MARKER = "x-otwd-safety-fact"
 
 # Formats the schemas rely on. Without the packages in requirements.txt the
 # jsonschema library silently skips some of them, so their absence is fatal.
 REQUIRED_FORMATS = {"date", "date-time", "uri", "email", "json-pointer"}
 
-VOCABULARY_SCHEMA = "vocabulary.schema.json"
-VALUES_SCHEMA = "values.schema.json"
-SITE_SCHEMA = "site.schema.json"
-GOVERNED_LISTS = ("site-types.json", "facilities.json")
+# The governed list files, named once each.
+SITE_TYPES = "site-types.json"
+FACILITIES = "facilities.json"
+STRUCTURES = "structures.json"
+SURFACES = "surfaces.json"
+ACCESS_CLASSES = "vehicle-access-classes.json"
+VEHICLE_CLASSES = "vehicle-classes.json"
+
+# Every governed list file, with the name its codes go by in error messages.
+GOVERNED_LISTS = {
+    SITE_TYPES: "site type",
+    FACILITIES: "facility",
+    STRUCTURES: "structure",
+    SURFACES: "surface",
+    ACCESS_CLASSES: "vehicle access class",
+    VEHICLE_CLASSES: "vehicle class",
+}
+
+# Submission kinds on the always-human list for every record type, besides the
+# kinds that create a record (new_<record type>).
+ALWAYS_HUMAN_KINDS = {"report_closure", "request_merge"}
+
+
+def schema_file(stem: str) -> str:
+    return f"{stem}.schema.json"
+
+
+@dataclass(frozen=True)
+class RecordType:
+    """One record type. Its schema files, ID definition and creation kind follow from code.
+
+    computed: facts OTWD computes and contributors never submit.
+    """
+
+    code: str
+    computed: frozenset[str] = frozenset()
+
+    @property
+    def stem(self) -> str:
+        return self.code.replace("_", "-")
+
+    @property
+    def full(self) -> str:
+        return schema_file(self.stem)
+
+    @property
+    def compact(self) -> str:
+        return schema_file(f"{self.stem}-compact")
+
+    @property
+    def camel(self) -> str:
+        return "".join(part.title() for part in self.code.split("_"))
+
+    @property
+    def new_kind(self) -> str:
+        return f"new_{self.code}"
+
+
+RECORD_TYPES = (
+    RecordType("site", frozenset({"fire_district"})),
+    RecordType("road_restriction"),
+    RecordType("road_segment"),
+    RecordType("ferry_service"),
+)
+RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_TYPES}
 
 
 def load_json(path: Path) -> Any:
@@ -98,29 +164,47 @@ def all_errors(errors: Iterable[ValidationError]) -> list[str]:
     return messages
 
 
-def top_level_errors(errors: Iterable[ValidationError]) -> list[str]:
-    ordered = sorted(errors, key=lambda error: [str(part) for part in error.absolute_path])
-    return [describe(error) for error in ordered]
+def record_type_of(record_id: str) -> RecordType:
+    """The record type named by the kind segment of a public ID, for example road_segment."""
+    return RECORD_TYPE_BY_CODE[record_id.split(":")[1]]
+
+
+def ref_name(schema: dict) -> str | None:
+    """The definition a {"$ref": ...} points at, as file#name or #name, or None."""
+    ref = schema.get("$ref")
+    return ref.replace("#/$defs/", "#") if ref else None
 
 
 class Vocab:
-    """The governed lists, keyed by code."""
+    """The governed lists: for each list file, its entries keyed by code."""
 
     def __init__(self) -> None:
-        site_types = load_json(SCHEMA_DIR / "site-types.json")
-        facilities = load_json(SCHEMA_DIR / "facilities.json")
-        self.site_types = {entry["code"]: entry for entry in site_types["entries"]}
-        self.facilities = {entry["code"]: entry for entry in facilities["entries"]}
-        self.stored_elsewhere = {code for code, entry in self.facilities.items() if "stored_as" in entry}
+        self.lists = {
+            name: {entry["code"]: entry for entry in load_json(SCHEMA_DIR / name)["entries"]}
+            for name in GOVERNED_LISTS
+        }
+        self.facilities = self.lists[FACILITIES]
+        self.stored_elsewhere = {
+            code for code, entry in self.facilities.items() if "stored_as" in entry
+        }
 
 
 @dataclass(frozen=True)
 class Context:
-    """Everything a check needs: the schema registry, the schemas by file name and the governed lists."""
+    """What every check needs: the schemas by file name, the registry and the governed lists.
+
+    safety_fields: for each record type, the pointers of its safety facts and facilities,
+    read from the x-otwd-safety-fact markers in its full form.
+    sites: site types of the sites known to this run, by public ID, for cross-document checks.
+    sites_complete: True when every site a document names must be known (the examples).
+    """
 
     registry: Registry
     schemas: dict[str, dict]
     vocab: Vocab
+    safety_fields: dict[str, frozenset[str]]
+    sites: dict[str, set[str]]
+    sites_complete: bool
 
     @classmethod
     def load(cls) -> Context:
@@ -132,10 +216,24 @@ class Context:
             if schema.get("$id") != expected_id:
                 raise SystemExit(f"{path.name}: $id must be {expected_id}")
             schemas[path.name] = schema
-            registry = registry.with_resource(
-                expected_id, Resource.from_contents(schema, default_specification=DRAFT202012)
-            )
-        return cls(registry.crawl(), schemas, Vocab())
+            resource = Resource.from_contents(schema, default_specification=DRAFT202012)
+            registry = registry.with_resource(expected_id, resource)
+        safety = {
+            record_type.code: frozenset(safety_pointers(schemas[record_type.full]))
+            for record_type in RECORD_TYPES
+        }
+        return cls(registry.crawl(), schemas, Vocab(), safety, {}, False)
+
+    def with_sites(self, paths: Iterable[Path], complete: bool) -> Context:
+        sites: dict[str, set[str]] = {}
+        for path in paths:
+            kind = DocumentKind.for_path(path)
+            if kind and kind.stem in ("site", "site-compact"):
+                document = load_json(path)
+                types = site_types_of(document)
+                if types is not None:
+                    sites[document["id"]] = types
+        return Context(self.registry, self.schemas, self.vocab, self.safety_fields, sites, complete)
 
     def validator(self, schema_name: str) -> Draft202012Validator:
         return Draft202012Validator(
@@ -149,102 +247,249 @@ class Context:
         return self.schemas[schema_name]["$defs"][def_name]
 
 
+def safety_pointers(full_schema: dict) -> Iterable[str]:
+    """The fields a record type's full form marks as safety facts, as JSON Pointers."""
+    sections = {"facts": "Facts", "facilities": "FacilityFacts"}
+    for section, def_name in sections.items():
+        definition = full_schema["$defs"].get(def_name, {})
+        for name, fact in definition.get("properties", {}).items():
+            if fact.get(SAFETY_MARKER):
+                yield f"/{section}/{name}"
+
+
+def site_types_of(document: dict) -> set[str] | None:
+    """The site types of a site in either form, or None for a merged site."""
+    value = document.get("site_types") or document.get("facts", {}).get("site_types", {})
+    value = value.get("value", value)
+    if "primary" not in value:
+        return None
+    return {value["primary"], *value.get("others", [])}
+
+
 class SemanticChecker:
     """Rules JSON Schema cannot express. The API applies the same rules."""
 
-    def __init__(self, vocab: Vocab, rejects_deprecated: bool) -> None:
-        self.vocab = vocab
+    def __init__(self, context: Context, rejects_deprecated: bool) -> None:
+        self.context = context
+        self.vocab = context.vocab
         self.rejects_deprecated = rejects_deprecated
         self.errors: list[str] = []
-
-    def site_type(self, code: str, where: str) -> None:
-        entry = self.vocab.site_types.get(code)
-        if entry is None:
-            self.errors.append(f"{where}: unknown site type code {code!r}")
-        elif entry["status"] != "active" and self.rejects_deprecated:
-            self.errors.append(f"{where}: site type {code!r} is deprecated")
-
-    def facilities(self, facilities: dict, where: str) -> None:
-        for code in facilities:
-            if code not in self.vocab.facilities:
-                self.errors.append(f"{where}/{code}: unknown facility code {code!r}")
-
-    def site_types(self, value: dict, where: str) -> None:
-        others = value.get("others", [])
-        self.site_type(value["primary"], f"{where}/primary")
-        for index, code in enumerate(others):
-            self.site_type(code, f"{where}/others/{index}")
-        if value["primary"] in others:
-            self.errors.append(f"{where}: primary site type repeated in others")
-
-    def description(self, value: list, where: str) -> None:
-        languages = [item["lang"].lower() for item in value]
-        if len(languages) != len(set(languages)):
-            self.errors.append(f"{where}: more than one description in the same language")
-
-    def hours(self, value: dict, where: str) -> None:
-        for index, exception in enumerate(value.get("exceptions", [])):
-            if exception["from"] > exception["to"]:
-                self.errors.append(f"{where}/exceptions/{index}: from is after to")
-
-    def facts(self, facts: dict, where: str, wrapped: bool) -> None:
-        """Check fact values. wrapped: each fact is a {value, provenance} object (full form)."""
-        checks: dict[str, Callable[[Any, str], None]] = {
+        # One table for every record type and for submissions: fact names do not
+        # repeat with different meanings across record types.
+        self.fact_checks: dict[str, Callable[[Any, str], None]] = {
             "site_types": self.site_types,
             "description": self.description,
             "opening_hours": self.hours,
             "reception_hours": self.hours,
+            "operating_hours": self.hours,
+            "structure": self.structure,
+            "vertical_clearance": self.lowest_figure,
+            "width_limit": self.lowest_figure,
+            "surface": self.coded(SURFACES),
+            "vehicle_access_class": self.coded(ACCESS_CLASSES),
+            "accepted_vehicle_classes": self.vehicle_class_list,
+            "vehicle_limits": self.vehicle_limits,
+            "fares": self.fares,
+            "terminals": self.terminals,
         }
-        suffix = "/value" if wrapped else ""
-        for name, check in checks.items():
-            fact = facts.get(name)
-            if fact is not None:
-                check(fact["value"] if wrapped else fact, f"{where}/{name}{suffix}")
 
-    def derived(self, country: str | None, subdivision: str | None, time_zone: str | None, where: str) -> None:
-        if country and subdivision and not subdivision.startswith(country + "-"):
-            self.errors.append(f"{where}: subdivision {subdivision} is not in country {country}")
+    def fail(self, where: str, message: str) -> None:
+        self.errors.append(f"{where}: {message}")
+
+    def code(self, list_name: str, code: str, where: str) -> None:
+        entry = self.vocab.lists[list_name].get(code)
+        label = GOVERNED_LISTS[list_name]
+        if entry is None:
+            self.fail(where, f"unknown {label} code {code!r}")
+        elif entry["status"] != "active" and self.rejects_deprecated:
+            self.fail(where, f"{label} {code!r} is deprecated")
+
+    def coded(self, list_name: str) -> Callable[[Any, str], None]:
+        """A check for a fact whose value is an object with one governed list code in code."""
+        return lambda value, where: self.code(list_name, value["code"], f"{where}/code")
+
+    def structure(self, value: dict, where: str) -> None:
+        self.code(STRUCTURES, value["code"], f"{where}/code")
+        entry = self.vocab.lists[STRUCTURES].get(value["code"])
+        if entry and value["passage"] not in entry["passages"]:
+            allowed = ", ".join(entry["passages"])
+            self.fail(
+                f"{where}/passage",
+                f"a {value['code']} allows passage {allowed}, not {value['passage']}",
+            )
+
+    def lowest_figure(self, value: dict, where: str) -> None:
+        """lowest_m is the lowest figure of any basis, and lowest_basis is that figure's basis."""
+        figures = value["measurements"]
+        lowest = min(item["value_m"] for item in figures)
+        bases = {item["basis"] for item in figures if item["value_m"] == lowest}
+        if value["lowest_m"] != lowest:
+            self.fail(
+                f"{where}/lowest_m", f"is {value['lowest_m']} but the lowest figure is {lowest}"
+            )
+        elif value["lowest_basis"] not in bases:
+            self.fail(
+                f"{where}/lowest_basis",
+                f"is {value['lowest_basis']} but the lowest figure is {', '.join(sorted(bases))}",
+            )
+
+    def site_types(self, value: dict, where: str) -> None:
+        others = value.get("others", [])
+        self.code(SITE_TYPES, value["primary"], f"{where}/primary")
+        for index, code in enumerate(others):
+            self.code(SITE_TYPES, code, f"{where}/others/{index}")
+        if value["primary"] in others:
+            self.fail(where, "primary site type repeated in others")
+
+    def description(self, value: list, where: str) -> None:
+        languages = [item["lang"].lower() for item in value]
+        if len(languages) != len(set(languages)):
+            self.fail(where, "more than one description in the same language")
+
+    def hours(self, value: dict, where: str) -> None:
+        for index, exception in enumerate(value.get("exceptions", [])):
+            if exception["from"] > exception["to"]:
+                self.fail(f"{where}/exceptions/{index}", "from is after to")
+
+    def vehicle_class_list(self, value: list, where: str) -> None:
+        for index, code in enumerate(value):
+            self.code(VEHICLE_CLASSES, code, f"{where}/{index}")
+
+    def vehicle_limits(self, value: dict, where: str) -> None:
+        for index, item in enumerate(value.get("by_vehicle_class", [])):
+            path = f"{where}/by_vehicle_class/{index}/vehicle_class"
+            self.code(VEHICLE_CLASSES, item["vehicle_class"], path)
+
+    def fares(self, value: dict, where: str) -> None:
+        for index, item in enumerate(value.get("items", [])):
+            self.code(
+                VEHICLE_CLASSES, item["vehicle_class"], f"{where}/items/{index}/vehicle_class"
+            )
+
+    def terminals(self, value: list, where: str) -> None:
+        """A ferry service's terminals are sites whose site types include ferry_terminal."""
+        for index, site_id in enumerate(value):
+            types = self.context.sites.get(site_id)
+            if types is None:
+                if self.context.sites_complete:
+                    self.fail(f"{where}/{index}", f"{site_id} is not a known site")
+            elif "ferry_terminal" not in types:
+                self.fail(f"{where}/{index}", f"{site_id} is not a ferry_terminal site")
+
+    def facts(self, values: dict, where: str, suffix: str) -> None:
+        """Check plain fact values. suffix is /value when the facts came from the full form."""
+        for name, check in self.fact_checks.items():
+            if name in values:
+                check(values[name], f"{where}/{name}{suffix}")
+        self.carried_classes(values, where, suffix)
+
+    def carried_classes(self, values: dict, where: str, suffix: str) -> None:
+        """Fares and vehicle limits only name vehicle classes the ferry service carries."""
+        accepted = values.get("accepted_vehicle_classes")
+        if accepted is None:
+            return
+        named = [
+            (fact, field, item)
+            for fact, field in (("fares", "items"), ("vehicle_limits", "by_vehicle_class"))
+            for item in values.get(fact, {}).get(field, [])
+        ]
+        for fact, field, item in named:
+            if item["vehicle_class"] not in accepted:
+                self.fail(
+                    f"{where}/{fact}{suffix}/{field}",
+                    f"vehicle class {item['vehicle_class']!r} is not in accepted_vehicle_classes",
+                )
+
+    def facilities(self, facilities: dict, where: str) -> None:
+        for code in facilities:
+            self.code(FACILITIES, code, f"{where}/{code}")
+
+    def derived(self, values: dict, where: str) -> None:
+        """Point records hold one country and subdivision, line records lists of them."""
+        countries = values.get("country_codes") or [values.get("country_code")]
+        subdivisions = values.get("subdivision_codes") or [values.get("subdivision_code")]
+        for subdivision in filter(None, subdivisions):
+            if not any(
+                subdivision.startswith(f"{country}-") for country in filter(None, countries)
+            ):
+                self.fail(
+                    where, f"subdivision {subdivision} is not in country {' or '.join(countries)}"
+                )
+        time_zone = values.get("time_zone")
         if time_zone:
             try:
                 zoneinfo.ZoneInfo(time_zone)
             except (zoneinfo.ZoneInfoNotFoundError, ValueError):
-                self.errors.append(f"{where}: unknown IANA time zone {time_zone!r}")
+                self.fail(where, f"unknown IANA time zone {time_zone!r}")
+
+    def same_type(self, record_id: str, others: list[str], where: str) -> None:
+        """Records merged together, or named as duplicates, share one record type and differ."""
+        for index, other in enumerate(others):
+            if other == record_id:
+                self.fail(f"{where}/{index}", "names the record itself")
+            elif record_type_of(other) != record_type_of(record_id):
+                self.fail(f"{where}/{index}", f"{other} is not a {record_type_of(record_id).code}")
+
+    def always_human_reasons(self, kind: str, record_type: str, fields: list[str]) -> list[str]:
+        """Why a submission is on the always-human list, from its kind and the schema's markers."""
+        reasons = []
+        if kind.startswith("new_") or kind in ALWAYS_HUMAN_KINDS:
+            reasons.append(f"{kind} is on the always-human list")
+        safety = self.context.safety_fields[record_type]
+        reasons += [
+            f"{field} is a safety fact of a {record_type}" for field in fields if field in safety
+        ]
+        return reasons
 
 
-def check_site(document: dict, checker: SemanticChecker) -> None:
-    derived = document.get("derived", {})
-    checker.derived(derived.get("country_code"), derived.get("subdivision_code"), derived.get("time_zone"), "/derived")
-    checker.facts(document.get("facts", {}), "/facts", wrapped=True)
+def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
+    """Any record in either form. The full form wraps facts and nests derived values."""
+    if full:
+        derived, where, suffix = document.get("derived", {}), "/derived", "/value"
+        values = {name: fact["value"] for name, fact in document.get("facts", {}).items()}
+        facts_where = "/facts"
+    else:
+        derived, where, suffix, values, facts_where = document, "/", "", document, ""
+    checker.derived(derived, where)
+    checker.facts(values, facts_where, suffix)
     checker.facilities(document.get("facilities", {}), "/facilities")
-    if document.get("redirect_to") == document.get("id"):
-        checker.errors.append("/redirect_to: a site cannot redirect to itself")
-
-
-def check_site_compact(document: dict, checker: SemanticChecker) -> None:
-    checker.derived(document.get("country_code"), document.get("subdivision_code"), document.get("time_zone"), "/")
-    checker.facts(document, "", wrapped=False)
-    checker.facilities(document.get("facilities", {}), "/facilities")
+    if document.get("redirect_to") == document["id"]:
+        checker.fail("/redirect_to", "a record cannot redirect to itself")
 
 
 def check_submission(document: dict, checker: SemanticChecker) -> None:
-    proposed = document.get("proposed", {})
-    if not isinstance(proposed, dict):
-        return
-    checker.facts(proposed.get("facts", {}), "/proposed/facts", wrapped=False)
+    proposed = document["proposed"]
+    checker.facts(proposed.get("facts", {}), "/proposed/facts", "")
     checker.facilities(proposed.get("facilities", {}), "/proposed/facilities")
-    if document.get("kind") == "request_merge" and document.get("site_id") in proposed.get("duplicate_site_ids", []):
-        checker.errors.append("/proposed/duplicate_site_ids: lists the submission's own site_id")
+    if document["kind"] == "request_merge":
+        duplicates = proposed["duplicate_record_ids"]
+        checker.same_type(document["record_id"], duplicates, "/proposed/duplicate_record_ids")
 
 
 def check_moderation_decision(document: dict, checker: SemanticChecker) -> None:
+    routing = document["routing"]
+    kind, record_type = routing["submission_kind"], routing["record_type"]
+    if kind.startswith("new_") and kind != RECORD_TYPE_BY_CODE[record_type].new_kind:
+        checker.fail("/routing/record_type", f"{kind} does not create a {record_type}")
+    reasons = checker.always_human_reasons(kind, record_type, routing.get("fields", []))
+    if reasons and not routing["always_human"]:
+        checker.fail("/routing/always_human", f"must be true: {'; '.join(reasons)}")
+    if reasons and document["decided_by"]["kind"] == "routing_rule":
+        checker.fail("/decided_by", f"a routing rule cannot decide this: {'; '.join(reasons)}")
     merge = document.get("merge")
-    if merge and merge["surviving_site_id"] in merge["merged_site_ids"]:
-        checker.errors.append("/merge: surviving site is also listed as merged")
+    if merge:
+        survivor = merge["surviving_record_id"]
+        checker.same_type(survivor, merge["merged_record_ids"], "/merge/merged_record_ids")
 
 
 def check_change(document: dict, checker: SemanticChecker) -> None:
-    if document.get("merged_into") == document.get("site_id"):
-        checker.errors.append("/merged_into: a site cannot merge into itself")
+    record_id = document["record_id"]
+    if "merged_into" in document:
+        checker.same_type(record_id, [document["merged_into"]], "/merged_into")
+    safety = checker.context.safety_fields[record_type_of(record_id).code]
+    changed = [field for field in document["changed_fields"] if field in safety]
+    if changed and document.get("safety_fact_changed") is False:
+        checker.fail("/safety_fact_changed", f"is false but {', '.join(changed)} changed")
 
 
 def check_nothing(document: dict, checker: SemanticChecker) -> None:
@@ -252,43 +497,125 @@ def check_nothing(document: dict, checker: SemanticChecker) -> None:
 
 
 @dataclass(frozen=True)
-class KindSpec:
-    suffix: str
-    schema: str
+class DocumentKind:
+    """A kind of document: its file suffix and schema follow from stem."""
+
+    stem: str
     semantic_check: Callable[[dict, SemanticChecker], None]
     rejects_deprecated: bool = False
 
+    @property
+    def suffix(self) -> str:
+        return f".{self.stem}.json"
 
-class DocumentKind(Enum):
-    """Every kind of document the validator knows, with its file suffix, schema and extra rules."""
+    @property
+    def schema(self) -> str:
+        return schema_file(self.stem)
 
-    SITE_COMPACT = KindSpec(".site-compact.json", "site-compact.schema.json", check_site_compact)
-    SITE = KindSpec(".site.json", SITE_SCHEMA, check_site)
-    SUBMISSION = KindSpec(".submission.json", "submission.schema.json", check_submission, rejects_deprecated=True)
-    VERDICT = KindSpec(".verdict.json", "verdict.schema.json", check_nothing)
-    MODERATION_DECISION = KindSpec(
-        ".moderation-decision.json", "moderation-decision.schema.json", check_moderation_decision
+    @staticmethod
+    def for_path(path: Path) -> DocumentKind | None:
+        return next((kind for kind in DOCUMENT_KINDS if path.name.endswith(kind.suffix)), None)
+
+
+def full_record(document: dict, checker: SemanticChecker) -> None:
+    check_record(document, checker, full=True)
+
+
+def compact_record(document: dict, checker: SemanticChecker) -> None:
+    check_record(document, checker, full=False)
+
+
+DOCUMENT_KINDS = tuple(
+    kind
+    for record_type in RECORD_TYPES
+    for kind in (
+        DocumentKind(record_type.stem, full_record),
+        DocumentKind(f"{record_type.stem}-compact", compact_record),
     )
-    CHANGE = KindSpec(".change.json", "change.schema.json", check_change)
-
-    @classmethod
-    def for_path(cls, path: Path) -> DocumentKind | None:
-        return next((kind for kind in cls if path.name.endswith(kind.value.suffix)), None)
+) + (
+    DocumentKind("submission", check_submission, rejects_deprecated=True),
+    DocumentKind("verdict", check_nothing),
+    DocumentKind("moderation-decision", check_moderation_decision),
+    DocumentKind("change", check_change),
+)
 
 
 def check_document(path: Path, context: Context) -> list[str]:
     kind = DocumentKind.for_path(path)
     if kind is None:
-        suffixes = ", ".join(kind.value.suffix for kind in DocumentKind)
+        suffixes = ", ".join(kind.suffix for kind in DOCUMENT_KINDS)
         return [f"/: cannot tell the schema from the file name (expected one of {suffixes})"]
-    spec = kind.value
     document = without_comment(load_json(path))
-    schema_errors = list(context.validator(spec.schema).iter_errors(document))
+    schema_errors = list(context.validator(kind.schema).iter_errors(document))
     if schema_errors:
         return all_errors(schema_errors)
-    checker = SemanticChecker(context.vocab, spec.rejects_deprecated)
-    spec.semantic_check(document, checker)
+    checker = SemanticChecker(context, kind.rejects_deprecated)
+    kind.semantic_check(document, checker)
     return checker.errors
+
+
+def check_record_type(context: Context, record_type: RecordType) -> list[str]:
+    """The full form, FactValues, the compact form and the submissions agree on one fact table."""
+    problems: list[str] = []
+    full = record_type.full
+    facts = context.definition(full, "Facts")
+    values = context.definition(full, "FactValues")["properties"]
+    required = context.definition(full, "RequiredFacts")["required"]
+    for name in facts["properties"].keys() ^ values.keys():
+        problems.append(f"{full}: fact {name} is in only one of Facts and FactValues")
+    for name, fact in facts["properties"].items():
+        shape = ref_name(fact["properties"]["value"])
+        if name in values and shape != ref_name(values[name]):
+            problems.append(
+                f"{full}: Facts {name} holds {shape}, FactValues {ref_name(values[name])}"
+            )
+    for name in record_type.computed - values.keys():
+        problems.append(f"{full}: computed fact {name} is not a fact")
+
+    shared_required = f"{full}#RequiredFacts"
+    uses = {
+        f"{full} Facts": [ref_name(item) for item in facts.get("allOf", [])],
+        record_type.compact: [
+            ref_name(item)
+            for branch in context.schemas[record_type.compact]["allOf"]
+            for item in branch.get("else", {}).get("allOf", [])
+        ],
+    }
+    submission = context.schemas["submission.schema.json"]["$defs"]
+    new = submission[f"New{record_type.camel}Submission"]["properties"]["proposed"]
+    uses[f"New{record_type.camel}Submission"] = [
+        ref_name(item) for item in new["properties"]["facts"].get("allOf", [])
+    ]
+    for user, refs in uses.items():
+        if shared_required not in refs and "#RequiredFacts" not in refs:
+            problems.append(f"{user} does not use {shared_required}")
+    compact_refs = [ref_name(item) for item in context.schemas[record_type.compact]["allOf"]]
+    if f"{full}#FactValues" not in compact_refs:
+        problems.append(f"{record_type.compact} does not use {full}#FactValues")
+
+    submitted = submission[f"{record_type.camel}Facts"]
+    if ref_name(submitted) != f"{full}#FactValues":
+        problems.append(f"submission.schema.json {record_type.camel}Facts is not {full}#FactValues")
+    excluded = {name for name, rule in submitted.get("properties", {}).items() if rule is False}
+    if excluded != record_type.computed:
+        problems.append(
+            f"{record_type.camel}Facts excludes {sorted(excluded)}, not the computed facts"
+        )
+    update = submission[f"{record_type.camel}FactsUpdate"]["properties"]["proposed"]["properties"]
+    forbidden = set(update["remove"]["items"]["not"]["enum"])
+    if forbidden != {f"/facts/{name}" for name in required}:
+        problems.append(
+            f"{record_type.camel}FactsUpdate forbids removing {sorted(forbidden)}, "
+            f"but RequiredFacts is {required}"
+        )
+    kinds = submission_kinds(context)
+    if record_type.new_kind not in kinds:
+        problems.append(f"submission.schema.json has no kind {record_type.new_kind}")
+    return problems
+
+
+def submission_kinds(context: Context) -> list[str]:
+    return context.schemas["submission.schema.json"]["properties"]["kind"]["enum"]
 
 
 def check_schemas(context: Context) -> list[str]:
@@ -299,39 +626,68 @@ def check_schemas(context: Context) -> list[str]:
         except Exception as metaschema_error:  # noqa: BLE001 - report any metaschema failure
             problems.append(f"{name}: not a valid 2020-12 schema: {metaschema_error}")
 
-    vocabulary_validator = context.validator(VOCABULARY_SCHEMA)
+    vocabulary_validator = context.validator("vocabulary.schema.json")
     for list_file in GOVERNED_LISTS:
         document = load_json(SCHEMA_DIR / list_file)
-        for message in top_level_errors(vocabulary_validator.iter_errors(document)):
-            problems.append(f"{list_file}{message}")
+        errors = sorted(
+            vocabulary_validator.iter_errors(document), key=lambda e: list(map(str, e.path))
+        )
+        problems += [f"{list_file}{describe(error)}" for error in errors]
         codes = [entry["code"] for entry in document["entries"]]
         if len(codes) != len(set(codes)):
             problems.append(f"{list_file}: duplicate codes")
-
-    # facilities.json and values.schema.json must agree on attributes, and the
-    # site schema must check every facility the values schema checks.
-    per_code = context.definition(VALUES_SCHEMA, "Facilities")["properties"]
-    site_codes = set(context.definition(SITE_SCHEMA, "FacilityFacts")["properties"])
-    if site_codes != set(per_code):
+    ranks = [entry.get("rank") or 0 for entry in context.vocab.lists[ACCESS_CLASSES].values()]
+    if sorted(ranks) != list(range(1, len(ranks) + 1)):
         problems.append(
-            "site.schema.json FacilityFacts and values.schema.json Facilities list different codes: "
-            f"{sorted(site_codes ^ set(per_code))}"
+            f"{ACCESS_CLASSES}: ranks must run 1, 2, 3 and so on without gaps, got {ranks}"
+        )
+
+    for record_type in RECORD_TYPES:
+        problems += check_record_type(context, record_type)
+    creation = {kind for kind in submission_kinds(context) if kind.startswith("new_")}
+    if creation != {record_type.new_kind for record_type in RECORD_TYPES}:
+        problems.append(f"creation kinds {sorted(creation)} do not match the record types")
+    problems += check_facilities(context)
+    return problems
+
+
+def check_facilities(context: Context) -> list[str]:
+    """facilities.json, values.schema.json and the site schema agree on codes and attributes."""
+    problems: list[str] = []
+    values = "values.schema.json"
+    per_code = context.definition(values, "Facilities")["properties"]
+    site_facilities = context.definition("site.schema.json", "FacilityFacts")["properties"]
+    if site_facilities.keys() != per_code.keys():
+        difference = sorted(site_facilities.keys() ^ per_code.keys())
+        problems.append(
+            f"site.schema.json FacilityFacts and {values} list different codes: {difference}"
+        )
+    marked = {code for code, fact in site_facilities.items() if fact.get(SAFETY_MARKER)}
+    listed_safety = {
+        code
+        for code, entry in context.vocab.facilities.items()
+        if entry.get("safety_fact") and code not in context.vocab.stored_elsewhere
+    }
+    if marked != listed_safety:
+        problems.append(
+            f"site.schema.json marks safety facilities {sorted(marked)}, "
+            f"but facilities.json marks {sorted(listed_safety)}"
         )
     for code, entry in context.vocab.facilities.items():
         listed = {attribute["name"] for attribute in entry.get("attributes", [])}
         ref = per_code.get(code, {}).get("$ref")
         defined: set[str] = set()
         if ref:
-            value_schema = context.definition(VALUES_SCHEMA, ref.rsplit("/", 1)[1])
+            value_schema = context.definition(values, ref.rsplit("/", 1)[1])
             defined = set(value_schema["properties"]["attributes"]["properties"])
         if listed != defined:
             problems.append(
-                f"facilities.json {code}: attributes {sorted(listed)} do not match values.schema.json {sorted(defined)}"
+                f"facilities.json {code}: attributes {sorted(listed)} "
+                f"do not match {values} {sorted(defined)}"
             )
-    for code in per_code:
-        if code not in context.vocab.facilities:
-            problems.append(f"values.schema.json defines facility {code!r} that is not in facilities.json")
-    excluded = context.definition(VALUES_SCHEMA, "StoredFacilities")["not"]["anyOf"]
+    for code in per_code.keys() - context.vocab.facilities.keys():
+        problems.append(f"{values} defines facility {code!r} that is not in facilities.json")
+    excluded = context.definition(values, "StoredFacilities")["not"]["anyOf"]
     excluded_codes = {item["required"][0] for item in excluded}
     if excluded_codes != context.vocab.stored_elsewhere:
         problems.append(
@@ -348,9 +704,10 @@ def report(label: str, name: str, problems: list[str], indent: str) -> None:
 
 
 def check_given_files(arguments: list[str], context: Context) -> bool:
+    paths = [Path(argument) for argument in arguments]
+    context = context.with_sites(paths, complete=False)
     ok = True
-    for argument in arguments:
-        path = Path(argument)
+    for path in paths:
         problems = check_document(path, context)
         report("PASS" if not problems else "FAIL", str(path), problems, indent="")
         ok &= not problems
@@ -372,7 +729,9 @@ def check_invalid_examples(context: Context) -> tuple[bool, int]:
     print("\nInvalid examples (must fail with the expected error)")
     ok = True
     expected: dict[str, str] = without_comment(load_json(EXAMPLES / "invalid" / "expected.json"))
-    paths = sorted(path for path in (EXAMPLES / "invalid").glob("*.json") if path.name != "expected.json")
+    paths = sorted(
+        path for path in (EXAMPLES / "invalid").glob("*.json") if path.name != "expected.json"
+    )
     for path in paths:
         problems = check_document(path, context)
         fragment = expected.get(path.name)
@@ -383,7 +742,7 @@ def check_invalid_examples(context: Context) -> tuple[bool, int]:
             print(f"  FAIL  {path.name}: validated, but it must fail")
             ok = False
         elif not any(fragment in message for message in problems):
-            report("FAIL", f"{path.name}: failed, but not with {fragment!r}", problems[:8], indent="  ")
+            report("FAIL", f"{path.name}: failed, but not with {fragment!r}", problems[:8], "  ")
             ok = False
         else:
             print(f"  fail  {path.name}  ({fragment})")
@@ -408,13 +767,19 @@ def main(arguments: list[str]) -> int:
     for message in problems:
         print(f"  FAIL  {message}")
     if not problems:
-        vocab = context.vocab
-        print(f"  ok    {len(context.schemas)} schemas, {len(vocab.site_types)} site types, {len(vocab.facilities)} facilities")
+        counts = ", ".join(
+            f"{len(context.vocab.lists[name])} {label} codes"
+            for name, label in GOVERNED_LISTS.items()
+        )
+        print(f"  ok    {len(context.schemas)} schemas, {len(RECORD_TYPES)} record types, {counts}")
 
+    # Ferry terminals in the examples must be sites among the valid examples.
+    context = context.with_sites((EXAMPLES / "valid").glob("*.json"), complete=True)
     valid_ok, valid_count = check_valid_examples(context)
     invalid_ok, invalid_count = check_invalid_examples(context)
     ok = not problems and valid_ok and invalid_ok
-    print(f"\n{valid_count} valid, {invalid_count} invalid: {'all expectations met' if ok else 'EXPECTATIONS NOT MET'}")
+    verdict = "all expectations met" if ok else "EXPECTATIONS NOT MET"
+    print(f"\n{valid_count} valid, {invalid_count} invalid: {verdict}")
     return 0 if ok else 1
 
 

@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/ferry-service.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD ferry service",
+  "description": "A ferry service with every fact and its provenance: the full form served by the API with view=full and in GeoJSON bulk downloads. A ferry service is a crossing between two ferry terminals, which are sites with the ferry_terminal site type, with line geometry for the crossing. It records which vehicle classes it carries, its ferry vehicle limits, fares and hours. A fact that is absent is unknown, and an absent vehicle limit is never unlimited. ferry-service-compact.schema.json describes the compact form.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/FullRecord"
+    }
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/FerryServiceId"
+    },
+    "redirect_to": {
+      "$ref": "common.schema.json#/$defs/FerryServiceId"
+    },
+    "derived": {
+      "$ref": "common.schema.json#/$defs/LineDerived"
+    },
+    "facts": {
+      "$ref": "#/$defs/Facts"
+    }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "Facts": {
+      "description": "The ferry service's facts, each holding its value and provenance. The fact names and their value shapes are the same as in FactValues.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Names"
+            }
+          }
+        },
+        "geometry": {
+          "description": "Safety fact. A wrong crossing line can send a traveller to the wrong terminal or across water with no ferry, so every change to the geometry needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/LineGeometry"
+            }
+          }
+        },
+        "terminals": {
+          "description": "Safety fact. Moving a ferry service to other terminals sends travellers to a ramp the ferry does not use, so every change to the terminals needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Terminals"
+            }
+          }
+        },
+        "operator": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Operator"
+            }
+          }
+        },
+        "accepted_vehicle_classes": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/AcceptedVehicleClasses"
+            }
+          }
+        },
+        "vehicle_limits": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FerryVehicleLimits"
+            }
+          }
+        },
+        "fares": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Fares"
+            }
+          }
+        },
+        "bookings": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Bookings"
+            }
+          }
+        },
+        "operating_hours": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/OpeningHours"
+            }
+          }
+        },
+        "crossing": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Crossing"
+            }
+          }
+        },
+        "seasonal_closure": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/SeasonalClosure"
+            }
+          }
+        },
+        "description": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Description"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/RequiredFacts"
+        }
+      ]
+    },
+    "FactValues": {
+      "description": "Every fact of a ferry service as a plain value, without provenance: the facts of the compact form and of submissions. It sets no rule on unknown names, so each user closes it with unevaluatedProperties.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "$ref": "values.schema.json#/$defs/Names"
+        },
+        "geometry": {
+          "$ref": "values.schema.json#/$defs/LineGeometry"
+        },
+        "terminals": {
+          "$ref": "values.schema.json#/$defs/Terminals"
+        },
+        "operator": {
+          "$ref": "values.schema.json#/$defs/Operator"
+        },
+        "accepted_vehicle_classes": {
+          "$ref": "values.schema.json#/$defs/AcceptedVehicleClasses"
+        },
+        "vehicle_limits": {
+          "$ref": "values.schema.json#/$defs/FerryVehicleLimits"
+        },
+        "fares": {
+          "$ref": "values.schema.json#/$defs/Fares"
+        },
+        "bookings": {
+          "$ref": "values.schema.json#/$defs/Bookings"
+        },
+        "operating_hours": {
+          "$ref": "values.schema.json#/$defs/OpeningHours"
+        },
+        "crossing": {
+          "$ref": "values.schema.json#/$defs/Crossing"
+        },
+        "seasonal_closure": {
+          "$ref": "values.schema.json#/$defs/SeasonalClosure"
+        },
+        "description": {
+          "$ref": "values.schema.json#/$defs/Description"
+        }
+      }
+    },
+    "RequiredFacts": {
+      "description": "The facts a ferry service always has when it is not merged: names, geometry, terminals, accepted_vehicle_classes. Shared by the full form, the compact form and the submission that creates one.",
+      "required": ["names", "geometry", "terminals", "accepted_vehicle_classes"],
+      "properties": {
+        "names": true,
+        "geometry": true,
+        "terminals": true,
+        "accepted_vehicle_classes": true
+      }
+    }
+  }
+}

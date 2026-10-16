@@ -17,7 +17,7 @@ Every source file carries an SPDX licence header matching its directory (see [LI
 
 ## Checks before every commit
 
-Run `npm install` once after cloning. It installs the git hooks (lefthook), which check every commit for the writing rules in `AGENTS.md`, a valid schema and OpenAPI spec, Prettier formatting and a DCO sign-off. Run `npm run format` to fix formatting, and `npm run check:writing`, `npm run check:schema` or `npm run check:api` to run a check on its own. Never skip the hooks with `--no-verify`.
+Run `npm install` once after cloning. It installs the git hooks (lefthook), which check every commit for the writing rules in `AGENTS.md`, a valid schema and OpenAPI spec, Prettier formatting and a DCO sign-off. The schema check (`tools/check-schema.sh`) builds a Python virtual environment in `.tools/venv` from `schema/tools/requirements.txt`, checks the formatting of `schema/tools` with `ruff format --check` (settings in `schema/tools/ruff.toml`) and runs the validator. Run `npm run format` to fix Prettier formatting, `.tools/venv/bin/ruff format schema/tools` to fix Python formatting, and `npm run check:writing`, `npm run check:schema` or `npm run check:api` to run a check on its own. Never skip the hooks with `--no-verify`.
 
 ## Sign-off (DCO)
 
@@ -31,14 +31,14 @@ Signed-off-by: Your Name <you@example.com>
 
 Use your real name or a name you are known by in the community. Pull requests with unsigned commits cannot be merged. To sign off commits already made on your branch, run `git rebase --signoff main` and force-push the branch.
 
-## Proposing a site type or facility
+## Proposing a governed list value
 
-Site types and facilities come from a governed list, so that every partner app can rely on the same values. To propose an addition or a change:
+Site types, facilities, structures, surfaces, vehicle access classes and vehicle classes come from governed lists, so that every partner app can rely on the same values. To propose an addition or a change:
 
 1. Check the current list in `schema/` and the existing issues, in case it is already covered or proposed.
 2. Open an issue titled "Governed list: add `<proposed_value>`" (or "change" or "retire").
 3. In the issue, give:
-   - the proposed value in `snake_case`, and whether it is a site type or a facility
+   - the proposed value in `snake_case`, and which governed list it belongs to
    - a one-sentence definition
    - any attributes it needs (for example `max_length_m` or `fee_aud`), with units
    - the matching OpenStreetMap tags and schema.org type or property, or "none"

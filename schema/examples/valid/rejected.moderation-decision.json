@@ -8,6 +8,14 @@
     "moderator_id": "otwd:contributor:01KKS1RPGCFYJK8VCTP4V7BMX8"
   },
   "decided_at": "2026-05-20T05:00:00Z",
+  "routing": {
+    "route": "human_review",
+    "policy_version": "routing-1.0",
+    "submission_kind": "update_facts",
+    "record_type": "site",
+    "fields": ["/facts/description"],
+    "always_human": false
+  },
   "reasons": [
     {
       "code": "copied_text",

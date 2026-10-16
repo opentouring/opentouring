@@ -2,7 +2,7 @@
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "schema_version": "1.0",
   "kind": "report_closure",
-  "site_id": "otwd:site:01KYP4ZPSXSNZC1V4BTVHNQ3ZX",
+  "record_id": "otwd:site:01KYP4ZPSXSNZC1V4BTVHNQ3ZX",
   "base_change_seq": 16002,
   "contributor": {
     "kind": "pseudonymous",

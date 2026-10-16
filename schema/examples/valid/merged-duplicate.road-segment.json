@@ -1,0 +1,28 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:road_segment:01M32P654048WNDY1WZ4SV2KT5",
+  "status": {
+    "value": "merged",
+    "reason": [
+      {
+        "text": "Same track as Snowgum Spur Track, added twice.",
+        "lang": "en-AU"
+      }
+    ],
+    "provenance": {
+      "source_kind": "contributor",
+      "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+      "observed_on": "2026-10-08",
+      "recorded_at": "2026-10-09T23:00:00Z",
+      "confidence": 0.9,
+      "submission_id": "otwd:submission:01M3DMC6W0G7CXSHCP4A3T01P5",
+      "decision_id": "otwd:decision:01M3RBPHC0DE4AKV7KDFGM8QHK",
+      "change_seq": 30950
+    }
+  },
+  "redirect_to": "otwd:road_segment:01M32FADW05SWY4J87AKN7XP34",
+  "created_at": "2026-09-30T04:00:00Z",
+  "updated_at": "2026-10-09T23:00:00Z",
+  "change_seq": 30950
+}

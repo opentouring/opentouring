@@ -7,3 +7,5 @@ jsonschema[format-nongpl]>=4.23,<5
 referencing>=0.35
 # IANA time zone data for systems without a zoneinfo database (Windows).
 tzdata>=2024.1
+# Formatter for schema/tools, run by tools/check-schema.sh (settings in ruff.toml).
+ruff>=0.15,<1

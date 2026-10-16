@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "surfaces",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "sealed",
+      "label": "Sealed",
+      "description": "Asphalt, spray seal (chip seal) or concrete.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["surface=paved"],
+          "match": "broader",
+          "note": "Also covers paving stones and setts."
+        },
+        { "tags": ["surface=asphalt"], "match": "narrower" },
+        { "tags": ["surface=chipseal"], "match": "narrower" },
+        { "tags": ["surface=concrete"], "match": "narrower" }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "unsealed",
+      "label": "Unsealed",
+      "description": "Not sealed, with the material not recorded. Most road authority datasets say only sealed or unsealed, so seed imports use this code until a contributor reports the material.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["surface=unpaved"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "gravel",
+      "label": "Gravel",
+      "description": "A formed road surfaced with compacted gravel, crushed rock or fine gravel.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        { "tags": ["surface=gravel"], "match": "exact" },
+        { "tags": ["surface=compacted"], "match": "exact" },
+        { "tags": ["surface=fine_gravel"], "match": "narrower" },
+        {
+          "tags": ["tracktype=grade2"],
+          "match": "related",
+          "note": "Used on highway=track ways: a firm gravel track."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "dirt",
+      "label": "Dirt or natural earth",
+      "description": "An unformed or lightly formed track on the natural soil, without added gravel.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        { "tags": ["surface=dirt"], "match": "exact" },
+        { "tags": ["surface=earth"], "match": "exact" },
+        { "tags": ["surface=ground"], "match": "broader" },
+        {
+          "tags": ["tracktype=grade4"],
+          "match": "related",
+          "note": "Used on highway=track ways: mostly soil with little hard material."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "sand",
+      "label": "Sand",
+      "description": "A track over sand, such as a beach or desert track, where a vehicle can bog without lowered tyre pressures.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        { "tags": ["surface=sand"], "match": "exact" },
+        {
+          "tags": ["tracktype=grade5"],
+          "match": "related",
+          "note": "Used on highway=track ways: soft, uncompacted material."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "clay",
+      "label": "Clay or black soil",
+      "description": "Clay or black soil that sets hard when dry and becomes slippery or impassable when wet.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["surface=clay"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "rock",
+      "label": "Rock",
+      "description": "Exposed bedrock, rock steps or loose stones larger than gravel.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        { "tags": ["surface=rock"], "match": "narrower", "note": "Bedrock only." },
+        { "tags": ["surface=stone"], "match": "related" }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "mud",
+      "label": "Mud",
+      "description": "A track that is mud for much of the year, such as a track through swamp or rainforest.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["surface=mud"], "match": "exact" }],
+      "schema_org": null
+    }
+  ]
+}

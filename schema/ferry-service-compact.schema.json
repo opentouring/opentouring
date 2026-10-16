@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/ferry-service-compact.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD ferry service, compact form",
+  "description": "A ferry service with plain values and no per-fact provenance: the default form served by the API (view=compact) and the column layout of GeoParquet bulk downloads. It is derived from the full form (ferry-service.schema.json) by replacing each fact with its value, in the same way as the compact site form.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/CompactRecord"
+    },
+    {
+      "$ref": "common.schema.json#/$defs/LineDerivedValues"
+    },
+    {
+      "$ref": "ferry-service.schema.json#/$defs/FactValues"
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "merged"
+          }
+        }
+      },
+      "else": {
+        "allOf": [
+          {
+            "$ref": "ferry-service.schema.json#/$defs/RequiredFacts"
+          }
+        ],
+        "required": ["name", "country_codes", "time_zone", "length_km"],
+        "properties": {
+          "name": true,
+          "country_codes": true,
+          "time_zone": true,
+          "length_km": true
+        }
+      }
+    }
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/FerryServiceId"
+    },
+    "redirect_to": {
+      "$ref": "common.schema.json#/$defs/FerryServiceId"
+    }
+  },
+  "unevaluatedProperties": false
+}
