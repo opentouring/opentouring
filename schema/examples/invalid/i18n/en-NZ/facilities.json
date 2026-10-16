@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "facilities",
+  "language": "en-NZ",
+  "reference_version": "1.0.0",
+  "entries": {
+    "drinking_water": {
+      "label": "Drinking water",
+      "safety_fact": false
+    }
+  }
+}

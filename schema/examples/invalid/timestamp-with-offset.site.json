@@ -1,0 +1,335 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-05-14",
+      "recorded_at": "2026-05-16T01:22:09Z",
+      "confidence": 0.82,
+      "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+      "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+      "change_seq": 10412
+    }
+  },
+  "created_at": "2026-05-16T01:22:09Z",
+  "updated_at": "2026-09-09T09:10:00+10:00",
+  "change_seq": 18877,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-QLD",
+    "locality": "Mount Garnet",
+    "time_zone": "Australia/Brisbane"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Granite Creek Bend Free Camp",
+          "lang": "en",
+          "kind": "primary"
+        },
+        {
+          "text": "Granite Bend",
+          "lang": "en",
+          "kind": "short"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -17.6271,
+        "lng": 145.0412,
+        "accuracy_m": 15
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "free_camp",
+        "others": ["rest_area"]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "description": {
+      "value": [
+        {
+          "text": "Flat gravel clearing beside a seasonal creek, set back from the highway behind a line of ironbarks. Room for a dozen rigs. Creek water is not for drinking.",
+          "lang": "en-AU"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "prices": {
+      "value": {
+        "charging": "free"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "stay_limits": {
+      "value": {
+        "max_nights": 2,
+        "period_days": 28,
+        "notes": [
+          {
+            "text": "Sign at the entrance says 48 hours.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "pets": {
+      "value": {
+        "allowed": "on_leash"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "access": {
+      "value": {
+        "road_surface": "gravel",
+        "unsealed_km": 0.4,
+        "four_wd_required": false,
+        "seasonal": {
+          "affected": true,
+          "wet_weather_closure": true
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-19",
+        "recorded_at": "2026-08-21T06:40:00Z",
+        "confidence": 0.88,
+        "submission_id": "otwd:submission:01KNTJPWN1B65TBMPY64JGFBHR",
+        "decision_id": "otwd:decision:01KP8M9EHR3RN6WEKMYGB8T07E",
+        "change_seq": 18877
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "big_rig_suitable": "yes",
+        "towing_allowed": true
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      },
+      "confirmations": {
+        "count": 3,
+        "last_confirmed_on": "2026-08-19"
+      }
+    }
+  },
+  "facilities": {
+    "toilets": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "kind": "pit",
+          "count": 1
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "bins": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "drinking_water": {
+      "value": {
+        "available": false
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "non_potable_water": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "source": "creek_or_river",
+          "signed_not_for_drinking": false
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "fires_allowed": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "fire_rings_only": false,
+          "bring_own_firewood": false
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    },
+    "mobile_coverage": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "observations": [
+            {
+              "carrier": "Telstra",
+              "technology": "4g",
+              "signal": "weak",
+              "data_usable": true,
+              "observed_on": "2026-05-14"
+            },
+            {
+              "carrier": "Optus",
+              "technology": "unknown",
+              "signal": "none",
+              "data_usable": false,
+              "observed_on": "2026-05-14"
+            }
+          ]
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-05-14",
+        "recorded_at": "2026-05-16T01:22:09Z",
+        "confidence": 0.82,
+        "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+        "decision_id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
+        "change_seq": 10412
+      }
+    }
+  }
+}

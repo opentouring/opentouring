@@ -242,6 +242,7 @@
   "subdivision_codes": ["AU-VIC"],
   "localities": ["Port Welshpool"],
   "time_zone": "Australia/Melbourne",
+  "time_zones": ["Australia/Melbourne"],
   "length_km": 9.8,
   "min_confidence": 0.8,
   "safety_facts_observed_on": "2026-10-01",

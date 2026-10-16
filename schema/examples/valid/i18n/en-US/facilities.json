@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "facilities",
+  "language": "en-US",
+  "reference_version": "1.0.0",
+  "entries": {
+    "toilets": {
+      "label": "Restrooms",
+      "description": "Restrooms travelers can use at the site.",
+      "attributes": {
+        "count": "Number of restrooms."
+      }
+    },
+    "dump_point_access": {
+      "label": "Dump station",
+      "description": "A dump station at the site for cassette toilets or holding tanks."
+    },
+    "bins": {
+      "label": "Trash cans"
+    }
+  }
+}

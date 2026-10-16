@@ -1,0 +1,11 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "list": "site_types",
+  "language": "en-IE",
+  "reference_version": "1.0.0",
+  "entries": {
+    "caravan_park": {
+      "label": "Caravan and camping park"
+    }
+  }
+}

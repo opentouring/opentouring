@@ -24,6 +24,7 @@
     "subdivision_codes": ["AU-VIC"],
     "localities": ["Mansfield"],
     "time_zone": "Australia/Melbourne",
+    "time_zones": ["Australia/Melbourne"],
     "length_km": 2.1
   },
   "facts": {

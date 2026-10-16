@@ -43,6 +43,17 @@ info:
     support. Contributing is free on every tier, and that includes the submissionDecided webhook,
     which reports the outcome of a partner app's own submissions.
 
+    ## Languages
+
+    Governed list endpoints honour `Accept-Language`, with the fallback the parameter describes.
+    Labels and descriptions are written in en-AU, the reference language, and translated by
+    contributors. The response carries `Content-Language` and `Vary: Accept-Language`.
+
+    Record responses are not translated. They carry codes, which apps label from the governed
+    lists in the traveller's language, and free text such as names, descriptions and notes in the
+    language the contributor wrote, with its `lang` tag. An app that shows a machine translation
+    of free text marks it as machine translated, and never submits it back as a fact.
+
     ## Attribution
 
     OTWD data is licensed under the Creative Commons Attribution 4.0 International licence
@@ -322,9 +333,10 @@ paths:
       tags: [Governed lists]
       operationId: listSiteTypes
       summary: List site types
-      description: Returns the governed list of site types, with labels, descriptions and OSM and schema.org mappings. The list changes rarely, so cache it and revalidate with If-None-Match.
+      description: Returns the governed list of site types, with labels, descriptions and OSM and schema.org mappings. Labels and descriptions are in the language asked for in Accept-Language, with en-AU as the fallback. The list changes rarely, so cache it and revalidate with If-None-Match.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           description: The site type list.
@@ -333,6 +345,10 @@ paths:
               $ref: "#/components/headers/ETag"
             Cache-Control:
               $ref: "#/components/headers/CacheControl"
+            Content-Language:
+              $ref: "#/components/headers/ContentLanguage"
+            Vary:
+              $ref: "#/components/headers/Vary"
           content:
             application/json:
               schema:
@@ -352,6 +368,7 @@ paths:
       description: Returns the governed list of facilities, with their attributes, safety fact flags and OSM and schema.org mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           description: The facility list.
@@ -360,6 +377,10 @@ paths:
               $ref: "#/components/headers/ETag"
             Cache-Control:
               $ref: "#/components/headers/CacheControl"
+            Content-Language:
+              $ref: "#/components/headers/ContentLanguage"
+            Vary:
+              $ref: "#/components/headers/Vary"
           content:
             application/json:
               schema:
@@ -575,7 +596,7 @@ paths:
             default: false
         - name: has_bait_notice
           in: query
-          description: When true, returns only segments with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the segment's time zone. When false, only segments without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
+          description: When true, returns only segments with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the segment's time zone, or in the notice's own time_zone when it has one. When false, only segments without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
           schema:
             type: boolean
         - $ref: "#/components/parameters/RigLengthM"
@@ -825,6 +846,7 @@ paths:
       description: Returns the governed list of structures found at road restrictions, with the passages each allows and OSM mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -843,6 +865,7 @@ paths:
       description: Returns the governed list of road segment surfaces, with OSM surface and tracktype mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -861,6 +884,7 @@ paths:
       description: Returns the governed list of vehicle access classes in rank order, from 2WD to closed to vehicles, with OSM mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -879,6 +903,7 @@ paths:
       description: Returns the governed list of vehicle classes used by ferry services, with OSM access mappings.
       parameters:
         - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
       responses:
         "200":
           $ref: "#/components/responses/GovernedList"
@@ -1342,10 +1367,9 @@ components:
     UpdatedSince:
       name: updated_since
       in: query
-      description: Returns only records changed at or after this time. For reliable incremental sync on paid tiers, follow the change feed instead.
+      description: Returns only records changed at or after this instant, in UTC with the Z suffix. For reliable incremental sync on paid tiers, follow the change feed instead.
       schema:
-        type: string
-        format: date-time
+        $ref: "#/components/schemas/Timestamp"
     RigLengthM:
       name: rig_length_m
       in: query
@@ -1452,6 +1476,14 @@ components:
       description: An ETag from an earlier response. The response is 304 when it still matches.
       schema:
         type: string
+    AcceptLanguage:
+      name: Accept-Language
+      in: header
+      description: The languages the reader prefers, as in RFC 9110, for example de-AT, de;q=0.8. Governed list text is served in the best match. A missing translation falls back to the base language (de-AT to de), then to en-AU, and label_lang or description_lang names the language used. Without this header the list is in en-AU.
+      schema:
+        type: string
+        maxLength: 200
+      example: de-AT, de;q=0.8, en;q=0.5
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -1472,7 +1504,7 @@ components:
       name: webhook-timestamp
       in: header
       required: true
-      description: Unix time in seconds when the delivery was signed.
+      description: Unix time in seconds when the delivery was signed, which counts from the epoch in UTC.
       schema:
         type: integer
     WebhookSignature:
@@ -1504,8 +1536,18 @@ components:
       description: Entity tag of the representation. For a record it changes whenever change_seq changes.
       schema:
         type: string
+    ContentLanguage:
+      description: The language the governed list was served in, the same as its language field. Entries with no translation in it say so in label_lang or description_lang.
+      schema:
+        type: string
+      example: de
+    Vary:
+      description: Accept-Language for governed lists, so caches keep one copy per language. The ETag differs between languages.
+      schema:
+        type: string
+      example: Accept-Language
     LastModified:
-      description: The record's updated_at, in HTTP date form.
+      description: The record's updated_at, in HTTP date form, which is always GMT.
       schema:
         type: string
     CacheControl:
@@ -1578,6 +1620,10 @@ components:
           $ref: "#/components/headers/ETag"
         Cache-Control:
           $ref: "#/components/headers/CacheControl"
+        Content-Language:
+          $ref: "#/components/headers/ContentLanguage"
+        Vary:
+          $ref: "#/components/headers/Vary"
       content:
         application/json:
           schema:
@@ -1590,6 +1636,9 @@ components:
             $ref: "#/components/schemas/Problem"
 
   schemas:
+    Timestamp:
+      description: An instant in RFC 3339 form in UTC with the Z suffix, for example 2026-09-08T23:10:00Z. Every time the API sends or accepts as an instant uses it, including the change feed and webhook payloads. Offsets other than Z are rejected. Opening hours, timetables and other local schedules are local clock times, never Timestamps.
+      $ref: "../schema/common.schema.json#/$defs/Timestamp"
     Problem:
       description: RFC 9457 problem details. The type URI identifies the problem and links to its documentation.
       type: object
@@ -1885,8 +1934,7 @@ components:
           type: string
           format: uri
         expires_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         size_bytes:
           type: integer
           minimum: 0
@@ -1894,8 +1942,7 @@ components:
           description: SHA-256 of the file.
           $ref: "../schema/common.schema.json#/$defs/Sha256"
         generated_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         schema_version:
           type: string
           example: "1.0"
@@ -1953,8 +2000,7 @@ components:
           type: string
           format: uri
         received_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         partner_reference:
           type: string
     SubmissionStatus:
@@ -1987,11 +2033,9 @@ components:
           type: string
           enum: [received, checking, in_review, needs_info, approved, edited_and_approved, rejected]
         received_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         updated_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         decision:
           $ref: "#/components/schemas/DecisionSummary"
     DecisionSummary:
@@ -2005,8 +2049,7 @@ components:
           type: string
           enum: [approved, edited_and_approved, rejected, needs_info]
         decided_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         decided_by_kind:
           type: string
           enum: [moderator, routing_rule]
@@ -2022,8 +2065,7 @@ components:
             $ref: "../schema/common.schema.json#/$defs/ChangeSeq"
         appealable_until:
           description: Last moment the contributor can appeal through the Open Touring website.
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
     PhotoUploadRequest:
       type: object
       required: [content_type, size_bytes, sha256]
@@ -2057,8 +2099,7 @@ components:
           additionalProperties:
             type: string
         expires_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
     ChangeAppliedEvent:
       type: object
       required: [type, created_at, data]
@@ -2066,8 +2107,7 @@ components:
         type:
           const: change.applied
         created_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         data:
           $ref: "../schema/change.schema.json"
     SubmissionDecidedEvent:
@@ -2077,7 +2117,6 @@ components:
         type:
           const: submission.decided
         created_at:
-          type: string
-          format: date-time
+          $ref: "#/components/schemas/Timestamp"
         data:
           $ref: "#/components/schemas/SubmissionStatus"

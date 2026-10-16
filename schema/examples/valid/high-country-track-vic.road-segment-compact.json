@@ -99,6 +99,7 @@
   "subdivision_codes": ["AU-VIC"],
   "localities": ["Licola"],
   "time_zone": "Australia/Melbourne",
+  "time_zones": ["Australia/Melbourne"],
   "length_km": 6.4,
   "min_confidence": 0.75,
   "safety_facts_observed_on": "2026-04-18",

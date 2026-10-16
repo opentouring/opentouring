@@ -15,24 +15,14 @@
       "type": "string"
     },
     "list": {
-      "type": "string",
-      "enum": [
-        "site_types",
-        "facilities",
-        "structures",
-        "surfaces",
-        "vehicle_access_classes",
-        "vehicle_classes",
-        "key_schemes",
-        "pet_species"
-      ]
+      "$ref": "#/$defs/ListName"
     },
     "version": {
       "description": "Version of the governed list. A new entry increases the minor version. Changing an entry's meaning is not allowed.",
       "$ref": "#/$defs/ListVersion"
     },
     "language": {
-      "description": "Language of labels and descriptions in this file. Translations are published as separate files.",
+      "description": "Language of the labels and descriptions. The governed list files in schema/ are always in en-AU, the reference language. Translations into other languages are separate files in schema/i18n (translation.schema.json). In an API response it is the language the API chose from Accept-Language, also sent as Content-Language, and entries with no translation in that language fall back as label_lang and description_lang say.",
       "$ref": "common.schema.json#/$defs/LanguageTag"
     },
     "entries": {
@@ -155,6 +145,20 @@
     }
   ],
   "$defs": {
+    "ListName": {
+      "description": "The name of a governed list. The file that holds it is the name with underscores turned into hyphens, for example vehicle_access_classes in vehicle-access-classes.json.",
+      "type": "string",
+      "enum": [
+        "site_types",
+        "facilities",
+        "structures",
+        "surfaces",
+        "vehicle_access_classes",
+        "vehicle_classes",
+        "key_schemes",
+        "pet_species"
+      ]
+    },
     "ListVersion": {
       "description": "A governed list version: major.minor.patch.",
       "type": "string",
@@ -176,6 +180,14 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 500
+        },
+        "label_lang": {
+          "description": "API responses only: the language the label is in, when it differs from the document's language because no translation exists and the label fell back (ADR 0031). Never present in the governed list files.",
+          "$ref": "common.schema.json#/$defs/LanguageTag"
+        },
+        "description_lang": {
+          "description": "API responses only: the language the description is in, when it differs from the document's language, with the same fallback as label_lang. Never present in the governed list files.",
+          "$ref": "common.schema.json#/$defs/LanguageTag"
         },
         "status": {
           "type": "string",

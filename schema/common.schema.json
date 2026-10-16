@@ -221,8 +221,20 @@
       "pattern": "^[A-Z]{3}$",
       "examples": ["AUD", "NZD"]
     },
+    "Timestamp": {
+      "description": "An instant: an RFC 3339 date and time in UTC, with the Z suffix and no other offset, for example 2026-09-08T23:10:00Z. Every moment OTWD records (recorded_at, retrieved_at, decided_at, created_at, applied_at, the change feed and webhook payloads) uses it. Show it in the reader's own time zone. Local schedules such as opening hours never use it.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?Z$",
+      "examples": ["2026-09-08T23:10:00Z"]
+    },
+    "LocalDate": {
+      "description": "A local calendar date in YYYY-MM-DD form, read in the time zone of the record it belongs to: the day as people at the record count it, for example the day a closure began or a fact was observed. It is never converted to UTC.",
+      "type": "string",
+      "format": "date"
+    },
     "TimeZone": {
-      "description": "IANA time zone name, for example Australia/Darwin.",
+      "description": "IANA time zone name, for example Australia/Darwin. Local schedules (LocalTime, LocalDate, MonthDay) are read in it.",
       "type": "string",
       "pattern": "^(UTC|[A-Za-z_]+(/[A-Za-z0-9_+-]+){1,2})$",
       "maxLength": 64
@@ -234,12 +246,12 @@
       "examples": ["+61740001234"]
     },
     "LocalTime": {
-      "description": "Local time of day in 24-hour HH:MM form, in the site's time zone. 24:00 means the end of the day.",
+      "description": "Local clock time of day in 24-hour HH:MM form, read in the record's time zone or in the time_zone of the schedule that holds it. 24:00 means the end of the day. It is never converted to UTC: a 06:00 departure stays at 06:00 on the local clock when daylight saving starts or ends.",
       "type": "string",
       "pattern": "^(([01][0-9]|2[0-3]):[0-5][0-9]|24:00)$"
     },
     "MonthDay": {
-      "description": "A day of the year in MM-DD form, used for periods that repeat every year.",
+      "description": "A day of the year in MM-DD form, used for periods that repeat every year. It is a local calendar day, read in the record's time zone or the schedule's own time_zone, and never converted to UTC.",
       "type": "string",
       "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
     },
@@ -294,8 +306,7 @@
         },
         "retrieved_at": {
           "description": "When OTWD downloaded the dataset.",
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/$defs/Timestamp"
         }
       },
       "additionalProperties": false
@@ -328,13 +339,11 @@
         },
         "observed_on": {
           "description": "The date the fact was observed on the ground, or the date the seed source says the record was current. Older observations are less likely to be true today.",
-          "type": "string",
-          "format": "date"
+          "$ref": "#/$defs/LocalDate"
         },
         "recorded_at": {
           "description": "When OTWD applied the fact to the live data.",
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/$defs/Timestamp"
         },
         "confidence": {
           "description": "OTWD's estimate, from 0 to 1, that the fact is correct. It is computed from the source's trust score, the moderation route, the age of the observation and any later confirmations.",
@@ -445,8 +454,7 @@
           "minimum": 1
         },
         "last_confirmed_on": {
-          "type": "string",
-          "format": "date"
+          "$ref": "#/$defs/LocalDate"
         }
       },
       "additionalProperties": false
@@ -490,13 +498,11 @@
         },
         "reopens_on": {
           "description": "For temporarily_closed: the expected reopening date, when known.",
-          "type": "string",
-          "format": "date"
+          "$ref": "#/$defs/LocalDate"
         },
         "closed_on": {
           "description": "For temporarily_closed or closed: the date the closure began, when known.",
-          "type": "string",
-          "format": "date"
+          "$ref": "#/$defs/LocalDate"
         },
         "closure_authority": {
           "$ref": "#/$defs/ClosureAuthority"
@@ -541,8 +547,7 @@
           "$ref": "#/$defs/Notes"
         },
         "taken_on": {
-          "type": "string",
-          "format": "date"
+          "$ref": "#/$defs/LocalDate"
         },
         "licence": {
           "description": "Always CC-BY-4.0 in schema version 1.",
@@ -597,8 +602,7 @@
             "$ref": "#/$defs/Notes"
           },
           "taken_on": {
-            "type": "string",
-            "format": "date"
+            "$ref": "#/$defs/LocalDate"
           },
           "licence": {
             "const": "CC-BY-4.0"
@@ -631,13 +635,11 @@
           "$ref": "#/$defs/RecordId"
         },
         "created_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/$defs/Timestamp"
         },
         "updated_at": {
           "description": "When the latest change to this record was applied.",
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/$defs/Timestamp"
         },
         "change_seq": {
           "description": "Sequence number of the latest change applied to this record. A submission that changes the record sends it back as base_change_seq so conflicts can be detected.",
@@ -704,12 +706,10 @@
           "$ref": "#/$defs/Notes"
         },
         "reopens_on": {
-          "type": "string",
-          "format": "date"
+          "$ref": "#/$defs/LocalDate"
         },
         "closed_on": {
-          "type": "string",
-          "format": "date"
+          "$ref": "#/$defs/LocalDate"
         },
         "closure_authority": {
           "$ref": "#/$defs/ClosureAuthority"
@@ -721,12 +721,10 @@
           "$ref": "#/$defs/RecordId"
         },
         "created_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/$defs/Timestamp"
         },
         "updated_at": {
-          "type": "string",
-          "format": "date-time"
+          "$ref": "#/$defs/Timestamp"
         },
         "change_seq": {
           "$ref": "#/$defs/ChangeSeq"
@@ -826,6 +824,15 @@
         "maxLength": 100
       }
     },
+    "TimeZones": {
+      "description": "Every IANA time zone the line passes through, in order from its start, so the first is time_zone. A zone appears again each time the line returns to it, as on a track from South Australia into Victoria and back, but never twice in a row (tools/validate.py checks this). A schedule's own time_zone must be one of them.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/TimeZone"
+      }
+    },
     "LengthKm": {
       "description": "Length of a line's geometry along the ground, in kilometres.",
       "type": "number",
@@ -845,8 +852,11 @@
           "$ref": "#/$defs/Localities"
         },
         "time_zone": {
-          "description": "The time zone at the start of the line. Times in the record's facts are local to it.",
+          "description": "The record's default time zone: the zone at the start of the line. Local times and dates in the record's facts are read in it, unless a schedule names its own time_zone.",
           "$ref": "#/$defs/TimeZone"
+        },
+        "time_zones": {
+          "$ref": "#/$defs/TimeZones"
         },
         "length_km": {
           "$ref": "#/$defs/LengthKm"
@@ -856,7 +866,7 @@
     "LineDerived": {
       "description": "The derived object of a line record in the full form.",
       "type": "object",
-      "required": ["country_codes", "time_zone", "length_km"],
+      "required": ["country_codes", "time_zone", "time_zones", "length_km"],
       "$ref": "#/$defs/LineDerivedValues",
       "unevaluatedProperties": false
     },
@@ -879,8 +889,7 @@
     },
     "SafetyFactsObservedOn": {
       "description": "The oldest observed date among the record's safety facts, when known. Apps can warn when it is old.",
-      "type": "string",
-      "format": "date"
+      "$ref": "#/$defs/LocalDate"
     },
     "Position": {
       "description": "A GeoJSON position (RFC 7946): longitude then latitude in WGS84 decimal degrees. OTWD positions have no altitude.",

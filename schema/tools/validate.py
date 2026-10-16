@@ -11,30 +11,41 @@ against site.schema.json, *.site-compact.json against site-compact.schema.json,
 and so on for every record type, submission, verdict, moderation decision and
 change (see DOCUMENT_KINDS).
 
+Translations of the governed lists live at i18n/<language>/<list file>, for
+example i18n/de/facilities.json, and are checked against translation.schema.json
+and against the reference list wherever they are found: in i18n/, and under
+examples/valid/i18n and examples/invalid/i18n.
+
 The script runs three stages:
 
 1. Every *.schema.json file is checked against the JSON Schema 2020-12
    metaschema, the governed lists against vocabulary.schema.json and
    facilities.json against the per-facility schemas in values.schema.json.
+   The governed lists are in en-AU, the reference language.
    For each record type in RECORD_TYPES it checks that the full form,
    FactValues, the compact form and the submissions name the same facts with
    the same value shapes and share one set of required facts.
 2. Each document is validated against its schema with format checking on
    (date, date-time, uri, email, json-pointer).
 3. Rules that JSON Schema cannot express, and that the API also enforces,
-   are checked: governed list codes, ISO 3166-2 prefixes, IANA time zones,
+   are checked: governed list codes, ISO 3166-2 prefixes, IANA time zones
+   (a line's time_zones start with its time_zone, never list one zone twice in a
+   row and hold every schedule's own time_zone),
    lowest figures, the always-human list derived from the schema's safety
-   fact markers, ferry terminals and a few cross-field rules.
+   fact markers, ferry terminals, translations that name only codes and
+   attributes of the reference list from a folder named for their language
+   and carry the SPDX header, and a few cross-field rules.
 
 A top-level "$comment" in a document (the SPDX header of the example files)
-is removed before validation. A document that holds "$base" and "$patch" is
-built from the document "$base" names, relative to its own file, with the JSON
-Patch operations add, replace and remove in "$patch" applied in order. Invalid
-examples use it to state only what makes them invalid.
+is removed before validation against the schema. A document that holds "$base"
+and "$patch" is built from the document "$base" names, relative to its own
+file, with the JSON Patch operations add, replace and remove in "$patch"
+applied in order. Invalid examples use it to state only what makes them invalid.
 
-Files under examples/valid must pass. Files under examples/invalid must fail,
-and examples/invalid/expected.json names a fragment of the error each one must
-produce, so an invalid example cannot pass by failing for the wrong reason.
+Files under examples/valid and i18n must pass. Files under examples/invalid must
+fail, and examples/invalid/expected.json names a fragment of the error each one
+must produce (keyed by its path below examples/invalid), so an invalid example
+cannot pass by failing for the wrong reason.
 The exit status is 0 when every expectation holds and 1 otherwise.
 """
 
@@ -59,7 +70,12 @@ BASE = "https://schema.opentouring.org/otwd/v1/"
 COMMENT_KEY = "$comment"
 BASE_KEY = "$base"
 PATCH_KEY = "$patch"
+SPDX_COMMENT = "SPDX-License-Identifier: Apache-2.0"
 SAFETY_MARKER = "x-otwd-safety-fact"
+I18N = "i18n"
+REFERENCE_LANGUAGE = "en-AU"
+# Fields the API adds to governed list entries when text falls back to another language.
+FALLBACK_FIELDS = ("label_lang", "description_lang")
 
 # Formats the schemas rely on. Without the packages in requirements.txt the
 # jsonschema library silently skips some of them, so their absence is fatal.
@@ -94,6 +110,16 @@ ALWAYS_HUMAN_KINDS = {"report_closure", "request_merge"}
 
 def schema_file(stem: str) -> str:
     return f"{stem}.schema.json"
+
+
+def list_file(list_name: str) -> str:
+    """The governed list file that holds a list, for example vehicle-access-classes.json."""
+    return f"{list_name.replace('_', '-')}.json"
+
+
+def version_tuple(version: str) -> tuple[int, ...]:
+    """A dotted version as numbers, so 1.10.0 sorts after 1.9.0."""
+    return tuple(int(part) for part in version.split("."))
 
 
 @dataclass(frozen=True)
@@ -139,6 +165,34 @@ RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_T
 def load_json(path: Path) -> Any:
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def canonical_tag(tag: str) -> str:
+    """A BCP 47 tag in its canonical case (RFC 5646 section 2.1.1), such as en-US or zh-Hant-TW.
+
+    Tags compare case-insensitively, so two tags are the same language when their canonical
+    forms are equal.
+    """
+    parts = tag.split("-")
+    canonical = [parts[0].lower()]
+    after_singleton = False
+    for part in parts[1:]:
+        after_singleton |= len(part) == 1
+        if after_singleton:
+            canonical.append(part.lower())
+        elif len(part) == 2:
+            canonical.append(part.upper())
+        elif len(part) == 4 and part.isalpha():
+            canonical.append(part.title())
+        else:
+            canonical.append(part.lower())
+    return "-".join(canonical)
+
+
+def record_zones(derived: dict) -> list[str]:
+    """The time zones a record lies in: a line's time_zones, or a point's one time_zone."""
+    time_zone = derived.get("time_zone")
+    return derived.get("time_zones", [time_zone] if time_zone else [])
 
 
 def without_comment(document: Any) -> Any:
@@ -228,10 +282,12 @@ class Vocab:
     """The governed lists: for each list file, its entries keyed by code."""
 
     def __init__(self) -> None:
+        documents = {name: load_json(SCHEMA_DIR / name) for name in GOVERNED_LISTS}
         self.lists = {
-            name: {entry["code"]: entry for entry in load_json(SCHEMA_DIR / name)["entries"]}
-            for name in GOVERNED_LISTS
+            name: {entry["code"]: entry for entry in document["entries"]}
+            for name, document in documents.items()
         }
+        self.versions = {name: document["version"] for name, document in documents.items()}
         self.facilities = self.lists[FACILITIES]
         self.stored_elsewhere = {
             code for code, entry in self.facilities.items() if "stored_as" in entry
@@ -365,8 +421,10 @@ class SemanticChecker:
         self.vocab = context.vocab
         self.rejects_deprecated = rejects_deprecated
         self.errors: list[str] = []
-        # The record's countries, for rules that depend on them. Submissions have none.
+        # The record's countries and time zones, for rules that depend on them.
+        # Submissions have none.
         self.countries: list[str] = []
+        self.zones: list[str] = []
         # One table for every record type and for submissions: fact names do not
         # repeat with different meanings across record types.
         self.fact_checks: dict[str, Callable[[Any, str], None]] = {
@@ -554,9 +612,16 @@ class SemanticChecker:
         self.species_list(value.get("species", []), f"{where}/species")
 
     def bait_notices(self, value: list, where: str) -> None:
+        """Notices end after they start, read in one of the record's time zones."""
         for index, notice in enumerate(value):
             if "to" in notice and notice["to"] < notice["from"]:
                 self.fail(f"{where}/{index}/to", "is before from")
+            zone = notice.get("time_zone")
+            if zone and self.zones and zone not in self.zones:
+                self.fail(
+                    f"{where}/{index}/time_zone",
+                    f"{zone} is not one of the record's time zones ({', '.join(self.zones)})",
+                )
 
     def facts(self, values: dict, where: str, suffix: str) -> None:
         """Check plain fact values. suffix is /value when the facts came from the full form."""
@@ -598,11 +663,30 @@ class SemanticChecker:
                     where, f"subdivision {subdivision} is not in country {' or '.join(countries)}"
                 )
         time_zone = values.get("time_zone")
-        if time_zone:
+        zones = record_zones(values)
+        for zone in dict.fromkeys(filter(None, [time_zone, *zones])):
             try:
-                zoneinfo.ZoneInfo(time_zone)
+                zoneinfo.ZoneInfo(zone)
             except (zoneinfo.ZoneInfoNotFoundError, ValueError):
-                self.fail(where, f"unknown IANA time zone {time_zone!r}")
+                self.fail(where, f"unknown IANA time zone {zone!r}")
+        if zones and time_zone and zones[0] != time_zone:
+            self.fail(where, f"time_zones starts with {zones[0]}, not time_zone {time_zone}")
+        for index, (zone, following) in enumerate(zip(zones, zones[1:]), start=1):
+            if zone == following:
+                self.fail(
+                    f"{where.rstrip('/')}/time_zones/{index}",
+                    f"{zone} is listed twice in a row: list a zone again only after another",
+                )
+
+    def schedule_zones(self, values: dict, zones: list[str], where: str, suffix: str) -> None:
+        """A schedule's own time_zone is one of the zones the record lies in."""
+        for name, fact in values.items():
+            zone = fact.get("time_zone") if isinstance(fact, dict) else None
+            if zone and zones and zone not in zones:
+                self.fail(
+                    f"{where}/{name}{suffix}/time_zone",
+                    f"{zone} is not one of the record's time zones ({', '.join(zones)})",
+                )
 
     def same_type(self, record_id: str, others: list[str], where: str) -> None:
         """Records merged together, or named as duplicates, share one record type and differ."""
@@ -633,6 +717,8 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
     else:
         derived, where, suffix, values, facts_where = document, "/", "", document, ""
     checker.derived(derived, where)
+    checker.schedule_zones(values, record_zones(derived), facts_where, suffix)
+    checker.zones = record_zones(derived)
     checker.countries = derived.get("country_codes") or list(
         filter(None, [derived.get("country_code")])
     )
@@ -683,6 +769,65 @@ def check_nothing(document: dict, checker: SemanticChecker) -> None:
     pass
 
 
+def check_translation(document: dict, checker: SemanticChecker) -> None:
+    """A translation names only codes and attributes of its reference list, in another language."""
+    reference_file = list_file(document["list"])
+    reference = checker.vocab.lists[reference_file]
+    if canonical_tag(document["language"]) == REFERENCE_LANGUAGE:
+        checker.fail(
+            "/language", f"{REFERENCE_LANGUAGE} is the reference language, not a translation"
+        )
+    if version_tuple(document["reference_version"]) > version_tuple(
+        checker.vocab.versions[reference_file]
+    ):
+        checker.fail(
+            "/reference_version",
+            f"{document['reference_version']} is newer than {reference_file} "
+            f"{checker.vocab.versions[reference_file]}",
+        )
+    for code, entry in document["entries"].items():
+        where = f"/entries/{code}"
+        if code not in reference:
+            checker.fail(where, f"code {code!r} is not in {reference_file}")
+            continue
+        names = {attribute["name"] for attribute in reference[code].get("attributes", [])}
+        for name in entry.get("attributes", {}):
+            if name not in names:
+                checker.fail(f"{where}/attributes/{name}", f"{code} has no attribute {name!r}")
+
+
+def is_translation(path: Path) -> bool:
+    """Translations sit at i18n/<language>/<list file>."""
+    return path.parent.parent.name == I18N
+
+
+def translation_file(path: Path, document: dict) -> list[str]:
+    """The folder names the translation's language, the file name its list, and it is licensed.
+
+    Language tags compare case-insensitively, and the folder is the tag in canonical case.
+    """
+    problems = []
+    folder, expected_file = path.parent.name, list_file(document["list"])
+    language = document["language"]
+    if canonical_tag(language) != canonical_tag(folder):
+        problems.append(f"/language: is {language} but the folder is {folder}")
+    elif folder != canonical_tag(folder):
+        problems.append(
+            f"/language: the folder {folder} must be the tag in canonical case, "
+            f"{canonical_tag(folder)} (tags compare case-insensitively)"
+        )
+    if path.name != expected_file:
+        problems.append(f"/list: is {document['list']} but the file is {path.name}")
+    if document.get(COMMENT_KEY) != SPDX_COMMENT:
+        problems.append(f"/{COMMENT_KEY}: must be {SPDX_COMMENT!r}, like every governed list file")
+    return problems
+
+
+def no_file_rules(path: Path, document: dict) -> list[str]:
+    """Documents other than translations have no rules on the file itself."""
+    return []
+
+
 @dataclass(frozen=True)
 class DocumentKind:
     """A kind of document: its file suffix and schema follow from stem."""
@@ -690,6 +835,8 @@ class DocumentKind:
     stem: str
     semantic_check: Callable[[dict, SemanticChecker], None]
     rejects_deprecated: bool = False
+    # Rules on the file itself, given its path and the document with its $comment.
+    file_check: Callable[[Path, dict], list[str]] = no_file_rules
 
     @property
     def suffix(self) -> str:
@@ -701,6 +848,8 @@ class DocumentKind:
 
     @staticmethod
     def for_path(path: Path) -> DocumentKind | None:
+        if is_translation(path):
+            return TRANSLATION
         return next((kind for kind in DOCUMENT_KINDS if path.name.endswith(kind.suffix)), None)
 
 
@@ -725,20 +874,25 @@ DOCUMENT_KINDS = tuple(
     DocumentKind("moderation-decision", check_moderation_decision),
     DocumentKind("change", check_change),
 )
+TRANSLATION = DocumentKind("translation", check_translation, file_check=translation_file)
 
 
 def check_document(path: Path, context: Context) -> list[str]:
     kind = DocumentKind.for_path(path)
     if kind is None:
         suffixes = ", ".join(kind.suffix for kind in DOCUMENT_KINDS)
-        return [f"/: cannot tell the schema from the file name (expected one of {suffixes})"]
+        return [
+            f"/: cannot tell the schema from the file name (expected one of {suffixes}, "
+            f"or a translation at {I18N}/<language>/<list file>)"
+        ]
+    raw = load_json(path)
     document = load_document(path)
     schema_errors = list(context.validator(kind.schema).iter_errors(document))
     if schema_errors:
         return all_errors(schema_errors)
     checker = SemanticChecker(context, kind.rejects_deprecated)
     kind.semantic_check(document, checker)
-    return checker.errors
+    return checker.errors + kind.file_check(path, raw)
 
 
 def check_record_type(context: Context, record_type: RecordType) -> list[str]:
@@ -823,6 +977,12 @@ def check_schemas(context: Context) -> list[str]:
         codes = [entry["code"] for entry in document["entries"]]
         if len(codes) != len(set(codes)):
             problems.append(f"{list_file}: duplicate codes")
+        if document.get("language") != REFERENCE_LANGUAGE:
+            problems.append(f"{list_file}: language must be {REFERENCE_LANGUAGE}, the reference")
+        for entry in document["entries"]:
+            for field in FALLBACK_FIELDS:
+                if field in entry:
+                    problems.append(f"{list_file} {entry['code']}: {field} is for API responses")
     ranks = [entry.get("rank") or 0 for entry in context.vocab.lists[ACCESS_CLASSES].values()]
     if sorted(ranks) != list(range(1, len(ranks) + 1)):
         problems.append(
@@ -906,39 +1066,59 @@ def check_given_files(arguments: list[str], context: Context) -> bool:
     return ok
 
 
-def check_valid_examples(context: Context) -> tuple[bool, int]:
-    print("\nValid examples (must pass)")
+def documents_in(folder: Path) -> list[Path]:
+    """The documents in a folder and the translations in its i18n tree."""
+    paths = sorted(path for path in folder.glob("*.json") if path.name != "expected.json")
+    return paths + sorted(folder.glob(f"{I18N}/*/*.json"))
+
+
+def check_passing(title: str, folder: Path, paths: list[Path], context: Context) -> bool:
+    print(f"\n{title}")
     ok = True
-    paths = sorted((EXAMPLES / "valid").glob("*.json"))
     for path in paths:
         problems = check_document(path, context)
-        report("pass" if not problems else "FAIL", path.name, problems, indent="  ")
+        name = str(path.relative_to(folder))
+        report("pass" if not problems else "FAIL", name, problems, indent="  ")
         ok &= not problems
-    return ok, len(paths)
+    if not paths:
+        print("  none yet")
+    return ok
+
+
+def check_valid_examples(context: Context) -> tuple[bool, int]:
+    folder = EXAMPLES / "valid"
+    paths = documents_in(folder)
+    return check_passing("Valid examples (must pass)", folder, paths, context), len(paths)
+
+
+def check_translations(context: Context) -> tuple[bool, int]:
+    paths = sorted((SCHEMA_DIR / I18N).glob("*/*.json"))
+    title = f"Translations in {I18N}/ (must pass)"
+    return check_passing(title, SCHEMA_DIR, paths, context), len(paths)
 
 
 def check_invalid_examples(context: Context) -> tuple[bool, int]:
     print("\nInvalid examples (must fail with the expected error)")
     ok = True
-    expected: dict[str, str] = without_comment(load_json(EXAMPLES / "invalid" / "expected.json"))
-    paths = sorted(
-        path for path in (EXAMPLES / "invalid").glob("*.json") if path.name != "expected.json"
-    )
-    for path in paths:
+    folder = EXAMPLES / "invalid"
+    expected: dict[str, str] = without_comment(load_json(folder / "expected.json"))
+    paths = documents_in(folder)
+    names = [str(path.relative_to(folder)) for path in paths]
+    for path, name in zip(paths, names):
         problems = check_document(path, context)
-        fragment = expected.get(path.name)
+        fragment = expected.get(name)
         if fragment is None:
-            print(f"  FAIL  {path.name}: no entry in expected.json")
+            print(f"  FAIL  {name}: no entry in expected.json")
             ok = False
         elif not problems:
-            print(f"  FAIL  {path.name}: validated, but it must fail")
+            print(f"  FAIL  {name}: validated, but it must fail")
             ok = False
         elif not any(fragment in message for message in problems):
-            report("FAIL", f"{path.name}: failed, but not with {fragment!r}", problems[:8], "  ")
+            report("FAIL", f"{name}: failed, but not with {fragment!r}", problems[:8], "  ")
             ok = False
         else:
-            print(f"  fail  {path.name}  ({fragment})")
-    for name in sorted(set(expected) - {path.name for path in paths}):
+            print(f"  fail  {name}  ({fragment})")
+    for name in sorted(set(expected) - set(names)):
         print(f"  FAIL  expected.json names {name}, which does not exist")
         ok = False
     return ok, len(paths)
@@ -969,9 +1149,11 @@ def main(arguments: list[str]) -> int:
     context = context.with_sites((EXAMPLES / "valid").glob("*.json"), complete=True)
     valid_ok, valid_count = check_valid_examples(context)
     invalid_ok, invalid_count = check_invalid_examples(context)
-    ok = not problems and valid_ok and invalid_ok
+    translations_ok, translation_count = check_translations(context)
+    ok = not problems and valid_ok and invalid_ok and translations_ok
     verdict = "all expectations met" if ok else "EXPECTATIONS NOT MET"
-    print(f"\n{valid_count} valid, {invalid_count} invalid: {verdict}")
+    counts = f"{valid_count} valid, {invalid_count} invalid, {translation_count} translations"
+    print(f"\n{counts}: {verdict}")
     return 0 if ok else 1
 
 

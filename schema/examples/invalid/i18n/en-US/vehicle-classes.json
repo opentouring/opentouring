@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "vehicle_classes",
+  "language": "en-US",
+  "reference_version": "1.0.0",
+  "entries": {
+    "car_towing": {
+      "label": "Car towing a trailer"
+    },
+    "fifth_wheel": {
+      "label": "Fifth wheel"
+    }
+  }
+}
