@@ -39,6 +39,12 @@ The script runs three stages:
 A top-level "$comment" in a document (the SPDX header of the example files)
 is removed before validation against the schema.
 
+Open enumerations (x-otwd-known-values) and record types (x-otwd-registry, checked
+against record-types.json) are checked strictly, as for a producer: OTWD never
+sends a value its schema version does not know. Files under examples/consumer
+come from a later minor version: each must pass the plain validator a consumer
+would use and fail the strict one on an unknown value (ADR 0035).
+
 Files under examples/valid and i18n must pass. Files under examples/invalid must
 fail, and examples/invalid/expected.json names a fragment of the error each one
 must produce (keyed by its path below examples/invalid), so an invalid example
@@ -49,6 +55,7 @@ The exit status is 0 when every expectation holds and 1 otherwise.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import zoneinfo
 from dataclasses import dataclass
@@ -56,7 +63,7 @@ from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, validators
 from jsonschema.exceptions import ValidationError
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
@@ -67,6 +74,14 @@ BASE = "https://schema.opentouring.org/otwd/v1/"
 COMMENT_KEY = "$comment"
 SPDX_COMMENT = "SPDX-License-Identifier: Apache-2.0"
 SAFETY_MARKER = "x-otwd-safety-fact"
+# Open enumerations list the values known at this schema version, and record IDs and record
+# types name the registry that holds theirs. Producers (OTWD and the examples) are held to
+# them. Consumers are not, so a document from a later minor version still validates.
+KNOWN_VALUES = "x-otwd-known-values"
+REGISTRY = "x-otwd-registry"
+RECORD_TYPE_REGISTRY = "record-types.json"
+# Every producer-only error says this, so consumer examples can tell it from other errors.
+PRODUCER_ONLY = "producers may not send it"
 I18N = "i18n"
 REFERENCE_LANGUAGE = "en-AU"
 # Fields the API adds to governed list entries when text falls back to another language.
@@ -144,15 +159,6 @@ class RecordType:
         return f"new_{self.code}"
 
 
-RECORD_TYPES = (
-    RecordType("site", frozenset({"fire_district"})),
-    RecordType("road_restriction"),
-    RecordType("road_segment"),
-    RecordType("ferry_service"),
-)
-RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_TYPES}
-
-
 def load_json(path: Path) -> Any:
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
@@ -184,6 +190,18 @@ def record_zones(derived: dict) -> list[str]:
     """The time zones a record lies in: a line's time_zones, or a point's one time_zone."""
     time_zone = derived.get("time_zone")
     return derived.get("time_zones", [time_zone] if time_zone else [])
+
+
+def load_record_types() -> tuple[RecordType, ...]:
+    """The record types in the registry, record-types.json, in its order."""
+    entries = load_json(SCHEMA_DIR / RECORD_TYPE_REGISTRY)["entries"]
+    return tuple(
+        RecordType(entry["code"], frozenset(entry.get("computed_facts", []))) for entry in entries
+    )
+
+
+RECORD_TYPES = load_record_types()
+RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_TYPES}
 
 
 def without_comment(document: Any) -> Any:
@@ -227,6 +245,39 @@ def ref_name(schema: dict) -> str | None:
     """The definition a {"$ref": ...} points at, as file#name or #name, or None."""
     ref = schema.get("$ref")
     return ref.replace("#/$defs/", "#") if ref else None
+
+
+def registry_code(value: str) -> str:
+    """The record type a registry-checked value names: a record type code or a record ID."""
+    return value.split(":")[1] if value.startswith("otwd:") else value
+
+
+def producer_keywords() -> dict[str, Callable]:
+    """Keywords that hold a producer to the values known at this schema version."""
+
+    def known_values(validator: Any, known: list[str], instance: Any, schema: dict) -> Iterable:
+        if isinstance(instance, str) and instance not in known:
+            yield ValidationError(
+                f"{instance!r} is not a known value of this open enumeration "
+                f"({', '.join(known)}): consumers accept it, producers may not send it"
+            )
+
+    registered = {record_type.code for record_type in RECORD_TYPES}
+
+    def registry(validator: Any, file_name: str, instance: Any, schema: dict) -> Iterable:
+        if isinstance(instance, str) and registry_code(instance) not in registered:
+            yield ValidationError(
+                f"{registry_code(instance)!r} is not a record type in {file_name}: "
+                "consumers skip it, producers may not send it"
+            )
+
+    return {KNOWN_VALUES: known_values, REGISTRY: registry}
+
+
+# The producer validator applies the open enumeration keywords. The consumer validator is the
+# plain 2020-12 validator, which ignores them, as any consumer's validator would.
+ProducerValidator = validators.extend(Draft202012Validator, producer_keywords())
+ConsumerValidator = Draft202012Validator
 
 
 class Vocab:
@@ -291,8 +342,9 @@ class Context:
                     sites[document["id"]] = types
         return Context(self.registry, self.schemas, self.vocab, self.safety_fields, sites, complete)
 
-    def validator(self, schema_name: str) -> Draft202012Validator:
-        return Draft202012Validator(
+    def validator(self, schema_name: str, consumer: bool = False) -> Draft202012Validator:
+        cls = ConsumerValidator if consumer else ProducerValidator
+        return cls(
             self.schemas[schema_name],
             registry=self.registry,
             format_checker=Draft202012Validator.FORMAT_CHECKER,
@@ -759,7 +811,7 @@ def check_record_type(context: Context, record_type: RecordType) -> list[str]:
 
 
 def submission_kinds(context: Context) -> list[str]:
-    return context.schemas["submission.schema.json"]["properties"]["kind"]["enum"]
+    return context.definition("common.schema.json", "SubmissionKind")[KNOWN_VALUES]
 
 
 def check_schemas(context: Context) -> list[str]:
@@ -798,6 +850,65 @@ def check_schemas(context: Context) -> list[str]:
     if creation != {record_type.new_kind for record_type in RECORD_TYPES}:
         problems.append(f"creation kinds {sorted(creation)} do not match the record types")
     problems += check_facilities(context)
+    problems += check_record_type_registry(context)
+    problems += check_open_enumerations(context)
+    return problems
+
+
+def check_record_type_registry(context: Context) -> list[str]:
+    """record-types.json is valid, and each entry names its schemas, ID kind and creation kind."""
+    problems: list[str] = []
+    document = load_json(SCHEMA_DIR / RECORD_TYPE_REGISTRY)
+    validator = context.validator("record-types.schema.json")
+    problems += [
+        f"{RECORD_TYPE_REGISTRY}{describe(error)}" for error in validator.iter_errors(document)
+    ]
+    reserved = re.compile(context.definition("common.schema.json", "NonRecordId")["pattern"])
+    codes = [entry["code"] for entry in document["entries"]]
+    if len(codes) != len(set(codes)):
+        problems.append(f"{RECORD_TYPE_REGISTRY}: duplicate codes")
+    for entry, record_type in zip(document["entries"], RECORD_TYPES):
+        where = f"{RECORD_TYPE_REGISTRY} {entry['code']}"
+        if reserved.match(f"otwd:{entry['code']}:"):
+            problems.append(f"{where}: the ID kind is reserved for another identifier")
+        if (entry["full_schema"], entry["compact_schema"]) != (
+            record_type.full,
+            record_type.compact,
+        ):
+            problems.append(
+                f"{where}: schemas must be {record_type.full} and {record_type.compact}"
+            )
+        for name in (entry["full_schema"], entry["compact_schema"]):
+            if name not in context.schemas:
+                problems.append(f"{where}: {name} does not exist")
+        if entry["creation_kind"] != record_type.new_kind:
+            problems.append(f"{where}: creation_kind must be {record_type.new_kind}")
+    return problems
+
+
+def open_enumerations(node: Any, where: str = "") -> Iterable[tuple[str, list]]:
+    """Every x-otwd-known-values list in a schema, with where it is."""
+    if isinstance(node, dict):
+        if KNOWN_VALUES in node:
+            yield where, node[KNOWN_VALUES]
+        for key, value in node.items():
+            yield from open_enumerations(value, f"{where}/{key}")
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from open_enumerations(value, f"{where}/{index}")
+
+
+def check_open_enumerations(context: Context) -> list[str]:
+    """Known values are unique, follow EnumCode, and sit on a schema that only allows EnumCode."""
+    problems: list[str] = []
+    pattern = re.compile(context.definition("common.schema.json", "EnumCode")["pattern"])
+    for name, schema in context.schemas.items():
+        for where, known in open_enumerations(schema):
+            if len(known) != len(set(known)):
+                problems.append(f"{name}{where}: {KNOWN_VALUES} repeats a value")
+            for value in known:
+                if not pattern.match(value):
+                    problems.append(f"{name}{where}: {value!r} does not follow EnumCode")
     return problems
 
 
@@ -895,6 +1006,38 @@ def check_translations(context: Context) -> tuple[bool, int]:
     return check_passing(title, SCHEMA_DIR, paths, context), len(paths)
 
 
+def check_consumer_examples(context: Context) -> tuple[bool, int]:
+    """Documents from a later minor version: a consumer accepts them, a producer may not send them.
+
+    Each must pass the plain 2020-12 validator, which ignores the open enumeration keywords as
+    any consumer's validator does, and must fail the producer validator on one of them, so it
+    proves an unknown value is accepted rather than passing for some other reason.
+    """
+    print("\nConsumer examples (a consumer accepts them, a producer may not send them)")
+    ok = True
+    folder = EXAMPLES / "consumer"
+    paths = documents_in(folder)
+    for path in paths:
+        kind = DocumentKind.for_path(path)
+        if kind is None:
+            print(f"  FAIL  {path.name}: cannot tell the schema from the file name")
+            ok = False
+            continue
+        document = without_comment(load_json(path))
+        consumer = all_errors(context.validator(kind.schema, consumer=True).iter_errors(document))
+        producer = all_errors(context.validator(kind.schema).iter_errors(document))
+        unknown = [message for message in producer if PRODUCER_ONLY in message]
+        if consumer:
+            report("FAIL", f"{path.name}: a consumer must accept it", consumer[:8], "  ")
+            ok = False
+        elif not unknown:
+            print(f"  FAIL  {path.name}: it must carry a value only a later version knows")
+            ok = False
+        else:
+            print(f"  pass  {path.name}  ({len(unknown)} unknown to this version)")
+    return ok, len(paths)
+
+
 def check_invalid_examples(context: Context) -> tuple[bool, int]:
     print("\nInvalid examples (must fail with the expected error)")
     ok = True
@@ -947,10 +1090,14 @@ def main(arguments: list[str]) -> int:
     context = context.with_sites((EXAMPLES / "valid").glob("*.json"), complete=True)
     valid_ok, valid_count = check_valid_examples(context)
     invalid_ok, invalid_count = check_invalid_examples(context)
+    consumer_ok, consumer_count = check_consumer_examples(context)
     translations_ok, translation_count = check_translations(context)
-    ok = not problems and valid_ok and invalid_ok and translations_ok
+    ok = not problems and valid_ok and invalid_ok and consumer_ok and translations_ok
     verdict = "all expectations met" if ok else "EXPECTATIONS NOT MET"
-    counts = f"{valid_count} valid, {invalid_count} invalid, {translation_count} translations"
+    counts = (
+        f"{valid_count} valid, {invalid_count} invalid, {consumer_count} consumer, "
+        f"{translation_count} translations"
+    )
     print(f"\n{counts}: {verdict}")
     return 0 if ok else 1
 

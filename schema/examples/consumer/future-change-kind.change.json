@@ -1,0 +1,12 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "seq": 40388,
+  "record_id": "otwd:site:01KR6JW0QBNHM90XV3GS9Y2G26",
+  "kind": "facts_reordered",
+  "applied_at": "2027-03-04T22:15:00Z",
+  "previous_seq": 19304,
+  "changed_fields": ["/facts/prices"],
+  "safety_fact_changed": false,
+  "submission_id": "otwd:submission:01M4C0A2C6E0G4J8M2P6R0T4W8",
+  "decision_id": "otwd:decision:01M4C0B3D7F1H5K9N3Q7S1V5X9"
+}

@@ -14,9 +14,8 @@
       "$ref": "common.schema.json#/$defs/SubmissionId"
     },
     "outcome": {
-      "description": "approved: applied as submitted. edited_and_approved: applied after a moderator corrected it (amendments lists the corrections). rejected: not applied. needs_info: waiting for the contributor to answer the public note.",
-      "type": "string",
-      "enum": ["approved", "edited_and_approved", "rejected", "needs_info"]
+      "description": "The outcome. For edited_and_approved, amendments lists the corrections.",
+      "$ref": "common.schema.json#/$defs/ModerationOutcome"
     },
     "decided_by": {
       "$ref": "#/$defs/Decider"
@@ -41,18 +40,7 @@
         },
         "submission_kind": {
           "description": "The kind of the submission decided.",
-          "type": "string",
-          "enum": [
-            "new_site",
-            "new_road_restriction",
-            "new_road_segment",
-            "new_ferry_service",
-            "update_facts",
-            "add_photo",
-            "report_closure",
-            "request_merge",
-            "report_problem"
-          ]
+          "$ref": "common.schema.json#/$defs/SubmissionKind"
         },
         "record_type": {
           "description": "The record type the submission creates or changes.",

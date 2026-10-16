@@ -290,9 +290,9 @@
       "required": ["applies_to", "amount", "currency", "per", "period"],
       "properties": {
         "applies_to": {
-          "description": "What is being paid for. Use other with notes when none fits.",
-          "type": "string",
-          "enum": [
+          "description": "What is being paid for. Use other with notes when none fits. Open: a consumer that does not know the value shows the price as other.",
+          "$ref": "common.schema.json#/$defs/EnumCode",
+          "x-otwd-known-values": [
             "site_unpowered",
             "site_powered",
             "site_ensuite",
@@ -318,12 +318,23 @@
           "$ref": "common.schema.json#/$defs/CurrencyCode"
         },
         "per": {
-          "type": "string",
-          "enum": ["site", "person", "adult", "child", "family", "vehicle", "pet", "use"]
+          "description": "The unit the amount is charged per. Open: a consumer that does not know the unit shows the amount without working out a total.",
+          "$ref": "common.schema.json#/$defs/EnumCode",
+          "x-otwd-known-values": [
+            "site",
+            "person",
+            "adult",
+            "child",
+            "family",
+            "vehicle",
+            "pet",
+            "use"
+          ]
         },
         "period": {
-          "type": "string",
-          "enum": ["night", "day", "hour", "week", "stay", "use"]
+          "description": "The period the amount covers. Open, with the same fallback as per.",
+          "$ref": "common.schema.json#/$defs/EnumCode",
+          "x-otwd-known-values": ["night", "day", "hour", "week", "stay", "use"]
         },
         "conditions": {
           "$ref": "#/$defs/PriceConditions"
@@ -338,12 +349,12 @@
       "maximum": 100000
     },
     "PaymentMethods": {
-      "description": "How a price or fare can be paid.",
+      "description": "How a price or fare can be paid. Open: a consumer ignores a method it does not know.",
       "type": "array",
       "uniqueItems": true,
       "items": {
-        "type": "string",
-        "enum": ["cash", "card", "online", "honesty_box", "app", "phone"]
+        "$ref": "common.schema.json#/$defs/EnumCode",
+        "x-otwd-known-values": ["cash", "card", "online", "honesty_box", "app", "phone"]
       }
     },
     "PriceConditions": {
@@ -691,9 +702,9 @@
       "additionalProperties": false
     },
     "LimitBasis": {
-      "description": "What a limit figure is. signed: the figure on the sign, the legal limit, which usually allows a margin. surveyed: measured by the road authority or a surveyor, often with a survey certificate. measured: measured by a contributor, for example with a tape or a height pole. unknown: the source does not say.",
-      "type": "string",
-      "enum": ["signed", "surveyed", "measured", "unknown"]
+      "description": "What a limit figure is. signed: the figure on the sign, the legal limit, which usually allows a margin. surveyed: measured by the road authority or a surveyor, often with a survey certificate. measured: measured by a contributor, for example with a tape or a height pole. unknown: the source does not say. Open: a consumer treats a basis it does not know as unknown, and still compares a rig with lowest_m.",
+      "$ref": "common.schema.json#/$defs/EnumCode",
+      "x-otwd-known-values": ["signed", "surveyed", "measured", "unknown"]
     },
     "LimitMeasurement": {
       "description": "One figure for a vertical clearance or width limit, in metres. A structure can have several: a signed and a surveyed figure, one per direction of travel, or one per lane.",

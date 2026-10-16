@@ -11,18 +11,7 @@
       "$ref": "common.schema.json#/$defs/SchemaVersion"
     },
     "kind": {
-      "type": "string",
-      "enum": [
-        "new_site",
-        "new_road_restriction",
-        "new_road_segment",
-        "new_ferry_service",
-        "update_facts",
-        "add_photo",
-        "report_closure",
-        "request_merge",
-        "report_problem"
-      ]
+      "$ref": "common.schema.json#/$defs/SubmissionKind"
     },
     "record_id": {
       "description": "The record the submission is about, of any record type. Every kind that changes an existing record names it here. Absent for the kinds that create a record.",
@@ -693,8 +682,9 @@
           "required": ["category", "details"],
           "properties": {
             "category": {
-              "type": "string",
-              "enum": [
+              "description": "What kind of problem it is. Open: a reader treats a category it does not know as other.",
+              "$ref": "common.schema.json#/$defs/EnumCode",
+              "x-otwd-known-values": [
                 "wrong_location",
                 "does_not_exist",
                 "safety_hazard",

@@ -35,14 +35,23 @@
       "examples": ["otwd:ferry_service:01KX3QK5B7D9F1H3K5N7Q9S1VX"]
     },
     "RecordId": {
-      "description": "Stable public ID of any record: a site, road restriction, road segment or ferry service. The kind segment names the record type.",
+      "description": "Stable public ID of any record. The kind segment names the record type, which is a code in the record type registry (record-types.json). The pattern accepts any record type code so a consumer written for an earlier minor version still reads IDs of record types added later, and skips records of a type it does not know. The kinds of OTWD's other identifiers are reserved and never name a record type. OTWD and its validator accept only registered record types (x-otwd-registry).",
       "type": "string",
-      "pattern": "^otwd:(site|road_restriction|road_segment|ferry_service):[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      "pattern": "^otwd:[a-z][a-z0-9_]{1,47}:[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+      "not": {
+        "$ref": "#/$defs/NonRecordId"
+      },
+      "x-otwd-registry": "record-types.json"
+    },
+    "NonRecordId": {
+      "description": "An OTWD identifier whose kind is reserved for something other than a record: a submission, moderation decision, verdict, photo, upload, contributor, partner app, seed source, appeal or API key.",
+      "type": "string",
+      "pattern": "^otwd:(submission|decision|verdict|photo|upload|contributor|partner_app|seed_source|appeal|api_key):"
     },
     "RecordType": {
-      "description": "The record type, as it appears in the kind segment of a record's public ID.",
-      "type": "string",
-      "enum": ["site", "road_restriction", "road_segment", "ferry_service"]
+      "description": "The record type, as it appears in the kind segment of a record's public ID: a code in the record type registry (record-types.json). Open: a minor version can register a new record type, and a consumer skips records, changes and bulk downloads of a record type it does not know.",
+      "$ref": "#/$defs/Code",
+      "x-otwd-registry": "record-types.json"
     },
     "SubmissionId": {
       "description": "ID of a submission, assigned by OTWD when the submission is received.",
@@ -98,7 +107,7 @@
       "examples": ["1.0"]
     },
     "RecordStatus": {
-      "description": "Whether a record is in use. active: in use. temporarily_closed: a temporary closure, such as a site shut for repairs, a bridge closed after flood damage or a ferry service suspended. closed: a closure, such as a site that no longer operates, a road restriction removed when its structure was replaced, a road segment closed for good or a ferry service withdrawn. The record keeps its public ID and history. merged: the record was a duplicate and redirect_to names the survivor.",
+      "description": "Whether a record is in use. A closed enumeration: a consumer decides what to show from it, so it gains a value only in a new major version. active: in use. temporarily_closed: a temporary closure, such as a site shut for repairs, a bridge closed after flood damage or a ferry service suspended. closed: a closure, such as a site that no longer operates, a road restriction removed when its structure was replaced, a road segment closed for good or a ferry service withdrawn. The record keeps its public ID and history. merged: the record was a duplicate and redirect_to names the survivor.",
       "type": "string",
       "enum": ["active", "temporarily_closed", "closed", "merged"]
     },
@@ -106,6 +115,31 @@
       "description": "A governed list code: lower case letters, digits and underscores, starting with a letter. Codes are never renamed or reused.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]{1,47}$"
+    },
+    "EnumCode": {
+      "description": "A value of an open enumeration: lower case letters, digits and underscores. An open enumeration lists the values known at its schema version in x-otwd-known-values. OTWD only ever sends and accepts known values, and tools/validate.py holds producers to them, but a minor version can add values, so a consumer accepts any value that matches this pattern and follows the fallback the enumeration's description gives for one it does not know (ADR 0035).",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_]{0,47}$"
+    },
+    "SubmissionKind": {
+      "description": "The kind of a submission. Open: a consumer reading submission statuses or moderation decisions treats a kind it does not know as a submission it cannot show in detail. The API rejects a submission of a kind it does not accept with 422.",
+      "$ref": "#/$defs/EnumCode",
+      "x-otwd-known-values": [
+        "new_site",
+        "new_road_restriction",
+        "new_road_segment",
+        "new_ferry_service",
+        "update_facts",
+        "add_photo",
+        "report_closure",
+        "request_merge",
+        "report_problem"
+      ]
+    },
+    "ModerationOutcome": {
+      "description": "The outcome of a moderation decision. approved: applied as submitted. edited_and_approved: applied after a moderator corrected it. rejected: not applied. needs_info: waiting for the contributor to answer the public note. Open: a consumer treats an outcome it does not know as not applied, unless the decision lists change_seqs.",
+      "$ref": "#/$defs/EnumCode",
+      "x-otwd-known-values": ["approved", "edited_and_approved", "rejected", "needs_info"]
     },
     "SiteTypeCode": {
       "description": "A code from the governed site type vocabulary (site-types.json). The pattern accepts codes added after this schema version so older validators keep working. Consumers ignore codes they do not recognise.",
@@ -316,9 +350,9 @@
       ],
       "properties": {
         "source_kind": {
-          "description": "contributor: a signed-in contributor supplied the fact directly. partner_app: a partner app supplied it, usually on behalf of one of its contributors. seed_source: it was imported from an open dataset.",
-          "type": "string",
-          "enum": ["contributor", "partner_app", "seed_source"]
+          "description": "contributor: a signed-in contributor supplied the fact directly. partner_app: a partner app supplied it, usually on behalf of one of its contributors. seed_source: it was imported from an open dataset. Open: a consumer treats a source kind it does not know as an unnamed source and still reads the fact's confidence.",
+          "$ref": "#/$defs/EnumCode",
+          "x-otwd-known-values": ["contributor", "partner_app", "seed_source"]
         },
         "contributor_id": {
           "$ref": "#/$defs/ContributorId"

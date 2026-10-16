@@ -100,7 +100,7 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The site types, facilities, structures, surfaces, vehicle access classes and vehicle classes records are described with.
+    description: The record type registry, and the site types, facilities, structures, surfaces, vehicle access classes and vehicle classes records are described with.
   - name: Bulk downloads
     description: The whole dataset, or the changes between two sequence numbers, as files.
   - name: Change feed
@@ -257,6 +257,37 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/ServerError"
+
+  /v1/record-types:
+    get:
+      tags: [Governed lists]
+      operationId: listRecordTypes
+      summary: List record types
+      description: |
+        Returns the record type registry: every record type OTWD serves, with its geometry, its
+        schemas, the path that lists it and the submission kind that creates one. A minor version
+        can add a record type. Skip records, changes and bulk downloads of a record type you do
+        not know, and read this list to find out what a newer type is.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          description: The record type registry.
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/record-types.schema.json"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
 
   /v1/site-types:
     get:
@@ -1763,11 +1794,13 @@ components:
         record_type:
           $ref: "../schema/common.schema.json#/$defs/RecordType"
         kind:
-          type: string
-          enum: [full, delta]
+          description: full or delta. An open enumeration. Skip a file whose kind you do not know.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [full, delta]
         format:
-          type: string
-          enum: [geoparquet, geojson, geojsonseq]
+          description: geoparquet, geojson or geojsonseq. An open enumeration. Skip a file whose format you do not know.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [geoparquet, geojson, geojsonseq]
         url:
           description: Signed HTTPS URL on the CDN, valid until expires_at.
           type: string
@@ -1849,28 +1882,17 @@ components:
         submission_id:
           $ref: "../schema/common.schema.json#/$defs/SubmissionId"
         kind:
-          type: string
-          enum:
-            [
-              new_site,
-              new_road_restriction,
-              new_road_segment,
-              new_ferry_service,
-              update_facts,
-              add_photo,
-              report_closure,
-              request_merge,
-              report_problem,
-            ]
+          $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
         record_id:
           description: The record concerned, of any record type. For an approved submission that creates a record, the new record's public ID.
           $ref: "../schema/common.schema.json#/$defs/RecordId"
         partner_reference:
           type: string
         status:
-          description: received, checking (fixed checks and AI review), in_review (waiting for a moderator), needs_info (waiting for the contributor), approved, edited_and_approved or rejected.
-          type: string
-          enum: [received, checking, in_review, needs_info, approved, edited_and_approved, rejected]
+          description: received, checking (fixed checks and AI review), in_review (waiting for a moderator), needs_info (waiting for the contributor), approved, edited_and_approved or rejected. An open enumeration (ADR 0035). Treat a status you do not know as still in progress.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values:
+            [received, checking, in_review, needs_info, approved, edited_and_approved, rejected]
         received_at:
           $ref: "#/components/schemas/Timestamp"
         updated_at:
@@ -1885,13 +1907,13 @@ components:
         decision_id:
           $ref: "../schema/common.schema.json#/$defs/DecisionId"
         outcome:
-          type: string
-          enum: [approved, edited_and_approved, rejected, needs_info]
+          $ref: "../schema/common.schema.json#/$defs/ModerationOutcome"
         decided_at:
           $ref: "#/components/schemas/Timestamp"
         decided_by_kind:
-          type: string
-          enum: [moderator, routing_rule]
+          description: moderator or routing_rule. An open enumeration. Show a value you do not know without naming who decided.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [moderator, routing_rule]
         reason_codes:
           type: array
           items:

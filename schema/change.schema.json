@@ -24,9 +24,9 @@
       "$ref": "common.schema.json#/$defs/RecordId"
     },
     "kind": {
-      "description": "record_created: a new record. facts_updated: facts or facilities set or removed. photo_added and photo_removed: a photo of the record published or withdrawn. status_changed: a closure, temporary closure or reopening. record_merged: the record became a duplicate and now redirects to merged_into.",
-      "type": "string",
-      "enum": [
+      "description": "What the change did to the record. record_created: a new record. facts_updated: facts or facilities set or removed. photo_added and photo_removed: a photo of the record published or withdrawn. status_changed: a closure, temporary closure or reopening. record_merged: the record became a duplicate and now redirects to merged_into. Open: a consumer that meets a kind it does not know fetches the record again, using changed_fields to see what moved.",
+      "$ref": "common.schema.json#/$defs/EnumCode",
+      "x-otwd-known-values": [
         "record_created",
         "facts_updated",
         "photo_added",

@@ -14,7 +14,7 @@ Redocly resolves the relative references into `../schema/`. To produce a single 
 
 ## Record types
 
-The API serves four record types with the same conventions: sites (`/v1/sites`), road restrictions (`/v1/road-restrictions`), road segments (`/v1/road-segments`) and ferry services (`/v1/ferry-services`). Each has a list endpoint and a get endpoint by public ID, the compact and full views, ETags, 301 redirects for merged records, closures, photos, bulk downloads, change feed coverage and submissions, and the sections below describe them for every record type. Sites and road restrictions are points, and road segments and ferry services are lines. OTWD serves no map tiles.
+The record type registry (`GET /v1/record-types`, from `schema/record-types.json`) lists every record type with its geometry, schemas and path, and a minor version can add one. The API serves four record types today, with the same conventions: sites (`/v1/sites`), road restrictions (`/v1/road-restrictions`), road segments (`/v1/road-segments`) and ferry services (`/v1/ferry-services`). Each has a list endpoint and a get endpoint by public ID, the compact and full views, ETags, 301 redirects for merged records, closures, photos, bulk downloads, change feed coverage and submissions, and the sections below describe them for every record type. Sites and road restrictions are points, and road segments and ferry services are lines. OTWD serves no map tiles.
 
 ## Finding records along a route
 
@@ -39,7 +39,9 @@ Every request carries an API key in the `OTWD-API-Key` header, including bulk do
 
 Until version 1.0.0 is released, the schema and the API are a draft. Release means a `v1.0.0` tag on this repository, made before any partner app outside the project integrates ([ADR 0030](../docs/adr/0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md)). Before that tag, any field, code or endpoint can change or be removed without a new major version, and documents carry `schema_version` `1.0`. From the tag on, the rules below apply.
 
-The major version is in the path (`/v1`). Within v1, changes are additive only: new endpoints, new optional query parameters, new optional response fields, and new governed list codes. Clients must ignore response fields and codes they do not recognise. A breaking change ships as `/v2` with schema version 2, and `/v1` keeps running alongside it for at least 12 months after `/v2` is released. Each response body that is a record carries its `schema_version`.
+The major version is in the path (`/v1`). Within v1, changes are additive only: new endpoints, new optional query parameters, new optional response fields, new governed list codes, new values of open enumerations and new record types in the registry. Clients must ignore response fields and codes they do not recognise.
+
+Open enumerations ([ADR 0035](../docs/adr/0035-open-enumerations-and-a-record-type-registry.md)) are the lists of values a minor version can extend: change kinds and origins, submission kinds and statuses, moderation outcomes, problem categories, price units, limit bases and bulk download kinds and formats, among others. In the schema each lists its known values in `x-otwd-known-values` and says what to do with an unknown one. Generate them as strings with named constants, never as closed enum types, or your client will fail on the first new value. Record status, towing permitted and the other closed enumerations change only in `/v2`. Record types are open too: `GET /v1/record-types` lists them, and a client skips records, changes and downloads of a type it does not know. A breaking change ships as `/v2` with schema version 2, and `/v1` keeps running alongside it for at least 12 months after `/v2` is released. Each response body that is a record carries its `schema_version`.
 
 ## Languages
 

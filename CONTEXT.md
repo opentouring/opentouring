@@ -31,12 +31,16 @@ _Avoid_: investor, owner
 ### Records and what is known about them
 
 **Record**:
-One thing OTWD keeps facts about under its own public ID: a site, a road restriction, a road segment or a ferry service.
+One thing OTWD keeps facts about under its own public ID: a site, a road restriction, a road segment, a ferry service, or a record of a type registered later.
 _Avoid_: entity, object, feature, item
 
 **Record type**:
-The kind of record: site, road restriction, road segment or ferry service. Every record type shares public IDs, facts with provenance, closures, merges and submissions.
+The kind of record: site, road restriction, road segment or ferry service, as listed in the record type registry. Every record type shares public IDs, facts with provenance, closures, merges and submissions. Consumers skip records of a type they do not know.
 _Avoid_: entity type, layer, collection
+
+**Record type registry**:
+The published list of record types (`record-types.json`, served at `/v1/record-types`), with each one's geometry, schemas, API path and creation kind. A minor version can add a record type to it, with an ADR.
+_Avoid_: type table, entity list
 
 **Site**:
 Any place a traveller stops at that OTWD records, such as a campsite, caravan park, rest area, dump point, ferry terminal or attraction. A point record.
@@ -73,6 +77,10 @@ _Avoid_: default language, master language
 **Translation**:
 The labels and descriptions of one governed list in one language other than the reference language, keyed by code and reviewed like any governed list change. It never changes what a code means. A machine translation an app shows is marked as one and is never a fact.
 _Avoid_: locale file, localisation (for the file)
+
+**Open enumeration**:
+A list of values the contract defines that a minor version can extend, such as change kinds, submission kinds or price units. OTWD sends only the values its schema version lists, and consumers accept any value and apply the fallback the schema gives for one they do not know. Unlike a governed list, it has no labels or mappings and is extended by pull request and ADR.
+_Avoid_: enum (for an open one), extensible enum
 
 **Fact**:
 One field value about a record, such as a facility, a price, opening hours, a rig limit or a vertical clearance, carrying its own provenance.
