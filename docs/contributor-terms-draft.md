@@ -28,7 +28,7 @@ This permission passes to any successor operator, including the not-for-profit h
 
 ## Photos
 
-Photos you submit must be your own. You license each photo under CC BY 4.0 as its author, and you also give the operator the permission above. Location data embedded in photos is removed before publication.
+Photos you submit must be your own. You license each photo under CC BY 4.0 as its author, or dedicate it under CC0 1.0 if you choose, and you also give the operator the permission above. You choose how the photo is credited, and without a choice it is credited to "Open Touring contributor". Location data embedded in photos is removed before publication.
 
 ## Your promises
 

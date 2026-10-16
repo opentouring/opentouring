@@ -63,9 +63,12 @@ info:
     > Data: Open Touring contributors, opentouring.org, CC BY 4.0
 
     Some facts come from seed sources whose licences need their own credit. Every record in the
-    compact form lists the credits it needs in `attribution`, and every fact in the full form
-    carries its seed source's `attribution` in its provenance. Show those credits too. Photos carry
-    their own `attribution`, which must be shown with the photo.
+    compact form lists the credits it needs in `attribution`, each with its text, licence, links
+    and the changes OTWD made, and every fact in the full form carries its seed source's details
+    in its provenance. Show those credits too, with the changes notice where an entry has one.
+    Photos carry their own `licence`, `attribution` and, for photos from a seed source,
+    `source_url` and `changes`, which must be shown with the photo. GET /v1/seed-sources lists
+    every seed source with its licence and credit.
 
     ## Licences
 
@@ -101,6 +104,8 @@ tags:
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
     description: The record type registry, and the site types, facilities, structures, surfaces, vehicle access classes and vehicle classes records are described with.
+  - name: Seed sources
+    description: The external open datasets OTWD imports, with their licences, credits and latest sync.
   - name: Bulk downloads
     description: The whole dataset, or the changes between two sequence numbers, as files.
   - name: Change feed
@@ -826,6 +831,90 @@ paths:
           $ref: "#/components/responses/NotModified"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/seed-sources:
+    get:
+      tags: [Seed sources]
+      operationId: listSeedSources
+      summary: List seed sources
+      description: |
+        Returns every seed source in the registry (schema/seed-sources.json): the dataset, its
+        publisher, licence, the credit to show and the changes OTWD makes to its data, the record
+        types it seeds, its status and its licence review, plus when OTWD last synced it. A
+        seed source is imported only after its licence review is confirmed. Provenance and
+        attribution entries name a seed source by its ID, so look it up here for anything they
+        do not carry.
+      parameters:
+        - name: record_type
+          in: query
+          description: Only seed sources that seed this record type.
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/RecordType"
+        - name: status
+          in: query
+          description: Only seed sources with this status.
+          schema:
+            type: string
+            enum: [planned, active, retired]
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          description: The seed sources.
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SeedSource"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/seed-sources/{seed_source_id}:
+    get:
+      tags: [Seed sources]
+      operationId: getSeedSource
+      summary: Get a seed source
+      description: Returns one seed source by its ID, such as otwd:seed_source:au-vic-vicmap-transport.
+      parameters:
+        - name: seed_source_id
+          in: path
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/SeedSourceId"
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          description: The seed source.
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeedSource"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
@@ -1774,6 +1863,25 @@ components:
           type: [string, "null"]
         attribution:
           type: string
+    SeedSource:
+      description: A seed source registry entry with its latest sync. The sync fields are absent until the first import.
+      allOf:
+        - $ref: "../schema/seed-sources.schema.json#/$defs/SeedSource"
+      properties:
+        last_synced_at:
+          description: When OTWD last finished importing the dataset.
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        last_dataset_version:
+          description: The dataset version or release date imported last, as the publisher gives it.
+          type: string
+          maxLength: 64
+        record_counts:
+          description: How many live records have at least one fact from this seed source, by record type.
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+      unevaluatedProperties: false
     DistancesKm:
       description: With near only. Distance from the centre to each listed record, by public ID.
       type: object

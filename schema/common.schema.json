@@ -307,10 +307,10 @@
       "description": "SPDX licence identifier, or LicenseRef-<name> for a licence that SPDX does not list (for example a government open data licence).",
       "type": "string",
       "pattern": "^([A-Za-z0-9.+-]+|LicenseRef-[A-Za-z0-9.-]+)$",
-      "examples": ["CC-BY-4.0", "CC0-1.0"]
+      "examples": ["CC-BY-4.0", "CC-BY-3.0-AU", "CC0-1.0"]
     },
     "SeedSourceRef": {
-      "description": "Details of the external open dataset a fact was imported from. The licence must be compatible with publishing the fact under CC BY 4.0.",
+      "description": "Details of the external open dataset a fact was imported from, copied from its entry in the seed source registry (seed-sources.json). The licence must be compatible with publishing the fact under CC BY 4.0. An entry under a CC BY licence states the changes OTWD made.",
       "type": "object",
       "required": ["id", "dataset_name", "publisher", "licence", "attribution"],
       "properties": {
@@ -333,8 +333,8 @@
           "$ref": "#/$defs/SpdxLicence"
         },
         "licence_url": {
-          "type": "string",
-          "format": "uri"
+          "description": "The licence text.",
+          "$ref": "#/$defs/HttpsUrl"
         },
         "attribution": {
           "description": "The attribution statement the licence requires. Partner apps that display this fact must show it.",
@@ -355,9 +355,28 @@
         "retrieved_at": {
           "description": "When OTWD downloaded the dataset.",
           "$ref": "#/$defs/Timestamp"
+        },
+        "changes": {
+          "description": "The changes OTWD made to the data, as the licence asks a reuser to indicate, for example: Mapped to OTWD codes and combined with contributor reports. Required when the licence is a CC BY licence.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "licence": {
+            "pattern": "^CC-BY-"
+          }
+        }
+      },
+      "then": {
+        "required": ["changes"],
+        "properties": {
+          "changes": true
+        }
+      }
     },
     "Provenance": {
       "description": "Who supplied a fact, through which partner app or seed source, when, and with what confidence. Every fact carries one. Every fact reaches the live data through a submission, a moderation decision and a change, including seed source imports, so all three are always named.",
@@ -566,7 +585,7 @@
       "additionalProperties": false
     },
     "Photo": {
-      "description": "A published photo of a record, such as a site or the sign at a road restriction. Photos are licensed CC BY 4.0 by the person who took them, and EXIF location data is removed before publication.",
+      "description": "A published photo of a record, such as a site or the sign at a road restriction. A contributor's photo is licensed by the person who took it, CC BY 4.0 unless they chose CC0 1.0. A photo from a seed source keeps that source's licence and credit (ADR 0037). EXIF location data is removed before publication.",
       "type": "object",
       "required": ["id", "url", "width", "height", "licence", "attribution", "provenance"],
       "properties": {
@@ -599,17 +618,30 @@
           "$ref": "#/$defs/LocalDate"
         },
         "licence": {
-          "description": "Always CC-BY-4.0 in schema version 1.",
-          "const": "CC-BY-4.0"
+          "$ref": "#/$defs/PhotoLicence"
         },
         "attribution": {
-          "description": "The credit to show with the photo, as the photographer chose it, for example a display name. Never an email address.",
+          "description": "The credit to show with the photo. For a contributor's photo it is the credit they chose, or Open Touring contributor when they chose none (ADR 0038). For a seed source photo it is the credit the seed source's licence requires. Never an email address.",
           "type": "string",
           "minLength": 1,
-          "maxLength": 100
+          "maxLength": 300
         },
         "provenance": {
           "$ref": "#/$defs/Provenance"
+        },
+        "licence_url": {
+          "description": "The licence text.",
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "source_url": {
+          "description": "For a photo from a seed source: the page the photo was published on.",
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "changes": {
+          "description": "The changes OTWD made to the photo, for example: Resized and location data removed. Stated for every photo from a seed source.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
         }
       },
       "additionalProperties": false
@@ -654,12 +686,27 @@
             "$ref": "#/$defs/LocalDate"
           },
           "licence": {
-            "const": "CC-BY-4.0"
+            "$ref": "#/$defs/PhotoLicence"
           },
           "attribution": {
+            "description": "The credit to show with the photo. For a contributor's photo it is the credit they chose, or Open Touring contributor when they chose none (ADR 0038). For a seed source photo it is the credit the seed source's licence requires. Never an email address.",
             "type": "string",
             "minLength": 1,
-            "maxLength": 100
+            "maxLength": 300
+          },
+          "licence_url": {
+            "description": "The licence text.",
+            "$ref": "#/$defs/HttpsUrl"
+          },
+          "source_url": {
+            "description": "For a photo from a seed source: the page the photo was published on.",
+            "$ref": "#/$defs/HttpsUrl"
+          },
+          "changes": {
+            "description": "The changes OTWD made to the photo, for example: Resized and location data removed. Stated for every photo from a seed source.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
           }
         },
         "additionalProperties": false
@@ -978,14 +1025,17 @@
       "unevaluatedProperties": false
     },
     "AttributionList": {
-      "description": "Every credit a record's facts require, in the compact form. The first entry is always the Open Touring credit. Seed source credits follow, once each.",
+      "description": "Every credit a record's facts require, in the compact form, as structured entries an app can render in its own words and layout. The first entry is always the Open Touring credit. Seed source credits follow, once each, with their licence, links and the changes OTWD made. Photo credits travel with each photo.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/OpenTouringCredit"
+        }
+      ],
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 300
+        "$ref": "#/$defs/AttributionEntry"
       }
     },
     "MinConfidence": {
@@ -1072,6 +1122,98 @@
         }
       },
       "additionalProperties": false
+    },
+    "PhotoLicence": {
+      "description": "The licence of a published photo, as an SPDX identifier. A contributor's own photo is CC-BY-4.0 by default, or CC0-1.0 if they choose. A photo from a seed source keeps the seed source's licence, which must be compatible with CC BY 4.0. Open: a consumer that does not know the licence shows the photo with its attribution and licence_url, or leaves it out.",
+      "$ref": "#/$defs/SpdxLicence",
+      "x-otwd-known-values": ["CC-BY-4.0", "CC0-1.0", "CC-BY-3.0-AU"]
+    },
+    "AttributionEntry": {
+      "description": "One credit a record's facts or photos require: the text to show, the licence it is given under, links to the source and the licence, and the changes OTWD made where the licence asks for them.",
+      "type": "object",
+      "required": ["text", "licence"],
+      "properties": {
+        "text": {
+          "description": "The credit as the licensor asks for it, for example: Contains Vicmap Transport data, Department of Transport and Planning (Victoria).",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "licence": {
+          "$ref": "#/$defs/SpdxLicence"
+        },
+        "licence_url": {
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "source_url": {
+          "description": "The source's own page, where the licence asks for a link to the material.",
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "seed_source": {
+          "description": "The seed source the credit is for, so a reader can look it up at /v1/seed-sources.",
+          "$ref": "#/$defs/SeedSourceId"
+        },
+        "changes": {
+          "description": "The changes OTWD made, where the licence asks a reuser to indicate them.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "Every CC BY licence asks a reuser who modifies the material to say so (CC BY 4.0 section 3(a)(1)(B), CC BY 3.0 AU section 4B). OTWD always maps seed source data to its own codes and combines it with other facts, so an entry or reference for a seed source under a CC BY licence states the changes.",
+          "if": {
+            "allOf": [
+              {
+                "required": ["seed_source"],
+                "properties": {
+                  "seed_source": true
+                }
+              },
+              {
+                "properties": {
+                  "licence": {
+                    "pattern": "^CC-BY-"
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "required": ["changes"],
+            "properties": {
+              "changes": true
+            }
+          }
+        }
+      ]
+    },
+    "OpenTouringCredit": {
+      "description": "The Open Touring credit that leads every attribution list.",
+      "$ref": "#/$defs/AttributionEntry",
+      "properties": {
+        "text": {
+          "const": "Open Touring contributors"
+        },
+        "licence": {
+          "const": "CC-BY-4.0"
+        },
+        "licence_url": {
+          "const": "https://creativecommons.org/licenses/by/4.0/"
+        },
+        "source_url": {
+          "const": "https://opentouring.org"
+        }
+      },
+      "required": ["licence_url", "source_url"],
+      "not": {
+        "required": ["seed_source"],
+        "properties": {
+          "seed_source": true
+        }
+      }
     }
   }
 }

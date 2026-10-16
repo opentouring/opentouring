@@ -565,9 +565,9 @@
           "const": "add_photo"
         },
         "proposed": {
-          "description": "A photo already uploaded through POST /v1/photo-uploads, of any record type, such as a site, the clearance sign at a road restriction or the towing sign on a road segment. The photographer licenses it under CC BY 4.0.",
+          "description": "A photo already uploaded through POST /v1/photo-uploads, of any record type, such as a site, the clearance sign at a road restriction or the towing sign on a road segment. The photographer licenses it under CC BY 4.0, or under CC0 1.0 if they choose, and may give the credit to show. Without one the photo is credited to Open Touring contributor.",
           "type": "object",
-          "required": ["upload_id", "licence", "attribution"],
+          "required": ["upload_id", "licence"],
           "properties": {
             "upload_id": {
               "$ref": "common.schema.json#/$defs/UploadId"
@@ -582,10 +582,11 @@
               "$ref": "common.schema.json#/$defs/LocalDate"
             },
             "licence": {
-              "const": "CC-BY-4.0"
+              "description": "CC-BY-4.0 unless the photographer chose CC0-1.0.",
+              "enum": ["CC-BY-4.0", "CC0-1.0"]
             },
             "attribution": {
-              "description": "The credit the photographer wants shown, such as a display name or handle. Never an email address.",
+              "description": "The credit the photographer chose to show with the photo, such as a display name or handle. Optional: a name repeated across photos links them, so apps should leave it empty unless the photographer asks to be named. Never an email address.",
               "type": "string",
               "minLength": 1,
               "maxLength": 100,

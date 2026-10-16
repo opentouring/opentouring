@@ -12,7 +12,8 @@
         "publisher": "Department of Transport and Planning (Victoria)",
         "licence": "CC-BY-4.0",
         "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-        "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+        "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria)",
+        "changes": "Mapped to OTWD codes and combined with contributor reports.",
         "record_id": "tr_road_infrastructure/9900417",
         "dataset_version": "2026-10",
         "retrieved_at": "2026-10-02T02:00:00Z"
@@ -69,7 +70,8 @@
           "publisher": "Department of Transport and Planning (Victoria)",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria)",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "tr_road_infrastructure/9900417",
           "dataset_version": "2026-10",
           "retrieved_at": "2026-10-02T02:00:00Z"
@@ -98,7 +100,8 @@
           "publisher": "Department of Transport and Planning (Victoria)",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria)",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "tr_road_infrastructure/9900417",
           "dataset_version": "2026-10",
           "retrieved_at": "2026-10-02T02:00:00Z"
@@ -130,7 +133,8 @@
           "publisher": "Department of Transport and Planning (Victoria)",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria)",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "tr_road_infrastructure/9900417",
           "dataset_version": "2026-10",
           "retrieved_at": "2026-10-02T02:00:00Z"

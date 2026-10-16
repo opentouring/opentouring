@@ -1,0 +1,93 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/seed-sources.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "version": "1.0.0",
+  "entries": [
+    {
+      "id": "otwd:seed_source:au-vic-vicmap-transport",
+      "dataset_name": "Vicmap Transport",
+      "publisher": "Department of Transport and Planning (Victoria)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://discover.data.vic.gov.au/api/3/action/package_show?id=vicmap-transport-road-line",
+      "record_types": ["road_restriction", "road_segment", "ferry_service"],
+      "subdivisions": ["AU-VIC"],
+      "status": "planned",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-vic-road-bridges",
+      "dataset_name": "Road Bridges",
+      "publisher": "Department of Transport and Planning (Victoria)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Road Bridges data, Department of Transport and Planning (Victoria)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://discover.data.vic.gov.au/api/3/action/package_show?id=road-bridges",
+      "record_types": ["road_restriction"],
+      "subdivisions": ["AU-VIC"],
+      "status": "planned",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-nsw-state-roads-vertical-clearances",
+      "dataset_name": "NSW State Roads Vertical Clearances",
+      "publisher": "Transport for NSW",
+      "licence": "CC-BY-3.0-AU",
+      "licence_url": "https://creativecommons.org/licenses/by/3.0/au/",
+      "attribution": "Contains NSW State Roads Vertical Clearances data, Transport for NSW",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://data.gov.au/data/dataset/nsw-2-nsw-state-roads-vertical-clearances",
+      "record_types": ["road_restriction"],
+      "subdivisions": ["AU-NSW"],
+      "status": "planned",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-wa-mrwa-drive-under-structures",
+      "dataset_name": "Drive Under Structures",
+      "publisher": "Main Roads Western Australia",
+      "licence": "CC-BY-3.0-AU",
+      "licence_url": "https://creativecommons.org/licenses/by/3.0/au/",
+      "attribution": "Contains Drive Under Structures data, Main Roads Western Australia",
+      "attribution_notes": "The publisher's record asks for a notice that Main Roads Western Australia is the creator and owner of the data. Quote its exact wording here once confirmed.",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://data.gov.au/data/dataset/mrwa-drive-under-structures",
+      "record_types": ["road_restriction"],
+      "subdivisions": ["AU-WA"],
+      "status": "planned",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+      }
+    },
+    {
+      "id": "otwd:seed_source:au-tas-low-bridge-clearances",
+      "dataset_name": "Tasmanian Low Bridge Clearances",
+      "publisher": "Department of State Growth (Tasmania)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Contains Tasmanian Low Bridge Clearances data, Department of State Growth (Tasmania)",
+      "changes": "Mapped to OTWD codes and combined with contributor reports.",
+      "dataset_url": "https://data.gov.au/data/dataset/tasmanian-low-bridge-clearances",
+      "record_types": ["road_restriction"],
+      "subdivisions": ["AU-TAS"],
+      "status": "planned",
+      "licence_review": {
+        "status": "pending",
+        "notes": "Licence from docs/research/road-and-ferry-data.md. Confirm the publisher's attribution statement before the first import."
+      }
+    }
+  ]
+}

@@ -80,6 +80,7 @@ SAFETY_MARKER = "x-otwd-safety-fact"
 KNOWN_VALUES = "x-otwd-known-values"
 REGISTRY = "x-otwd-registry"
 RECORD_TYPE_REGISTRY = "record-types.json"
+SEED_SOURCE_REGISTRY = "seed-sources.json"
 # Every producer-only error says this, so consumer examples can tell it from other errors.
 PRODUCER_ONLY = "producers may not send it"
 I18N = "i18n"
@@ -118,6 +119,8 @@ ALWAYS_HUMAN_KINDS = {
     "request_split",
     "request_replacement",
 }
+# The licences a contributor may choose for their own photo (ADR 0037).
+CONTRIBUTOR_PHOTO_LICENCES = {"CC-BY-4.0", "CC0-1.0"}
 # The top-level fields of a retracted stub: everything else was removed with the record.
 STUB_FIELDS = {"schema_version", "id", "status", "created_at", "updated_at", "change_seq"}
 STUB_FIELDS_COMPACT = STUB_FIELDS | {"status_reason", "attribution"}
@@ -566,6 +569,28 @@ class SemanticChecker:
             elif record_type_of(other) != record_type_of(record_id):
                 self.fail(f"{where}/{index}", f"{other} is not a {record_type_of(record_id).code}")
 
+    def photo_licences(self, photos: list[dict]) -> None:
+        """A seed source photo keeps its source's licence, and a contributor chose CC BY or CC0."""
+        for index, photo in enumerate(photos):
+            where, provenance = f"/photos/{index}", photo["provenance"]
+            seed = provenance.get("seed_source")
+            if seed and photo["licence"] != seed["licence"]:
+                self.fail(
+                    f"{where}/licence",
+                    f"is {photo['licence']}, but a photo from a seed source keeps its licence, "
+                    f"{seed['licence']}",
+                )
+            elif seed and "changes" not in photo:
+                self.fail(where, "a photo from a seed source states the changes OTWD made")
+            elif not seed and photo["licence"] not in CONTRIBUTOR_PHOTO_LICENCES:
+                self.fail(f"{where}/licence", "a contributor's photo is CC-BY-4.0 or CC0-1.0")
+
+    def credits(self, attribution: list[dict]) -> None:
+        """Each seed source is credited once."""
+        sources = [entry["seed_source"] for entry in attribution if "seed_source" in entry]
+        for source in sorted({source for source in sources if sources.count(source) > 1}):
+            self.fail("/attribution", f"{source} is credited more than once")
+
     def other_type(self, record_id: str, other: str, where: str) -> None:
         """A replacement is a record of another record type."""
         if record_type_of(other) == record_type_of(record_id):
@@ -606,6 +631,10 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
         checker.same_type(document["id"], [target], "/redirect_to")
     elif target and status == "replaced":
         checker.other_type(document["id"], target, "/redirect_to")
+    if full:
+        checker.photo_licences(document.get("photos", []))
+    else:
+        checker.credits(document.get("attribution", []))
     if status == "retracted":
         allowed = STUB_FIELDS if full else STUB_FIELDS_COMPACT
         for name in sorted(document.keys() - allowed):
@@ -911,6 +940,7 @@ def check_schemas(context: Context) -> list[str]:
         problems.append(f"creation kinds {sorted(creation)} do not match the record types")
     problems += check_facilities(context)
     problems += check_record_type_registry(context)
+    problems += check_seed_source_registry(context)
     problems += check_open_enumerations(context)
     return problems
 
@@ -946,6 +976,19 @@ def check_record_type_registry(context: Context) -> list[str]:
     return problems
 
 
+def check_seed_source_registry(context: Context) -> list[str]:
+    """seed-sources.json is valid, and each seed source is listed once."""
+    document = load_json(SCHEMA_DIR / SEED_SOURCE_REGISTRY)
+    validator = context.validator("seed-sources.schema.json")
+    problems = [
+        f"{SEED_SOURCE_REGISTRY}{describe(error)}" for error in validator.iter_errors(document)
+    ]
+    ids = [entry["id"] for entry in document["entries"]]
+    for duplicate in sorted({seed for seed in ids if ids.count(seed) > 1}):
+        problems.append(f"{SEED_SOURCE_REGISTRY}: {duplicate} is listed more than once")
+    return problems
+
+
 def open_enumerations(node: Any, where: str = "") -> Iterable[tuple[str, list]]:
     """Every x-otwd-known-values list in a schema, with where it is."""
     if isinstance(node, dict):
@@ -959,16 +1002,18 @@ def open_enumerations(node: Any, where: str = "") -> Iterable[tuple[str, list]]:
 
 
 def check_open_enumerations(context: Context) -> list[str]:
-    """Known values are unique, follow EnumCode, and sit on a schema that only allows EnumCode."""
+    """Known values are unique and valid under the schema they annotate, such as EnumCode."""
     problems: list[str] = []
-    pattern = re.compile(context.definition("common.schema.json", "EnumCode")["pattern"])
     for name, schema in context.schemas.items():
         for where, known in open_enumerations(schema):
             if len(known) != len(set(known)):
                 problems.append(f"{name}{where}: {KNOWN_VALUES} repeats a value")
+            annotated = Draft202012Validator(
+                {"$ref": f"{BASE}{name}#{where}"}, registry=context.registry
+            )
             for value in known:
-                if not pattern.match(value):
-                    problems.append(f"{name}{where}: {value!r} does not follow EnumCode")
+                if not annotated.is_valid(value):
+                    problems.append(f"{name}{where}: known value {value!r} fails its own schema")
     return problems
 
 

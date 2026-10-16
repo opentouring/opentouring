@@ -119,4 +119,8 @@ Errors use RFC 9457 problem details with content type `application/problem+json`
 
 ## Attribution and licences
 
-OTWD data is CC BY 4.0. Show "Data: Open Touring contributors, opentouring.org, CC BY 4.0" wherever OTWD data appears, plus every credit in a record's `attribution` list and each photo's own `attribution`. The spec itself and the JSON Schema are Apache-2.0.
+OTWD data is CC BY 4.0. Show "Data: Open Touring contributors, opentouring.org, CC BY 4.0" wherever OTWD data appears, plus every credit in a record's `attribution` list and each photo's own credit. The spec itself and the JSON Schema are Apache-2.0.
+
+Each `attribution` entry is structured ([ADR 0037](../docs/adr/0037-structured-attribution-and-photo-licences.md)): `text` to show, `licence` as an SPDX identifier, `licence_url`, `source_url` where the licence asks for a link, `seed_source` naming the registry entry, and `changes`, the notice of changes OTWD made, which every seed source under a CC BY licence has. The first entry is always the Open Touring credit. Render them in your own layout, for example as "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), CC BY 4.0, modified: mapped to OTWD codes and combined with contributor reports", with the licence name linked to `licence_url`. `GET /v1/seed-sources` lists every seed source with its licence, credit, licence review and last sync.
+
+Photos carry their own `licence`, `licence_url` and `attribution`. A contributor's photo is CC BY 4.0, or CC0 1.0 if they chose it, credited as they asked or as "Open Touring contributor". A photo from a seed source keeps that source's licence and credit, links to where it was published in `source_url`, and states the changes OTWD made in `changes`.

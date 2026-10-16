@@ -103,7 +103,7 @@ A short original text about a record, written by a contributor and published und
 _Avoid_: review, blurb
 
 **Photo**:
-An image of a record, such as a site or the sign at a road restriction, licensed under the data licence by the person who took it, with its embedded location removed.
+An image of a record, such as a site or the sign at a road restriction, with its embedded location removed. A contributor's photo is licensed by the person who took it under CC BY 4.0, or CC0 1.0 if they choose. A photo from a seed source keeps that source's compatible licence and credit.
 _Avoid_: image upload, media
 
 **Public ID**:
@@ -253,6 +253,18 @@ _Avoid_: source (on its own), metadata, history
 **Seed source**:
 An external open dataset imported under a compatible licence, such as a state parks dataset, recorded as provenance.
 _Avoid_: import, feed, scrape
+
+**Seed source registry**:
+The published list of seed sources (`seed-sources.json`, served at `/v1/seed-sources`), with each one's licence, credit, changes notice and licence review. A seed source is imported only after its licence review is confirmed.
+_Avoid_: source list, data catalogue
+
+**Attribution entry**:
+One credit a record needs, as structured data: the text to show, the licence, links to the licence and the source, and the changes notice where the licence asks for one. A record's attribution list starts with the Open Touring credit.
+_Avoid_: credit string, citation
+
+**Changes notice**:
+The statement of what OTWD changed in a seed source's data or photo, such as mapping it to OTWD codes, which CC BY licences ask a reuser to give.
+_Avoid_: modification flag, disclaimer
 
 **Compatible licence**:
 A licence on outside data that allows OTWD to republish it under CC BY 4.0.

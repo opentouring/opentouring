@@ -60,7 +60,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
