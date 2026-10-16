@@ -207,6 +207,14 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `nz_self_containment` | none     |       | No documented key. `self_contained=*` has 2 uses in taginfo and no wiki page.            |
 | `cmca_scv`            | none     |       | No documented key. `caravans=*` and `motorhome=*` say whether a vehicle type is allowed. |
 
+## Location sensitivity reasons
+
+| Code                 | OSM tags | Match | Note                                                                                                                                   |
+| -------------------- | -------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `cultural_heritage`  | none     |       | No documented tag. The Australian tagging guidelines for First Peoples say to "defer to that community on how it should be presented". |
+| `threatened_species` | none     |       | No documented tag.                                                                                                                     |
+| `breeding_wildlife`  | none     |       | No documented tag.                                                                                                                     |
+
 ## Record types and their facts
 
 Road restrictions, road segments and ferry services are not governed lists, so their mapping is given here only. OSM records most of these facts as tags on the road way or ferry route a limit applies to.
@@ -249,6 +257,7 @@ Road restrictions, road segments and ferry services are not governed lists, so t
 | `seasonal_operation`                                         | `opening_hours=*` with months, `seasonal=*`                                                | related | Key:seasonal is de facto and points amenities to opening_hours.                                                                             |
 | `water_notices`                                              | none                                                                                       |         | Key:drinking_water:legal says tagging "boil before drinking" is not defined.                                                                |
 | `flood_depth_marker`                                         | none                                                                                       |         | No documented tag for a depth marker post. `ford=yes` (de facto) and `flood_prone=yes` (in use) describe the crossing.                      |
+| `location_sensitivity`                                       | none                                                                                       |         | No documented tag. OTWD publishes only the generalised location.                                                                            |
 | Ferry terminal                                               | `amenity=ferry_terminal`                                                                   | exact   | A site with the `ferry_terminal` site type.                                                                                                 |
 | `vehicle_limits.max_length_m` and the like                   | `maxlength=*`, `maxheight=*`, `maxweight=*` on the ferry route                             | related | Per-class limits and vehicle bands have no OSM equivalent.                                                                                  |
 

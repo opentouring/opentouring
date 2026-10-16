@@ -34,7 +34,7 @@ Sign off every commit with `git commit -s` (DCO). No CLA. The git hooks (run `np
 
 ## Schema and vocabulary changes
 
-Site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species and self-contained schemes are governed lists. A new or changed value starts as a "Governed list:" issue in the format in `CONTRIBUTING.md`, with OSM and schema.org mappings, and lands in `schema/` and `CONTEXT.md` together.
+Site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons are governed lists. A new or changed value starts as a "Governed list:" issue in the format in `CONTRIBUTING.md`, with OSM and schema.org mappings, and lands in `schema/` and `CONTEXT.md` together.
 
 ## Agent skills
 

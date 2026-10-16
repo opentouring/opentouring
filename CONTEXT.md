@@ -67,7 +67,7 @@ A typed detail of a facility, defined with the facility in the governed list, su
 _Avoid_: property, option, sub-field
 
 **Governed list**:
-A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species and self-contained schemes, which the community extends by proposal and the steering group approves.
+A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
 **Reference language**:
@@ -153,6 +153,14 @@ _Avoid_: adults only (as the field), family friendly
 **Seasonal operation**:
 The periods each year a site operates, as local month and day: the operator's own season, distinct from a seasonal closure and a temporary closure.
 _Avoid_: open season, seasonal opening (for a closure)
+
+**Location sensitivity**:
+A moderator's marking that a site's exact position must not be published, with a reason from a governed list, such as a culturally sensitive place. The site is then published with a generalised location, and the exact position is held privately for moderation.
+_Avoid_: hidden site, secret location
+
+**Generalised location**:
+The published location of a site whose location is sensitive: its coordinates rounded to a grid cell of 0.01, 0.1 or 1 degree, with no accuracy and no locality.
+_Avoid_: fuzzed location, approximate location, obfuscated location
 
 **Description**:
 A short original text about a record, written by a contributor and published under the data licence.
@@ -387,7 +395,7 @@ The fixed code that sends each submission to a human queue or, where allowed, to
 _Avoid_: triage (by the AI), dispatch
 
 **Always-human list**:
-The kinds of submission that routing always sends to a person: new records of every record type, closures, merges and any change to a safety fact. Membership follows from the submission's kind and the safety facts it touches, never from a flag routing sets for itself.
+The kinds of submission that routing always sends to a person: new records of every record type, closures, merges, any change to a safety fact and any change to a site's location sensitivity. Membership follows from the submission's kind and the fields it touches, as the schema marks them, never from a flag routing sets for itself.
 _Avoid_: exceptions, manual list
 
 **Moderation decision**:

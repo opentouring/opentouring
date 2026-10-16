@@ -45,8 +45,8 @@
       },
       "additionalProperties": false
     },
-    "Location": {
-      "description": "The coordinates of a site or road restriction in WGS84 (EPSG:4326), in decimal degrees. For a large site such as a campground this is the entrance or office, where a traveller would drive to. For a road restriction it is the point on the road where the limit applies, such as the centre of the road under a bridge.",
+    "Coordinates": {
+      "description": "A latitude and longitude in WGS84 (EPSG:4326), in decimal degrees, with an optional accuracy. Location and SiteLocation build on it and close the object.",
       "type": "object",
       "required": ["lat", "lng"],
       "properties": {
@@ -65,6 +65,46 @@
           "type": "number",
           "minimum": 0,
           "maximum": 10000
+        }
+      }
+    },
+    "Location": {
+      "description": "The coordinates of a road restriction: the point on the road where the limit applies, such as the centre of the road under a bridge. Always exact, because a road restriction's location is a safety fact.",
+      "$ref": "#/$defs/Coordinates",
+      "unevaluatedProperties": false
+    },
+    "SiteLocation": {
+      "description": "The coordinates of a site. For a large site such as a campground this is the entrance or office, where a traveller would drive to. When the site has a location_sensitivity fact, the published coordinates are generalised (ADR 0045): lat and lng are rounded to the nearest multiple of generalised.cell_deg and accuracy_m is left out, so they name a grid cell rather than the place. Submissions always carry the exact position and never generalised.",
+      "$ref": "#/$defs/Coordinates",
+      "properties": {
+        "generalised": {
+          "$ref": "#/$defs/Generalisation"
+        }
+      },
+      "unevaluatedProperties": false,
+      "if": {
+        "required": ["generalised"],
+        "properties": {
+          "generalised": true
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["accuracy_m"],
+          "properties": {
+            "accuracy_m": true
+          }
+        }
+      }
+    },
+    "Generalisation": {
+      "description": "How a published site position was generalised. cell_deg: the grid cell size in degrees, 0.01 (about 1.1 km north to south), 0.1 (about 11 km) or 1 (about 111 km). lat and lng are rounded to the nearest multiple of it, which tools/validate.py checks.",
+      "type": "object",
+      "required": ["cell_deg"],
+      "properties": {
+        "cell_deg": {
+          "type": "number",
+          "enum": [0.01, 0.1, 1]
         }
       },
       "additionalProperties": false
@@ -1065,6 +1105,21 @@
         }
       },
       "unevaluatedProperties": false
+    },
+    "LocationSensitivity": {
+      "description": "The site's exact position must not be published, and why (ADR 0045). reason comes from the location sensitivity reason governed list (location-sensitivity-reasons.json). A moderator sets it, and the site's published location is then generalised to a grid cell at least as coarse as the reason's min_cell_deg, without accuracy_m, and the site has no locality. The exact position is held privately for moderation and never appears in the API, bulk downloads or the change feed. It carries no free text, so nothing about the place or the request is published beyond the reason.",
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "reason": {
+          "$ref": "common.schema.json#/$defs/LocationSensitivityReasonCode"
+        },
+        "review_on": {
+          "description": "The local date on which moderators review whether the marking is still needed, when one is set. A marking for cultural_heritage is reviewed only with the people who asked for it.",
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        }
+      },
+      "additionalProperties": false
     },
     "AccessFeature": {
       "description": "Wheelchair access to one feature. yes: a wheelchair user can reach and use it without help. limited: usable with help or with difficulty, such as a ramp steeper than the standard allows or a door narrower than a modern chair. no: a wheelchair user cannot reach or use it. notes says what limits it.",

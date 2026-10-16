@@ -100,7 +100,7 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species and self-contained schemes records are described with.
+    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons records are described with.
   - name: Bulk downloads
     description: The whole dataset, or the changes between two sequence numbers, as files.
   - name: Change feed
@@ -127,6 +127,10 @@ paths:
 
         With `near`, results are ordered by distance and `distances_km` gives each site's
         distance. Otherwise they are ordered by public ID.
+
+        A site whose location is sensitive (a location_sensitivity fact) is served with its
+        generalised location only, in every view and format, and `bbox`, `near` and
+        `distances_km` use that generalised position. The exact position is never served.
       parameters:
         - $ref: "#/components/parameters/Bbox"
         - $ref: "#/components/parameters/Near"
@@ -1072,6 +1076,25 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
+  /v1/location-sensitivity-reasons:
+    get:
+      tags: [Governed lists]
+      operationId: listLocationSensitivityReasons
+      summary: List location sensitivity reasons
+      description: Returns the governed list of reasons a site's exact position is withheld, with the finest grid each allows its published location to be generalised to.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
   /v1/downloads:
     get:
       tags: [Bulk downloads]
@@ -1082,7 +1105,9 @@ paths:
         type. Full downloads hold every record of that type that is not merged, in the compact form
         for GeoParquet and in the full form for GeoJSON, with point geometry for sites and road
         restrictions and line geometry for road segments and ferry services. Delta files hold the
-        changes between two sequence numbers and need a paid tier.
+        changes between two sequence numbers and need a paid tier. A site whose location is
+        sensitive appears with its generalised location only, in its properties and its geometry
+        alike (site-feature.schema.json).
 
         Download URLs are signed for the API key and expire. Verify each file against its sha256.
       parameters:
@@ -1849,7 +1874,7 @@ components:
           type: string
           example: "Data: Open Touring contributors, opentouring.org, CC BY 4.0"
     SiteFeatureCollection:
-      description: The same page as GeoJSON (RFC 7946). Each feature is a Point whose properties are the compact site form. next_cursor and attribution are foreign members.
+      description: The same page as GeoJSON (RFC 7946). Each feature is a Point built from the site's published location, whose properties are the compact site form (site-feature.schema.json). next_cursor and attribution are foreign members.
       type: object
       required: [type, features, next_cursor]
       properties:
@@ -1858,17 +1883,7 @@ components:
         features:
           type: array
           items:
-            type: object
-            required: [type, id, geometry, properties]
-            properties:
-              type:
-                const: Feature
-              id:
-                $ref: "../schema/common.schema.json#/$defs/SiteId"
-              geometry:
-                $ref: "../schema/common.schema.json#/$defs/GeoJsonPoint"
-              properties:
-                $ref: "../schema/site-compact.schema.json"
+            $ref: "../schema/site-feature.schema.json"
         next_cursor:
           type: [string, "null"]
         attribution:

@@ -72,6 +72,8 @@ BASE_KEY = "$base"
 PATCH_KEY = "$patch"
 SPDX_COMMENT = "SPDX-License-Identifier: Apache-2.0"
 SAFETY_MARKER = "x-otwd-safety-fact"
+# Facts that are not safety facts but whose every change goes to a person (ADR 0045).
+ALWAYS_HUMAN_MARKER = "x-otwd-always-human"
 I18N = "i18n"
 REFERENCE_LANGUAGE = "en-AU"
 # Fields the API adds to governed list entries when text falls back to another language.
@@ -91,6 +93,7 @@ VEHICLE_CLASSES = "vehicle-classes.json"
 KEY_SCHEMES = "key-schemes.json"
 PET_SPECIES = "pet-species.json"
 SELF_CONTAINED_SCHEMES = "self-contained-schemes.json"
+SENSITIVITY_REASONS = "location-sensitivity-reasons.json"
 
 # Every governed list file, with the name its codes go by in error messages.
 GOVERNED_LISTS = {
@@ -103,9 +106,13 @@ GOVERNED_LISTS = {
     KEY_SCHEMES: "key scheme",
     PET_SPECIES: "pet species",
     SELF_CONTAINED_SCHEMES: "self-contained scheme",
+    SENSITIVITY_REASONS: "location sensitivity reason",
 }
+
 # Structures where water crosses the road, the only ones a flood depth marker stands at.
 FLOOD_CROSSINGS = {"ford", "causeway"}
+# Tolerance when checking that a generalised coordinate sits on its grid.
+GRID_TOLERANCE = 1e-9
 
 # Submission kinds on the always-human list for every record type, besides the
 # kinds that create a record (new_<record type>).
@@ -304,6 +311,8 @@ class Context:
 
     safety_fields: for each record type, the pointers of its safety facts and facilities,
     read from the x-otwd-safety-fact markers in its full form.
+    human_fields: for each record type, the pointers of facts that are not safety facts but
+    are on the always-human list, read from the x-otwd-always-human markers.
     sites: site types of the sites known to this run, by public ID, for cross-document checks.
     sites_complete: True when every site a document names must be known (the examples).
     """
@@ -312,6 +321,7 @@ class Context:
     schemas: dict[str, dict]
     vocab: Vocab
     safety_fields: dict[str, frozenset[str]]
+    human_fields: dict[str, frozenset[str]]
     sites: dict[str, set[str]]
     sites_complete: bool
 
@@ -327,22 +337,35 @@ class Context:
             schemas[path.name] = schema
             resource = Resource.from_contents(schema, default_specification=DRAFT202012)
             registry = registry.with_resource(expected_id, resource)
-        safety = {
-            record_type.code: frozenset(safety_pointers(schemas[record_type.full]))
-            for record_type in RECORD_TYPES
-        }
-        return cls(registry.crawl(), schemas, Vocab(), safety, {}, False)
+        safety, human = (
+            {
+                record_type.code: frozenset(marked_pointers(schemas[record_type.full], marker))
+                for record_type in RECORD_TYPES
+            }
+            for marker in (SAFETY_MARKER, ALWAYS_HUMAN_MARKER)
+        )
+        return cls(registry.crawl(), schemas, Vocab(), safety, human, {}, False)
 
     def with_sites(self, paths: Iterable[Path], complete: bool) -> Context:
         sites: dict[str, set[str]] = {}
         for path in paths:
             kind = DocumentKind.for_path(path)
-            if kind and kind.stem in ("site", "site-compact"):
+            if kind and kind.stem in ("site", "site-compact", "site-feature"):
                 document = load_document(path)
+                if kind.stem == "site-feature":
+                    document = document["properties"]
                 types = site_types_of(document)
                 if types is not None:
                     sites[document["id"]] = types
-        return Context(self.registry, self.schemas, self.vocab, self.safety_fields, sites, complete)
+        return Context(
+            self.registry,
+            self.schemas,
+            self.vocab,
+            self.safety_fields,
+            self.human_fields,
+            sites,
+            complete,
+        )
 
     def validator(self, schema_name: str) -> Draft202012Validator:
         return Draft202012Validator(
@@ -356,13 +379,13 @@ class Context:
         return self.schemas[schema_name]["$defs"][def_name]
 
 
-def safety_pointers(full_schema: dict) -> Iterable[str]:
-    """The fields a record type's full form marks as safety facts, as JSON Pointers."""
+def marked_pointers(full_schema: dict, marker: str) -> Iterable[str]:
+    """The fields a record type's full form marks with a marker, as JSON Pointers."""
     sections = {"facts": "Facts", "facilities": "FacilityFacts"}
     for section, def_name in sections.items():
         definition = full_schema["$defs"].get(def_name, {})
         for name, fact in definition.get("properties", {}).items():
-            if fact.get(SAFETY_MARKER):
+            if fact.get(marker):
                 yield f"/{section}/{name}"
 
 
@@ -453,6 +476,7 @@ class SemanticChecker:
             "bait_notices": self.bait_notices,
             "camping_rules": self.camping_rules,
             "water_notices": self.water_notices,
+            "location_sensitivity": self.location_sensitivity,
         }
 
     def fail(self, where: str, message: str) -> None:
@@ -647,8 +671,34 @@ class SemanticChecker:
             if "to" in notice and notice["to"] < notice["from"]:
                 self.fail(f"{where}/{index}/to", "is before from")
 
+    def location_sensitivity(self, value: dict, where: str) -> None:
+        self.code(SENSITIVITY_REASONS, value["reason"], f"{where}/reason")
+
+    def generalised_location(self, values: dict, where: str, suffix: str) -> None:
+        """A sensitive site's published coordinates sit on a grid at least as coarse as its reason allows."""
+        sensitivity, location = values.get("location_sensitivity"), values.get("location")
+        if not sensitivity or not location or "generalised" not in location:
+            return
+        cell = location["generalised"]["cell_deg"]
+        reason = self.vocab.lists[SENSITIVITY_REASONS].get(sensitivity["reason"])
+        if reason and cell < reason["min_cell_deg"]:
+            self.fail(
+                f"{where}/location{suffix}/generalised/cell_deg",
+                f"is {cell} but {sensitivity['reason']} needs a cell of at least "
+                f"{reason['min_cell_deg']} degrees",
+            )
+        for axis in ("lat", "lng"):
+            cells = location[axis] / cell
+            if abs(cells - round(cells)) > GRID_TOLERANCE:
+                self.fail(
+                    f"{where}/location{suffix}/{axis}",
+                    f"{location[axis]} is not on the {cell} degree grid: "
+                    "a sensitive site never publishes its exact position",
+                )
+
     def record_rules(self, values: dict, where: str, suffix: str) -> None:
         """Rules across a record's facts that do not apply to a submission's partial facts."""
+        self.generalised_location(values, where, suffix)
         closures = values.get("opening_hours", {}).get("seasonal_closures")
         if "seasonal_operation" in values and closures:
             self.fail(
@@ -744,6 +794,12 @@ class SemanticChecker:
         reasons += [
             f"{field} is a safety fact of a {record_type}" for field in fields if field in safety
         ]
+        human = self.context.human_fields[record_type]
+        reasons += [
+            f"every change to {field} of a {record_type} goes to a person"
+            for field in fields
+            if field in human
+        ]
         return reasons
 
 
@@ -803,6 +859,30 @@ def check_change(document: dict, checker: SemanticChecker) -> None:
     changed = [field for field in document["changed_fields"] if field in safety]
     if changed and document.get("safety_fact_changed") is False:
         checker.fail("/safety_fact_changed", f"is false but {', '.join(changed)} changed")
+
+
+def check_site_feature(document: dict, checker: SemanticChecker) -> None:
+    """A GeoJSON feature's properties are a site, and its geometry is the site's own location."""
+    properties = document["properties"]
+    full = isinstance(properties.get("status"), dict)
+    check_record(properties, checker, full)
+    checker.errors = [f"/properties{error}" for error in checker.errors]
+    if document["id"] != properties["id"]:
+        checker.fail("/id", f"is {document['id']} but the site is {properties['id']}")
+    facts = properties.get("facts", {}) if full else properties
+    location = facts.get("location", {}).get("value") if full else facts.get("location")
+    geometry = document.get("geometry")
+    if location is None or geometry is None:
+        if location != geometry:
+            checker.fail("/geometry", "must be null exactly when the site has no location")
+        return
+    expected = [location["lng"], location["lat"]]
+    if geometry["coordinates"] != expected:
+        checker.fail(
+            "/geometry/coordinates",
+            f"are {geometry['coordinates']} but the site's location is {expected}: "
+            "the geometry is always built from the published location",
+        )
 
 
 def check_nothing(document: dict, checker: SemanticChecker) -> None:
@@ -909,6 +989,7 @@ DOCUMENT_KINDS = tuple(
         DocumentKind(f"{record_type.stem}-compact", compact_record),
     )
 ) + (
+    DocumentKind("site-feature", check_site_feature),
     DocumentKind("submission", check_submission, rejects_deprecated=True),
     DocumentKind("verdict", check_nothing),
     DocumentKind("moderation-decision", check_moderation_decision),

@@ -3,7 +3,7 @@
   "$id": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD governed list",
-  "description": "The format of the governed lists (site-types.json, facilities.json, structures.json, surfaces.json, vehicle-access-classes.json, vehicle-classes.json, key-schemes.json, pet-species.json and self-contained-schemes.json) and of the API responses that serve them. Codes are stable: a code is never renamed or reused. A code that is no longer wanted is marked deprecated and keeps its meaning.",
+  "description": "The format of the governed lists (site-types.json, facilities.json, structures.json, surfaces.json, vehicle-access-classes.json, vehicle-classes.json, key-schemes.json, pet-species.json, self-contained-schemes.json and location-sensitivity-reasons.json) and of the API responses that serve them. Codes are stable: a code is never renamed or reused. A code that is no longer wanted is marked deprecated and keeps its meaning.",
   "type": "object",
   "required": ["$schema", "list", "version", "language", "entries"],
   "properties": {
@@ -160,6 +160,24 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "list": {
+            "const": "location_sensitivity_reasons"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/LocationSensitivityReasonEntry"
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {
@@ -175,7 +193,8 @@
         "vehicle_classes",
         "key_schemes",
         "pet_species",
-        "self_contained_schemes"
+        "self_contained_schemes",
+        "location_sensitivity_reasons"
       ]
     },
     "ListVersion": {
@@ -425,6 +444,18 @@
         }
       },
       "required": ["countries", "statutory"],
+      "unevaluatedProperties": false
+    },
+    "LocationSensitivityReasonEntry": {
+      "description": "An entry in the location sensitivity reason list: why a site's exact position is withheld (ADR 0045). min_cell_deg is the finest grid, in degrees, its published location may be generalised to.",
+      "$ref": "#/$defs/Entry",
+      "properties": {
+        "min_cell_deg": {
+          "type": "number",
+          "enum": [0.01, 0.1, 1]
+        }
+      },
+      "required": ["min_cell_deg"],
       "unevaluatedProperties": false
     },
     "Countries": {
