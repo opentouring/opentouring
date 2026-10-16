@@ -314,7 +314,7 @@ paths:
 
         The rig filters answer "which of these would stop my rig". With any rig_ parameter, only
         road restrictions with a recorded limit below the rig in at least one given dimension are
-        returned. Vertical clearance and width are compared using `lowest_m`, the lowest figure of
+        returned. Vertical clearance and width limit are compared using `lowest_m`, the lowest figure of
         any basis, so a measured figure below the sign counts. A restriction with no recorded
         limit for a dimension is never returned for that dimension, so an empty result is not
         proof a route is clear: the absent limit is unknown. See Rig filters above.

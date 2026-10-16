@@ -24,10 +24,10 @@ The road restriction, road segment and ferry service lists take `route`, the rou
 
 `rig_length_m`, `rig_height_m`, `rig_width_m`, `rig_weight_t` and `rig_axle_load_t` describe the rig the same way on every list endpoint, and each is compared with the record type's matching limit. A vertical clearance or width limit is compared using `lowest_m`, the lowest figure of any basis, so a measured figure below the sign counts.
 
-| Endpoint                      | Question it answers               | A recorded limit below the rig | No recorded limit                                                |
-| ----------------------------- | --------------------------------- | ------------------------------ | ---------------------------------------------------------------- |
-| Sites, road segments, ferries | Which of these can my rig use?    | Left out                       | Kept, unless `rig_limits_known=true`                             |
-| Road restrictions             | Which of these would stop my rig? | Returned                       | Not returned, so an empty result is not proof the route is clear |
+| Endpoint                             | Question it answers               | A recorded limit below the rig | No recorded limit                                                |
+| ------------------------------------ | --------------------------------- | ------------------------------ | ---------------------------------------------------------------- |
+| Sites, road segments, ferry services | Which of these can my rig use?    | Left out                       | Kept, unless `rig_limits_known=true`                             |
+| Road restrictions                    | Which of these would stop my rig? | Returned                       | Not returned, so an empty result is not proof the route is clear |
 
 Road restrictions answer the opposite question because they are the obstacles themselves. Other filters follow one pattern: a filter on a fact keeps records where the fact is unknown, and the matching `_known` parameter (`rig_limits_known`, `vehicle_access_class_known`, `towing_permitted_known`) leaves them out. On road segments, `vehicle_access_class` keeps segments a vehicle of that class can use, `towing_permitted` keeps segments with one of the listed values and `has_seasonal_closure` keeps segments with or without a seasonal closure. On ferry services, `vehicle_class` keeps services that carry every listed class.
 
