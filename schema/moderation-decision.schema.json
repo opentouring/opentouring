@@ -5,41 +5,106 @@
   "title": "OTWD moderation decision",
   "description": "The recorded outcome for a submission, with who or what decided and why. Decisions are appended to the submission log and never edited. An appeal produces a new decision that refers to the earlier one.",
   "type": "object",
-  "required": ["id", "submission_id", "outcome", "decided_by", "decided_at", "reasons"],
+  "required": ["id", "submission_id", "outcome", "decided_by", "decided_at", "routing", "reasons"],
   "properties": {
-    "id": { "$ref": "common.schema.json#/$defs/DecisionId" },
-    "submission_id": { "$ref": "common.schema.json#/$defs/SubmissionId" },
+    "id": {
+      "$ref": "common.schema.json#/$defs/DecisionId"
+    },
+    "submission_id": {
+      "$ref": "common.schema.json#/$defs/SubmissionId"
+    },
     "outcome": {
       "description": "approved: applied as submitted. edited_and_approved: applied after a moderator corrected it (amendments lists the corrections). rejected: not applied. needs_info: waiting for the contributor to answer the public note.",
       "type": "string",
       "enum": ["approved", "edited_and_approved", "rejected", "needs_info"]
     },
-    "decided_by": { "$ref": "#/$defs/Decider" },
-    "decided_at": { "type": "string", "format": "date-time" },
+    "decided_by": {
+      "$ref": "#/$defs/Decider"
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "routing": {
-      "description": "How routing sent the submission to whoever decided it.",
+      "description": "How routing sent the submission to whoever decided it, with what routing read from the submission: its kind, its record type and the fields it touches. The fixed checks derive whether the submission is on the always-human list from these, using the creation kinds, closures, merges and the safety fact markers (x-otwd-safety-fact) in the record type's schema, so a routing rule cannot approve one by declaring always_human false.",
       "type": "object",
-      "required": ["route", "policy_version"],
+      "required": ["route", "policy_version", "submission_kind", "record_type", "always_human"],
       "properties": {
         "route": {
-          "description": "human_review: a moderator's queue. auto_approval: approved by a routing rule, never used for the always-human list (new sites, closures, merges, safety facts).",
+          "description": "human_review: a moderator's queue. auto_approval: approved by a routing rule, never used for the always-human list (new records of every record type, closures, merges, safety facts).",
           "type": "string",
           "enum": ["human_review", "auto_approval"]
         },
-        "policy_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "submission_kind": {
+          "description": "The kind of the submission decided.",
+          "type": "string",
+          "enum": [
+            "new_site",
+            "new_road_restriction",
+            "new_road_segment",
+            "new_ferry_service",
+            "update_facts",
+            "add_photo",
+            "report_closure",
+            "request_merge",
+            "report_problem"
+          ]
+        },
+        "record_type": {
+          "description": "The record type the submission creates or changes.",
+          "$ref": "common.schema.json#/$defs/RecordType"
+        },
+        "fields": {
+          "description": "For update_facts: every fact and facility the submission sets or removes.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/FieldPointer"
+          }
+        },
         "always_human": {
-          "description": "True when the submission is on the always-human list.",
+          "description": "True when the submission is on the always-human list. The fixed checks derive it, and it must be true whenever the kind or a field puts the submission on the list.",
           "type": "boolean"
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "submission_kind": {
+            "const": "update_facts"
+          }
+        }
+      },
+      "then": {
+        "required": ["fields"],
+        "properties": {
+          "fields": true
+        }
+      },
+      "else": {
+        "not": {
+          "required": ["fields"],
+          "properties": {
+            "fields": true
+          }
+        }
+      }
     },
     "verdict_ids": {
       "description": "The verdicts available when the decision was made. A verdict informs a decision and is never one.",
       "type": "array",
       "maxItems": 10,
       "uniqueItems": true,
-      "items": { "$ref": "common.schema.json#/$defs/VerdictId" }
+      "items": {
+        "$ref": "common.schema.json#/$defs/VerdictId"
+      }
     },
     "reasons": {
       "type": "array",
@@ -53,7 +118,10 @@
             "description": "For example confirmed_by_seed_source, duplicate_of_existing_site or copied_text.",
             "$ref": "common.schema.json#/$defs/ReasonCode"
           },
-          "text": { "type": "string", "maxLength": 1000 }
+          "text": {
+            "type": "string",
+            "maxLength": 1000
+          }
         },
         "additionalProperties": false
       }
@@ -71,8 +139,12 @@
         "type": "object",
         "required": ["field", "submitted", "applied"],
         "properties": {
-          "field": { "$ref": "common.schema.json#/$defs/FieldPointer" },
-          "submitted": { "description": "The value as submitted." },
+          "field": {
+            "$ref": "common.schema.json#/$defs/FieldPointer"
+          },
+          "submitted": {
+            "description": "The value as submitted."
+          },
           "applied": {
             "description": "The value as applied, or null when the moderator dropped the field."
           }
@@ -81,26 +153,32 @@
       }
     },
     "merge": {
-      "description": "For an approved request_merge: the surviving site and the sites that now redirect to it.",
+      "description": "For an approved request_merge: the surviving record and the records that now redirect to it, all of one record type.",
       "type": "object",
-      "required": ["surviving_site_id", "merged_site_ids"],
+      "required": ["surviving_record_id", "merged_record_ids"],
       "properties": {
-        "surviving_site_id": { "$ref": "common.schema.json#/$defs/SiteId" },
-        "merged_site_ids": {
+        "surviving_record_id": {
+          "$ref": "common.schema.json#/$defs/RecordId"
+        },
+        "merged_record_ids": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "$ref": "common.schema.json#/$defs/SiteId" }
+          "items": {
+            "$ref": "common.schema.json#/$defs/RecordId"
+          }
         }
       },
       "additionalProperties": false
     },
     "change_seqs": {
-      "description": "For approved and edited_and_approved: the changes the decision produced. A merge produces one change per site involved.",
+      "description": "For approved and edited_and_approved: the changes the decision produced. A merge produces one change per record involved.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": { "$ref": "common.schema.json#/$defs/ChangeSeq" }
+      "items": {
+        "$ref": "common.schema.json#/$defs/ChangeSeq"
+      }
     },
     "appeal_of": {
       "description": "When this decision answers an appeal: the decision appealed against.",
@@ -110,42 +188,84 @@
   "additionalProperties": false,
   "allOf": [
     {
-      "if": { "properties": { "outcome": { "enum": ["rejected", "needs_info"] } } },
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": ["rejected", "needs_info"]
+          }
+        }
+      },
       "then": {
         "required": ["public_note"],
-        "properties": { "public_note": true },
+        "properties": {
+          "public_note": true
+        },
         "not": {
           "required": ["change_seqs"],
-          "properties": { "change_seqs": true }
+          "properties": {
+            "change_seqs": true
+          }
         }
       }
     },
     {
-      "if": { "properties": { "outcome": { "const": "edited_and_approved" } } },
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "edited_and_approved"
+          }
+        }
+      },
       "then": {
         "required": ["amendments"],
-        "properties": { "amendments": { "minItems": 1 } }
+        "properties": {
+          "amendments": {
+            "minItems": 1
+          }
+        }
       }
     },
     {
-      "if": { "properties": { "outcome": { "enum": ["approved", "edited_and_approved"] } } },
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": ["approved", "edited_and_approved"]
+          }
+        }
+      },
       "then": {
         "required": ["change_seqs"],
-        "properties": { "change_seqs": true }
+        "properties": {
+          "change_seqs": true
+        }
       }
     },
     {
-      "description": "Only a moderator may decide a submission on the always-human list, and a routing rule may only approve.",
+      "description": "A routing rule may only approve, only on the auto_approval route, and only a submission outside the always-human list. The fixed checks derive membership of the list from routing's submission_kind, record_type and fields, so the always_human false required here is a cross-check, never the rule itself.",
       "if": {
-        "properties": { "decided_by": { "properties": { "kind": { "const": "routing_rule" } } } }
+        "properties": {
+          "decided_by": {
+            "properties": {
+              "kind": {
+                "const": "routing_rule"
+              }
+            }
+          }
+        }
       },
       "then": {
         "properties": {
-          "outcome": { "const": "approved" },
+          "outcome": {
+            "const": "approved"
+          },
           "routing": {
             "properties": {
-              "route": { "const": "auto_approval" },
-              "always_human": { "const": false }
+              "route": {
+                "const": "auto_approval"
+              },
+              "always_human": {
+                "const": false
+              }
             }
           }
         },
@@ -161,7 +281,9 @@
           "type": "object",
           "required": ["kind", "moderator_id"],
           "properties": {
-            "kind": { "const": "moderator" },
+            "kind": {
+              "const": "moderator"
+            },
             "moderator_id": {
               "description": "Moderators are contributors with moderation rights, so they use contributor IDs.",
               "$ref": "common.schema.json#/$defs/ContributorId"
@@ -173,9 +295,18 @@
           "type": "object",
           "required": ["kind", "rule_id", "rule_version"],
           "properties": {
-            "kind": { "const": "routing_rule" },
-            "rule_id": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]{1,63}$" },
-            "rule_version": { "type": "string", "minLength": 1, "maxLength": 64 }
+            "kind": {
+              "const": "routing_rule"
+            },
+            "rule_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.-]{1,63}$"
+            },
+            "rule_version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
           },
           "additionalProperties": false
         }

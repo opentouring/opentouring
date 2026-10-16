@@ -3,11 +3,11 @@
   "$id": "https://schema.opentouring.org/otwd/v1/change.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD change",
-  "description": "An approved submission once applied to the live data, as it appears in the change feed (GET /v1/changes), in change webhooks and in delta files. Every change comes from a moderation decision. Sequence numbers are global, strictly increasing in the order changes are applied, and never reused. They may have gaps, so use previous_seq to detect a missed change to one site.",
+  "description": "An approved submission once applied to the live data, as it appears in the change feed (GET /v1/changes), in change webhooks and in delta files. It covers every record type and names the record in record_id. Every change comes from a moderation decision. Sequence numbers are global, strictly increasing in the order changes are applied, and never reused. They may have gaps, so use previous_seq to detect a missed change to one record.",
   "type": "object",
   "required": [
     "seq",
-    "site_id",
+    "record_id",
     "kind",
     "applied_at",
     "changed_fields",
@@ -16,37 +16,45 @@
   ],
   "properties": {
     "seq": {
-      "description": "This change's sequence number, which also becomes the site's change_seq.",
+      "description": "This change's sequence number, which also becomes the record's change_seq.",
       "$ref": "common.schema.json#/$defs/ChangeSeq"
     },
-    "site_id": { "$ref": "common.schema.json#/$defs/SiteId" },
+    "record_id": {
+      "description": "The record changed, of any record type.",
+      "$ref": "common.schema.json#/$defs/RecordId"
+    },
     "kind": {
-      "description": "site_created: a new site. facts_updated: facts or facilities set or removed. photo_added and photo_removed: a photo published or withdrawn. status_changed: a closure, temporary closure or reopening. site_merged: this site became a duplicate and now redirects to merged_into.",
+      "description": "record_created: a new record. facts_updated: facts or facilities set or removed. photo_added and photo_removed: a photo of the record published or withdrawn. status_changed: a closure, temporary closure or reopening. record_merged: the record became a duplicate and now redirects to merged_into.",
       "type": "string",
       "enum": [
-        "site_created",
+        "record_created",
         "facts_updated",
         "photo_added",
         "photo_removed",
         "status_changed",
-        "site_merged"
+        "record_merged"
       ]
     },
-    "applied_at": { "type": "string", "format": "date-time" },
+    "applied_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "previous_seq": {
-      "description": "The site's change_seq before this change. Absent for site_created. A consumer that does not hold this sequence for the site has missed a change and should fetch the site again.",
+      "description": "The record's change_seq before this change. Absent for record_created. A consumer that does not hold this sequence for the record has missed a change and should fetch the record again.",
       "$ref": "common.schema.json#/$defs/ChangeSeq"
     },
     "changed_fields": {
-      "description": "JSON Pointers to the parts of the site document this change set or removed, for example /facts/prices, /facilities/power, /status or /photos.",
+      "description": "JSON Pointers to the parts of the record this change set or removed, for example /facts/prices, /facts/vertical_clearance, /facilities/power, /status or /photos.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
       "items": {
         "anyOf": [
-          { "$ref": "common.schema.json#/$defs/FieldPointer" },
           {
-            "description": "Parts of the site document outside facts and facilities.",
+            "$ref": "common.schema.json#/$defs/FieldPointer"
+          },
+          {
+            "description": "Parts of the record outside facts and facilities.",
             "type": "string",
             "format": "json-pointer",
             "pattern": "^/(status|redirect_to|photos(/[0-9]+)?|derived)$"
@@ -58,35 +66,72 @@
       "description": "The subset of changed_fields that the change removed.",
       "type": "array",
       "uniqueItems": true,
-      "items": { "type": "string", "format": "json-pointer" }
+      "items": {
+        "type": "string",
+        "format": "json-pointer"
+      }
     },
     "safety_fact_changed": {
-      "description": "True when any changed field is a safety fact, so partner apps can refresh those first.",
+      "description": "True when any changed field is a safety fact, so partner apps can refresh those first. The fixed checks derive it from the record type's safety facts, so it is never false when a safety fact changed.",
       "type": "boolean"
     },
     "merged_into": {
-      "description": "For site_merged: the surviving site.",
-      "$ref": "common.schema.json#/$defs/SiteId"
+      "description": "For record_merged: the surviving record, of the same record type.",
+      "$ref": "common.schema.json#/$defs/RecordId"
     },
-    "submission_id": { "$ref": "common.schema.json#/$defs/SubmissionId" },
-    "decision_id": { "$ref": "common.schema.json#/$defs/DecisionId" }
+    "submission_id": {
+      "$ref": "common.schema.json#/$defs/SubmissionId"
+    },
+    "decision_id": {
+      "$ref": "common.schema.json#/$defs/DecisionId"
+    }
   },
   "additionalProperties": false,
   "allOf": [
     {
-      "if": { "properties": { "kind": { "const": "site_merged" } } },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "record_merged"
+          }
+        }
+      },
       "then": {
         "required": ["merged_into"],
-        "properties": { "merged_into": true }
+        "properties": {
+          "merged_into": true
+        }
       },
-      "else": { "not": { "required": ["merged_into"], "properties": { "merged_into": true } } }
+      "else": {
+        "not": {
+          "required": ["merged_into"],
+          "properties": {
+            "merged_into": true
+          }
+        }
+      }
     },
     {
-      "if": { "properties": { "kind": { "const": "site_created" } } },
-      "then": { "not": { "required": ["previous_seq"], "properties": { "previous_seq": true } } },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "record_created"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["previous_seq"],
+          "properties": {
+            "previous_seq": true
+          }
+        }
+      },
       "else": {
         "required": ["previous_seq"],
-        "properties": { "previous_seq": true }
+        "properties": {
+          "previous_seq": true
+        }
       }
     }
   ]

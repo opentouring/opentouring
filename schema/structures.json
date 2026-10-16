@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "structures",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "bridge",
+      "label": "Bridge",
+      "description": "A bridge, whether it carries the road (passage over: weight and width limits matter) or carries a railway, another road or a path over the road (passage under: vertical clearance matters, as at a low rail bridge).",
+      "passages": ["over", "under"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["bridge=yes"],
+          "match": "exact",
+          "note": "Passage over: on the road way that crosses the bridge, which carries maxweight, maxaxleload and maxwidth."
+        },
+        {
+          "tags": ["maxheight=*"],
+          "match": "related",
+          "note": "Passage under: OSM has no tag for the road beneath a bridge. That road way carries maxheight and maxheight:physical, and the bridge above is a separate way with bridge=yes and a higher layer."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "tunnel",
+      "label": "Tunnel",
+      "description": "A tunnel the road passes through. Its limits are usually a vertical clearance and sometimes a ban on vehicles carrying dangerous goods.",
+      "passages": ["through"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["tunnel=yes"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "overhead_structure",
+      "label": "Overhead structure",
+      "description": "Something above the road that is not a bridge, such as a sign or toll gantry, a pipe or conveyor, overhead wires, an awning or a building overhang.",
+      "passages": ["under"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["man_made=gantry"],
+          "match": "narrower",
+          "note": "Sign and toll gantries only."
+        },
+        {
+          "tags": ["barrier=height_restrictor"],
+          "match": "related",
+          "note": "A height barrier that warns of a low structure ahead, mapped as its own feature."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "causeway",
+      "label": "Causeway or floodway",
+      "description": "A low section of road built to be covered by water after rain or in floods, at or near the level of a watercourse or flood plain. Travellers must check the depth and flow before crossing.",
+      "passages": ["over"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["flood_prone=yes"],
+          "match": "related",
+          "note": "On the road way. Marks a road that floods without saying whether it is built as a causeway."
+        }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "ford",
+      "label": "Ford",
+      "description": "A place where the road crosses a watercourse through the water, with no bridge or built causeway.",
+      "passages": ["through"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["ford=yes"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "gate",
+      "label": "Gate",
+      "description": "A gate across the road, such as a seasonal closure gate, a park entrance gate or a farm gate. Its limit is usually its width.",
+      "passages": ["through"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["barrier=gate"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "cattle_grid",
+      "label": "Cattle grid",
+      "description": "A grid of rails across the road that stock will not cross, sometimes with a signed width or weight limit.",
+      "passages": ["over"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["barrier=cattle_grid"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "no_structure",
+      "label": "No structure (signed limit only)",
+      "description": "A limit signed on an open road with no structure at that point, such as a weight limit at the start of a road or a length limit on a steep, winding road.",
+      "passages": ["along"],
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["traffic_sign=*"],
+          "match": "related",
+          "note": "The sign itself, mapped as a node beside or on the road. The limit is tagged on the road way it applies to."
+        }
+      ],
+      "schema_org": null
+    }
+  ]
+}

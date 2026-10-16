@@ -5,109 +5,49 @@
   "title": "OTWD site, compact form",
   "description": "A site with plain values and no per-fact provenance: the default form served by the API (view=compact) and the column layout of GeoParquet bulk downloads. It is derived from the full form (site.schema.json) by replacing each fact with its value. The attribution list carries every credit the facts require, so a partner app that shows this form can still meet the CC BY 4.0 attribution terms. Facilities pets_allowed, dog_off_leash and big_rig_access are filled in from the pets and rig_limits facts.",
   "type": "object",
-  "required": [
-    "schema_version",
-    "id",
-    "status",
-    "created_at",
-    "updated_at",
-    "change_seq",
-    "attribution"
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/CompactRecord"
+    },
+    {
+      "$ref": "common.schema.json#/$defs/PointDerivedValues"
+    },
+    {
+      "$ref": "site.schema.json#/$defs/FactValues"
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "merged"
+          }
+        }
+      },
+      "else": {
+        "allOf": [
+          {
+            "$ref": "site.schema.json#/$defs/RequiredFacts"
+          }
+        ],
+        "required": ["name", "country_code", "time_zone"],
+        "properties": {
+          "name": true,
+          "country_code": true,
+          "time_zone": true
+        }
+      }
+    }
   ],
   "properties": {
-    "schema_version": { "$ref": "common.schema.json#/$defs/SchemaVersion" },
-    "id": { "$ref": "common.schema.json#/$defs/SiteId" },
-    "status": { "$ref": "common.schema.json#/$defs/SiteStatus" },
-    "status_reason": { "$ref": "common.schema.json#/$defs/Notes" },
-    "reopens_on": { "type": "string", "format": "date" },
-    "redirect_to": { "$ref": "common.schema.json#/$defs/SiteId" },
-    "created_at": { "type": "string", "format": "date-time" },
-    "updated_at": { "type": "string", "format": "date-time" },
-    "change_seq": { "$ref": "common.schema.json#/$defs/ChangeSeq" },
-    "name": {
-      "description": "The primary name, copied from names for convenience.",
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 200
+    "id": {
+      "$ref": "common.schema.json#/$defs/SiteId"
     },
-    "names": { "$ref": "values.schema.json#/$defs/Names" },
-    "location": { "$ref": "values.schema.json#/$defs/Location" },
-    "country_code": { "$ref": "common.schema.json#/$defs/CountryCode" },
-    "subdivision_code": { "$ref": "common.schema.json#/$defs/SubdivisionCode" },
-    "locality": { "type": "string", "maxLength": 100 },
-    "time_zone": { "$ref": "common.schema.json#/$defs/TimeZone" },
-    "site_types": { "$ref": "values.schema.json#/$defs/SiteTypes" },
-    "description": { "$ref": "values.schema.json#/$defs/Description" },
-    "opening_hours": { "$ref": "values.schema.json#/$defs/OpeningHours" },
-    "reception_hours": { "$ref": "values.schema.json#/$defs/OpeningHours" },
-    "prices": { "$ref": "values.schema.json#/$defs/Prices" },
-    "rig_limits": { "$ref": "values.schema.json#/$defs/RigLimits" },
-    "access": { "$ref": "values.schema.json#/$defs/Access" },
-    "pets": { "$ref": "values.schema.json#/$defs/Pets" },
-    "bookings": { "$ref": "values.schema.json#/$defs/Bookings" },
-    "contact": { "$ref": "values.schema.json#/$defs/Contact" },
-    "capacity": { "$ref": "values.schema.json#/$defs/Capacity" },
-    "stay_limits": { "$ref": "values.schema.json#/$defs/StayLimits" },
-    "fire_district": { "$ref": "values.schema.json#/$defs/FireDistrict" },
-    "facilities": { "$ref": "values.schema.json#/$defs/Facilities" },
-    "photos": {
-      "type": "array",
-      "maxItems": 200,
-      "items": {
-        "type": "object",
-        "required": ["id", "url", "width", "height", "licence", "attribution"],
-        "properties": {
-          "id": { "$ref": "common.schema.json#/$defs/PhotoId" },
-          "url": { "$ref": "common.schema.json#/$defs/HttpsUrl" },
-          "thumbnail_url": { "$ref": "common.schema.json#/$defs/HttpsUrl" },
-          "width": { "type": "integer", "minimum": 1 },
-          "height": { "type": "integer", "minimum": 1 },
-          "caption": { "$ref": "common.schema.json#/$defs/Notes" },
-          "taken_on": { "type": "string", "format": "date" },
-          "licence": { "const": "CC-BY-4.0" },
-          "attribution": { "type": "string", "minLength": 1, "maxLength": 100 }
-        },
-        "additionalProperties": false
-      }
+    "redirect_to": {
+      "$ref": "common.schema.json#/$defs/SiteId"
     },
-    "min_confidence": {
-      "description": "The lowest confidence of any fact on the site, so a reader can tell when to fetch the full form.",
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1
-    },
-    "safety_facts_observed_on": {
-      "description": "The oldest observed date among the site's safety facts, when known. Apps can warn when it is old.",
-      "type": "string",
-      "format": "date"
-    },
-    "attribution": {
-      "description": "Every credit the site's facts require. The first entry is always the Open Touring credit. Seed source credits follow, once each.",
-      "type": "array",
-      "minItems": 1,
-      "uniqueItems": true,
-      "items": { "type": "string", "minLength": 1, "maxLength": 300 }
+    "facilities": {
+      "$ref": "values.schema.json#/$defs/Facilities"
     }
   },
-  "additionalProperties": false,
-  "if": { "properties": { "status": { "const": "merged" } } },
-  "then": {
-    "required": ["redirect_to"],
-    "properties": { "redirect_to": true }
-  },
-  "else": {
-    "required": ["name", "names", "location", "site_types", "country_code", "time_zone"],
-    "properties": {
-      "name": true,
-      "names": true,
-      "location": true,
-      "site_types": true,
-      "country_code": true,
-      "time_zone": true
-    },
-    "not": {
-      "required": ["redirect_to"],
-      "properties": { "redirect_to": true }
-    }
-  }
+  "unevaluatedProperties": false
 }

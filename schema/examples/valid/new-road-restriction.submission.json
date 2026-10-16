@@ -1,0 +1,55 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.1",
+  "kind": "new_road_restriction",
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "fo-7Qm2xK9pLr4T"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-14T16:20:00+11:00",
+  "observed_on": "2026-10-14",
+  "proposed": {
+    "facts": {
+      "location": {
+        "lat": -37.71844,
+        "lng": 145.98712,
+        "accuracy_m": 8
+      },
+      "road": {
+        "name": "Myrtle Gully Road"
+      },
+      "structure": {
+        "code": "gate",
+        "passage": "through",
+        "notes": [
+          {
+            "text": "Park entrance gate. Swung open in the day, locked at night.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "width_limit": {
+        "lowest_m": 3.0,
+        "lowest_basis": "measured",
+        "measurements": [
+          {
+            "value_m": 3.0,
+            "basis": "measured",
+            "observed_on": "2026-10-14"
+          }
+        ],
+        "notes": [
+          {
+            "text": "Measured between the gate posts. There is no sign.",
+            "lang": "en-AU"
+          }
+        ]
+      }
+    }
+  },
+  "partner_reference": "fo-report-88213"
+}

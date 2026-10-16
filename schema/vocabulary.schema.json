@@ -3,13 +3,28 @@
   "$id": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD governed list",
-  "description": "The format of site-types.json and facilities.json, and of the GET /v1/site-types and GET /v1/facilities responses. Codes are stable: a code is never renamed or reused. A code that is no longer wanted is marked deprecated and keeps its meaning.",
+  "description": "The format of the governed lists (site-types.json, facilities.json, structures.json, surfaces.json, vehicle-access-classes.json and vehicle-classes.json) and of the API responses that serve them. Codes are stable: a code is never renamed or reused. A code that is no longer wanted is marked deprecated and keeps its meaning.",
   "type": "object",
   "required": ["$schema", "list", "version", "language", "entries"],
   "properties": {
-    "$schema": { "type": "string", "format": "uri" },
-    "$comment": { "type": "string" },
-    "list": { "type": "string", "enum": ["site_types", "facilities"] },
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "$comment": {
+      "type": "string"
+    },
+    "list": {
+      "type": "string",
+      "enum": [
+        "site_types",
+        "facilities",
+        "structures",
+        "surfaces",
+        "vehicle_access_classes",
+        "vehicle_classes"
+      ]
+    },
     "version": {
       "description": "Version of the governed list. A new entry increases the minor version. Changing an entry's meaning is not allowed.",
       "$ref": "#/$defs/ListVersion"
@@ -18,17 +33,105 @@
       "description": "Language of labels and descriptions in this file. Translations are published as separate files.",
       "$ref": "common.schema.json#/$defs/LanguageTag"
     },
-    "entries": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/Entry" } }
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/Entry"
+      }
+    }
   },
   "additionalProperties": false,
   "allOf": [
     {
-      "if": { "properties": { "list": { "const": "site_types" } } },
-      "then": { "properties": { "entries": { "items": { "$ref": "#/$defs/SiteTypeEntry" } } } }
+      "if": {
+        "properties": {
+          "list": {
+            "const": "site_types"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/SiteTypeEntry"
+            }
+          }
+        }
+      }
     },
     {
-      "if": { "properties": { "list": { "const": "facilities" } } },
-      "then": { "properties": { "entries": { "items": { "$ref": "#/$defs/FacilityEntry" } } } }
+      "if": {
+        "properties": {
+          "list": {
+            "const": "facilities"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/FacilityEntry"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "list": {
+            "enum": ["surfaces", "vehicle_classes"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/PlainEntry"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "list": {
+            "const": "structures"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/StructureEntry"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "list": {
+            "const": "vehicle_access_classes"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/$defs/RankedEntry"
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {
@@ -41,14 +144,31 @@
       "type": "object",
       "required": ["code", "label", "description", "status", "introduced_in", "osm", "schema_org"],
       "properties": {
-        "code": { "$ref": "common.schema.json#/$defs/Code" },
-        "label": { "type": "string", "minLength": 1, "maxLength": 60 },
-        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
-        "status": { "type": "string", "enum": ["active", "deprecated"] },
-        "introduced_in": { "$ref": "#/$defs/ListVersion" },
-        "replaced_by": { "$ref": "common.schema.json#/$defs/Code" },
+        "code": {
+          "$ref": "common.schema.json#/$defs/Code"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "deprecated"]
+        },
+        "introduced_in": {
+          "$ref": "#/$defs/ListVersion"
+        },
+        "replaced_by": {
+          "$ref": "common.schema.json#/$defs/Code"
+        },
         "safety_fact": {
-          "description": "True when the entry is a safety fact, which routing always sends to a moderator.",
+          "description": "True when the entry is a safety fact, which routing always sends to a moderator. Used by site types and facilities. In the other lists the fact that holds the code says whether it is a safety fact.",
           "type": "boolean"
         },
         "osm": {
@@ -62,14 +182,20 @@
                 "description": "One or more key=value tags that together express the entry.",
                 "type": "array",
                 "minItems": 1,
-                "items": { "type": "string", "pattern": "^[a-z0-9_:]+=[^=\\s][^=]*$" }
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_:]+=[^=\\s][^=]*$"
+                }
               },
               "match": {
                 "description": "exact: same meaning. broader: the OSM tagging covers more than the entry. narrower: it covers less. related: useful but not equivalent.",
                 "type": "string",
                 "enum": ["exact", "broader", "narrower", "related"]
               },
-              "note": { "type": "string", "maxLength": 300 }
+              "note": {
+                "type": "string",
+                "maxLength": 300
+              }
             },
             "additionalProperties": false
           }
@@ -77,7 +203,9 @@
         "schema_org": {
           "description": "The closest schema.org type or property, or null when there is none.",
           "oneOf": [
-            { "type": "null" },
+            {
+              "type": "null"
+            },
             {
               "type": "object",
               "required": ["match"],
@@ -97,40 +225,43 @@
                   "type": "string",
                   "maxLength": 100
                 },
-                "match": { "type": "string", "enum": ["exact", "broader", "narrower", "related"] },
-                "note": { "type": "string", "maxLength": 300 }
+                "match": {
+                  "type": "string",
+                  "enum": ["exact", "broader", "narrower", "related"]
+                },
+                "note": {
+                  "type": "string",
+                  "maxLength": 300
+                }
               },
               "additionalProperties": false,
               "anyOf": [
                 {
                   "required": ["type"],
-                  "properties": { "type": true }
+                  "properties": {
+                    "type": true
+                  }
                 },
                 {
                   "required": ["property"],
-                  "properties": { "property": true }
+                  "properties": {
+                    "property": true
+                  }
                 }
               ]
             }
           ]
         }
-      }
+      },
+      "description": "The fields every governed list entry has. Each list's entry definition adds its own fields and closes the entry with unevaluatedProperties."
     },
     "SiteTypeEntry": {
-      "type": "object",
+      "description": "An entry in the site type list.",
+      "$ref": "#/$defs/Entry",
       "properties": {
-        "code": true,
-        "label": true,
-        "description": true,
-        "status": true,
-        "introduced_in": true,
-        "replaced_by": true,
-        "safety_fact": true,
-        "osm": true,
-        "schema_org": true,
         "group": {
           "type": "string",
-          "enum": ["overnight", "utility", "services", "attraction", "emergency"]
+          "enum": ["overnight", "utility", "services", "attraction", "emergency", "transport"]
         },
         "defers_to": {
           "description": "For a site type whose detailed data lives outside OTWD: what OTWD records and where the rest comes from.",
@@ -139,20 +270,12 @@
         }
       },
       "required": ["group"],
-      "additionalProperties": false
+      "unevaluatedProperties": false
     },
     "FacilityEntry": {
-      "type": "object",
+      "description": "An entry in the facility list, with its attributes.",
+      "$ref": "#/$defs/Entry",
       "properties": {
-        "code": true,
-        "label": true,
-        "description": true,
-        "status": true,
-        "introduced_in": true,
-        "replaced_by": true,
-        "safety_fact": true,
-        "osm": true,
-        "schema_org": true,
         "attributes": {
           "description": "The attributes the facility carries. They are validated by the facility's schema in values.schema.json.",
           "type": "array",
@@ -160,14 +283,28 @@
             "type": "object",
             "required": ["name", "type", "description"],
             "properties": {
-              "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,47}$" },
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,47}$"
+              },
               "type": {
                 "type": "string",
                 "enum": ["boolean", "integer", "number", "string", "enum", "time", "list"]
               },
-              "unit": { "type": "string", "maxLength": 20 },
-              "values": { "type": "array", "items": { "type": "string" } },
-              "description": { "type": "string", "maxLength": 300 }
+              "unit": {
+                "type": "string",
+                "maxLength": 20
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 300
+              }
             },
             "additionalProperties": false
           }
@@ -177,14 +314,55 @@
           "type": "object",
           "required": ["field", "rule"],
           "properties": {
-            "field": { "type": "string", "format": "json-pointer" },
-            "rule": { "type": "string", "maxLength": 300 }
+            "field": {
+              "type": "string",
+              "format": "json-pointer"
+            },
+            "rule": {
+              "type": "string",
+              "maxLength": 300
+            }
           },
           "additionalProperties": false
         }
       },
       "required": ["safety_fact"],
-      "additionalProperties": false
+      "unevaluatedProperties": false
+    },
+    "PlainEntry": {
+      "description": "An entry in a list whose codes carry no attributes: surfaces and vehicle classes.",
+      "$ref": "#/$defs/Entry",
+      "unevaluatedProperties": false
+    },
+    "StructureEntry": {
+      "description": "An entry in the structure list. passages lists how a road can pass the structure (over, under, through or along), and a road restriction's passage must be one of them.",
+      "$ref": "#/$defs/Entry",
+      "properties": {
+        "passages": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["over", "under", "through", "along"]
+          }
+        }
+      },
+      "required": ["passages"],
+      "unevaluatedProperties": false
+    },
+    "RankedEntry": {
+      "description": "An entry in an ordered list: vehicle access classes. rank orders the entries from the least to the most restrictive, so a filter can match every class up to the one a vehicle can handle.",
+      "$ref": "#/$defs/Entry",
+      "properties": {
+        "rank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": ["rank"],
+      "unevaluatedProperties": false
     }
   }
 }

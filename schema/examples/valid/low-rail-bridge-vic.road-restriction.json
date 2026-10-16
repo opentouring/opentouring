@@ -1,0 +1,196 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.1",
+  "id": "otwd:road_restriction:01M328EPM08TJWB6EH3A30YPTQ",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "seed_source",
+      "seed_source": {
+        "id": "otwd:seed_source:au-vic-vicmap-transport",
+        "dataset_name": "Vicmap Transport",
+        "publisher": "Department of Transport and Planning (Victoria)",
+        "licence": "CC-BY-4.0",
+        "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+        "record_id": "tr_road_infrastructure/9900417",
+        "dataset_version": "2026-10",
+        "retrieved_at": "2026-10-02T02:00:00Z"
+      },
+      "observed_on": "2026-08-01",
+      "recorded_at": "2026-09-03T01:00:00Z",
+      "confidence": 0.9,
+      "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
+      "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
+      "change_seq": 30110
+    }
+  },
+  "created_at": "2026-09-03T01:00:00Z",
+  "updated_at": "2026-09-15T05:30:00Z",
+  "change_seq": 30412,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-VIC",
+    "locality": "Broadford",
+    "time_zone": "Australia/Melbourne"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Station Street rail bridge",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-15T05:30:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3D36WR0241BJPX7E6TGCPMP",
+        "decision_id": "otwd:decision:01M3QTH780SS0HQ5SS26S3VZC3",
+        "change_seq": 30412
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -37.20512,
+        "lng": 145.04936,
+        "accuracy_m": 5
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-vic-vicmap-transport",
+          "dataset_name": "Vicmap Transport",
+          "publisher": "Department of Transport and Planning (Victoria)",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+          "record_id": "tr_road_infrastructure/9900417",
+          "dataset_version": "2026-10",
+          "retrieved_at": "2026-10-02T02:00:00Z"
+        },
+        "observed_on": "2026-08-01",
+        "recorded_at": "2026-09-03T01:00:00Z",
+        "confidence": 0.9,
+        "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
+        "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
+        "change_seq": 30110
+      },
+      "confirmations": {
+        "count": 3,
+        "last_confirmed_on": "2026-09-12"
+      }
+    },
+    "road": {
+      "value": {
+        "name": "Station Street"
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-vic-vicmap-transport",
+          "dataset_name": "Vicmap Transport",
+          "publisher": "Department of Transport and Planning (Victoria)",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+          "record_id": "tr_road_infrastructure/9900417",
+          "dataset_version": "2026-10",
+          "retrieved_at": "2026-10-02T02:00:00Z"
+        },
+        "observed_on": "2026-08-01",
+        "recorded_at": "2026-09-03T01:00:00Z",
+        "confidence": 0.9,
+        "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
+        "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
+        "change_seq": 30110
+      }
+    },
+    "structure": {
+      "value": {
+        "code": "bridge",
+        "passage": "under",
+        "notes": [
+          {
+            "text": "A steel rail bridge carries the main north line over the road.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-vic-vicmap-transport",
+          "dataset_name": "Vicmap Transport",
+          "publisher": "Department of Transport and Planning (Victoria)",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0",
+          "record_id": "tr_road_infrastructure/9900417",
+          "dataset_version": "2026-10",
+          "retrieved_at": "2026-10-02T02:00:00Z"
+        },
+        "observed_on": "2026-08-01",
+        "recorded_at": "2026-09-03T01:00:00Z",
+        "confidence": 0.9,
+        "submission_id": "otwd:submission:01M3CZS140SQQWNFKYGR8T91RP",
+        "decision_id": "otwd:decision:01M3QQ3BM0ZGX6QZV7KZ62AR60",
+        "change_seq": 30110
+      }
+    },
+    "vertical_clearance": {
+      "value": {
+        "lowest_m": 3.4,
+        "lowest_basis": "signed",
+        "measurements": [
+          {
+            "value_m": 3.4,
+            "basis": "signed",
+            "heading_deg": 15,
+            "observed_on": "2026-09-12"
+          },
+          {
+            "value_m": 3.4,
+            "basis": "signed",
+            "heading_deg": 195,
+            "observed_on": "2026-09-12"
+          },
+          {
+            "value_m": 3.62,
+            "basis": "measured",
+            "lane": "1",
+            "observed_on": "2026-09-12"
+          },
+          {
+            "value_m": 3.55,
+            "basis": "measured",
+            "lane": "kerb",
+            "observed_on": "2026-09-12"
+          }
+        ],
+        "notes": [
+          {
+            "text": "Clearance is lowest at the kerb. Keep to the centre of the road.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-15T05:30:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3D36WR0241BJPX7E6TGCPMP",
+        "decision_id": "otwd:decision:01M3QTH780SS0HQ5SS26S3VZC3",
+        "change_seq": 30412
+      }
+    }
+  }
+}

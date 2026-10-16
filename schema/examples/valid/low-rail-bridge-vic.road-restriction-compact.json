@@ -1,0 +1,81 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.1",
+  "id": "otwd:road_restriction:01M328EPM08TJWB6EH3A30YPTQ",
+  "status": "active",
+  "created_at": "2026-09-03T01:00:00Z",
+  "updated_at": "2026-09-15T05:30:00Z",
+  "change_seq": 30412,
+  "name": "Station Street rail bridge",
+  "names": [
+    {
+      "text": "Station Street rail bridge",
+      "lang": "en",
+      "kind": "primary"
+    }
+  ],
+  "location": {
+    "lat": -37.20512,
+    "lng": 145.04936,
+    "accuracy_m": 5
+  },
+  "road": {
+    "name": "Station Street"
+  },
+  "structure": {
+    "code": "bridge",
+    "passage": "under",
+    "notes": [
+      {
+        "text": "A steel rail bridge carries the main north line over the road.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "vertical_clearance": {
+    "lowest_m": 3.4,
+    "lowest_basis": "signed",
+    "measurements": [
+      {
+        "value_m": 3.4,
+        "basis": "signed",
+        "heading_deg": 15,
+        "observed_on": "2026-09-12"
+      },
+      {
+        "value_m": 3.4,
+        "basis": "signed",
+        "heading_deg": 195,
+        "observed_on": "2026-09-12"
+      },
+      {
+        "value_m": 3.62,
+        "basis": "measured",
+        "lane": "1",
+        "observed_on": "2026-09-12"
+      },
+      {
+        "value_m": 3.55,
+        "basis": "measured",
+        "lane": "kerb",
+        "observed_on": "2026-09-12"
+      }
+    ],
+    "notes": [
+      {
+        "text": "Clearance is lowest at the kerb. Keep to the centre of the road.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "country_code": "AU",
+  "subdivision_code": "AU-VIC",
+  "locality": "Broadford",
+  "time_zone": "Australia/Melbourne",
+  "min_confidence": 0.85,
+  "safety_facts_observed_on": "2026-09-12",
+  "attribution": [
+    "Open Touring contributors, opentouring.org, CC BY 4.0",
+    "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0"
+  ]
+}

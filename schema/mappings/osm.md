@@ -2,7 +2,7 @@
 
 # Mapping to OpenStreetMap tags
 
-This page maps OTWD site types and facilities to the closest OpenStreetMap (OSM) tagging. The same mappings are published in machine-readable form in the `osm` field of each entry in `site-types.json` and `facilities.json`, and the tables below are generated from those files.
+This page maps OTWD governed lists and record types to the closest OpenStreetMap (OSM) tagging. The same mappings are published in machine-readable form in the `osm` field of each entry in the governed list files, and the tables of governed lists below are generated from those files.
 
 ## What the mapping is for
 
@@ -59,6 +59,7 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `lpg_refill_swap`        | `amenity=fuel` + `fuel:lpg=yes`                              | related  | Autogas for vehicles, which does not always include bottle refills.                                                  |
 | `mechanic`               | `shop=car_repair`                                            | exact    |                                                                                                                      |
 | `hospital_emergency`     | `amenity=hospital` + `emergency=yes`                         | exact    |                                                                                                                      |
+| `ferry_terminal`         | `amenity=ferry_terminal`                                     | exact    |                                                                                                                      |
 
 ## Facilities
 
@@ -109,6 +110,97 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `tent_sites`            | `tents=yes`                       | exact    |                                                                                         |
 | `camp_kitchen`          | `kitchen=yes`                     | exact    |                                                                                         |
 
+## Structures
+
+| Code                 | OSM tags                    | Match    | Note                                                                                                                                                                                            |
+| -------------------- | --------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bridge`             | `bridge=yes`                | exact    | Passage over: on the road way that crosses the bridge, which carries maxweight, maxaxleload and maxwidth.                                                                                       |
+| `bridge`             | `maxheight=*`               | related  | Passage under: OSM has no tag for the road beneath a bridge. That road way carries maxheight and maxheight:physical, and the bridge above is a separate way with bridge=yes and a higher layer. |
+| `tunnel`             | `tunnel=yes`                | exact    |                                                                                                                                                                                                 |
+| `overhead_structure` | `man_made=gantry`           | narrower | Sign and toll gantries only.                                                                                                                                                                    |
+| `overhead_structure` | `barrier=height_restrictor` | related  | A height barrier that warns of a low structure ahead, mapped as its own feature.                                                                                                                |
+| `causeway`           | `flood_prone=yes`           | related  | On the road way. Marks a road that floods without saying whether it is built as a causeway.                                                                                                     |
+| `ford`               | `ford=yes`                  | exact    |                                                                                                                                                                                                 |
+| `gate`               | `barrier=gate`              | exact    |                                                                                                                                                                                                 |
+| `cattle_grid`        | `barrier=cattle_grid`       | exact    |                                                                                                                                                                                                 |
+| `no_structure`       | `traffic_sign=*`            | related  | The sign itself, mapped as a node beside or on the road. The limit is tagged on the road way it applies to.                                                                                     |
+
+## Surfaces
+
+| Code       | OSM tags              | Match    | Note                                                               |
+| ---------- | --------------------- | -------- | ------------------------------------------------------------------ |
+| `sealed`   | `surface=paved`       | broader  | Also covers paving stones and setts.                               |
+| `sealed`   | `surface=asphalt`     | narrower |                                                                    |
+| `sealed`   | `surface=chipseal`    | narrower |                                                                    |
+| `sealed`   | `surface=concrete`    | narrower |                                                                    |
+| `unsealed` | `surface=unpaved`     | exact    |                                                                    |
+| `gravel`   | `surface=gravel`      | exact    |                                                                    |
+| `gravel`   | `surface=compacted`   | exact    |                                                                    |
+| `gravel`   | `surface=fine_gravel` | narrower |                                                                    |
+| `gravel`   | `tracktype=grade2`    | related  | Used on highway=track ways: a firm gravel track.                   |
+| `dirt`     | `surface=dirt`        | exact    |                                                                    |
+| `dirt`     | `surface=earth`       | exact    |                                                                    |
+| `dirt`     | `surface=ground`      | broader  |                                                                    |
+| `dirt`     | `tracktype=grade4`    | related  | Used on highway=track ways: mostly soil with little hard material. |
+| `sand`     | `surface=sand`        | exact    |                                                                    |
+| `sand`     | `tracktype=grade5`    | related  | Used on highway=track ways: soft, uncompacted material.            |
+| `clay`     | `surface=clay`        | exact    |                                                                    |
+| `rock`     | `surface=rock`        | narrower | Bedrock only.                                                      |
+| `rock`     | `surface=stone`       | related  |                                                                    |
+| `mud`      | `surface=mud`         | exact    |                                                                    |
+
+## Vehicle access classes
+
+| Code                     | OSM tags                | Match    | Note                                                                                                  |
+| ------------------------ | ----------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `two_wd`                 | `4wd_only=no`           | related  | Rarely tagged. Most OSM roads without 4wd_only are passable by 2WD vehicles, but OSM does not say so. |
+| `awd`                    | none                    |          |                                                                                                       |
+| `four_wd_high_clearance` | `4wd_only=recommended`  | related  | A 4WD is advised but not required by sign.                                                            |
+| `four_wd_only`           | `4wd_only=yes`          | exact    |                                                                                                       |
+| `closed_to_vehicles`     | `motor_vehicle=no`      | exact    |                                                                                                       |
+| `closed_to_vehicles`     | `access=no`             | broader  | Closed to everyone, including walkers and cyclists.                                                   |
+| `closed_to_vehicles`     | `motor_vehicle=private` | narrower | Only authorised vehicles, such as a management track.                                                 |
+
+## Vehicle classes
+
+| Code             | OSM tags         | Match    | Note                          |
+| ---------------- | ---------------- | -------- | ----------------------------- |
+| `foot_passenger` | `foot=yes`       | exact    |                               |
+| `bicycle`        | `bicycle=yes`    | exact    |                               |
+| `motorcycle`     | `motorcycle=yes` | exact    |                               |
+| `car`            | `motorcar=yes`   | exact    |                               |
+| `car_towing`     | `trailer=yes`    | broader  | Any vehicle towing a trailer. |
+| `car_towing`     | `caravan=yes`    | narrower | Caravans only.                |
+| `motorhome`      | `motorhome=yes`  | exact    |                               |
+| `heavy_vehicle`  | `hgv=yes`        | exact    |                               |
+| `bus`            | `bus=yes`        | exact    |                               |
+
+## Record types and their facts
+
+Road restrictions, road segments and ferry services are not governed lists, so their mapping is given here only. OSM records most of these facts as tags on the road way or ferry route a limit applies to.
+
+| OTWD                                                         | OSM                                                                                        | Match   | Note                                                                                                                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Road restriction                                             | `maxheight=*`, `maxwidth=*`, `maxweight=*`, `maxaxleload=*` or `maxlength=*` on a road way | related | OSM tags the way the limit applies to. OTWD records the point where it applies.                                                             |
+| `vertical_clearance` measurement, basis signed               | `maxheight=*`                                                                              | exact   | In metres. OSM also accepts feet and inches, which OTWD converts.                                                                           |
+| `vertical_clearance` measurement, basis surveyed or measured | `maxheight:physical=*`                                                                     | exact   |                                                                                                                                             |
+| `vertical_clearance` measurement with a heading              | `maxheight:forward=*`, `maxheight:backward=*`                                              | related | OSM direction is relative to the way, OTWD's is a compass heading.                                                                          |
+| `width_limit` measurement, basis signed                      | `maxwidth=*`                                                                               | exact   |                                                                                                                                             |
+| `width_limit` measurement, basis surveyed or measured        | `maxwidth:physical=*`                                                                      | exact   |                                                                                                                                             |
+| `weight_limit.gross_t`                                       | `maxweight=*`                                                                              | exact   |                                                                                                                                             |
+| `weight_limit.axle_load_t`                                   | `maxaxleload=*`                                                                            | exact   |                                                                                                                                             |
+| `length_limit.signed_m`                                      | `maxlength=*`                                                                              | exact   |                                                                                                                                             |
+| Road segment                                                 | `highway=*` way                                                                            | broader | One road segment may cover several OSM ways, or part of one.                                                                                |
+| `surface.condition`                                          | `smoothness=*`                                                                             | related | good: good or intermediate. fair: intermediate or bad. poor: bad or very_bad. very_poor: horrible or very_horrible. impassable: impassable. |
+| `vehicle_access_class` `four_wd_only`                        | `4wd_only=yes`                                                                             | exact   | See the vehicle access class table.                                                                                                         |
+| `vehicle_access_class` `closed_to_vehicles`                  | `motor_vehicle=no`                                                                         | exact   |                                                                                                                                             |
+| `towing_permitted` no                                        | `trailer=no`                                                                               | exact   | `caravan=no` is narrower.                                                                                                                   |
+| `towing_permitted` not_recommended                           | none                                                                                       |         | OSM has no advisory value.                                                                                                                  |
+| `seasonal_closure`                                           | `motor_vehicle:conditional=no @ (Jun 10-Oct 31)`                                           | related | OSM conditional restrictions hold the period. OTWD also records the authority and its link.                                                 |
+| Ferry service                                                | `route=ferry`                                                                              | exact   | On the ferry route way, with `motorcar=*`, `hgv=*`, `bicycle=*` and `foot=*` for the vehicle classes carried.                               |
+| Ferry terminal                                               | `amenity=ferry_terminal`                                                                   | exact   | A site with the `ferry_terminal` site type.                                                                                                 |
+| `vehicle_limits.max_length_m` and the like                   | `maxlength=*`, `maxheight=*`, `maxweight=*` on the ferry route                             | related | Per-class limits and vehicle bands have no OSM equivalent.                                                                                  |
+
 ## Changing a mapping
 
-Mappings belong to the governed list. A change to a mapping is proposed the same way as a new site type or facility, as described in CONTRIBUTING.md, and lands in `site-types.json` or `facilities.json` with this page regenerated in the same change.
+Mappings belong to the governed list. A change to a mapping is proposed the same way as a new site type or facility, as described in CONTRIBUTING.md, and lands in the governed list file with this page regenerated in the same change.

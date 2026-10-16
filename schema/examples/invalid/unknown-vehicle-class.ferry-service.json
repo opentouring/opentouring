@@ -1,0 +1,353 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.1",
+  "id": "otwd:ferry_service:01M32SM0R0YSSMC1FDQP01T3DF",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-10-01",
+      "recorded_at": "2026-10-06T06:05:00Z",
+      "confidence": 0.85,
+      "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+      "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+      "change_seq": 31003
+    }
+  },
+  "created_at": "2026-10-06T06:05:00Z",
+  "updated_at": "2026-10-13T01:20:00Z",
+  "change_seq": 31120,
+  "derived": {
+    "country_codes": ["AU"],
+    "subdivision_codes": ["AU-VIC"],
+    "localities": ["Port Welshpool"],
+    "time_zone": "Australia/Melbourne",
+    "length_km": 9.8
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Port Wattle to Saltbush Point Ferry",
+          "lang": "en",
+          "kind": "primary"
+        },
+        {
+          "text": "Saltbush Ferry",
+          "lang": "en",
+          "kind": "short"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "geometry": {
+      "value": {
+        "type": "LineString",
+        "coordinates": [
+          [146.45212, -38.69851],
+          [146.4753, -38.71402],
+          [146.50911, -38.72266],
+          [146.55317, -38.72094]
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "terminals": {
+      "value": ["otwd:site:01M32X1WC02EBVKCY5C60GBW41", "otwd:site:01M330FR008NQD6VCS6A308BBG"],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "operator": {
+      "value": {
+        "name": "Example Bay Ferries",
+        "contact": {
+          "website": "https://www.example.com/ferry",
+          "phone": "+61355501234"
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "accepted_vehicle_classes": {
+      "value": [
+        "foot_passenger",
+        "bicycle",
+        "motorcycle",
+        "car",
+        "car_towing",
+        "motorhome",
+        "campervan"
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "vehicle_limits": {
+      "value": {
+        "max_length_m": 19,
+        "max_height_m": 4.3,
+        "max_width_m": 2.6,
+        "max_weight_t": 22,
+        "max_total_load_t": 400,
+        "by_vehicle_class": [
+          {
+            "vehicle_class": "car_towing",
+            "max_length_m": 16
+          },
+          {
+            "vehicle_class": "motorhome",
+            "max_length_m": 12.5,
+            "max_height_m": 3.8
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "fares": {
+      "value": {
+        "charging": "paid",
+        "payment_methods": ["card", "online"],
+        "items": [
+          {
+            "vehicle_class": "foot_passenger",
+            "amount": 9,
+            "currency": "AUD",
+            "crossings": 1
+          },
+          {
+            "vehicle_class": "bicycle",
+            "amount": 12,
+            "currency": "AUD",
+            "crossings": 1
+          },
+          {
+            "vehicle_class": "motorcycle",
+            "amount": 30,
+            "currency": "AUD",
+            "crossings": 1
+          },
+          {
+            "vehicle_class": "car",
+            "band": {
+              "max_length_m": 5.5,
+              "max_height_m": 2.1
+            },
+            "amount": 55,
+            "currency": "AUD",
+            "crossings": 1,
+            "conditions": {
+              "persons_included": 1
+            }
+          },
+          {
+            "vehicle_class": "car",
+            "band": {
+              "min_length_m": 5.5,
+              "max_length_m": 8
+            },
+            "amount": 70,
+            "currency": "AUD",
+            "crossings": 1,
+            "conditions": {
+              "persons_included": 1
+            }
+          },
+          {
+            "vehicle_class": "car",
+            "band": {
+              "max_length_m": 5.5,
+              "min_height_m": 2.1
+            },
+            "amount": 62,
+            "currency": "AUD",
+            "crossings": 1,
+            "conditions": {
+              "persons_included": 1
+            }
+          },
+          {
+            "vehicle_class": "car_towing",
+            "band": {
+              "max_length_m": 12
+            },
+            "amount": 85,
+            "currency": "AUD",
+            "crossings": 1,
+            "conditions": {
+              "persons_included": 1
+            }
+          },
+          {
+            "vehicle_class": "car_towing",
+            "band": {
+              "min_length_m": 12,
+              "max_length_m": 16
+            },
+            "amount": 110,
+            "currency": "AUD",
+            "crossings": 1,
+            "conditions": {
+              "persons_included": 1
+            }
+          },
+          {
+            "vehicle_class": "motorhome",
+            "band": {
+              "max_length_m": 12.5
+            },
+            "amount": 90,
+            "currency": "AUD",
+            "crossings": 1,
+            "conditions": {
+              "persons_included": 1
+            }
+          }
+        ],
+        "notes": [
+          {
+            "text": "Vehicle lengths include the drawbar and anything towed.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-10-11",
+        "recorded_at": "2026-10-13T01:20:00Z",
+        "confidence": 0.8,
+        "submission_id": "otwd:submission:01M3DYNSR09YWKNVWH962GXVZ6",
+        "decision_id": "otwd:decision:01M3RP0480PKPMFPSHVGRT1QAJ",
+        "change_seq": 31120
+      }
+    },
+    "bookings": {
+      "value": {
+        "booking": "recommended",
+        "url": "https://www.example.com/ferry/book",
+        "notes": [
+          {
+            "text": "Book ahead for caravans in school holidays.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "operating_hours": {
+      "value": {
+        "weekly": [
+          {
+            "days": ["mo", "tu", "we", "th", "fr", "sa", "su"],
+            "opens": "06:00",
+            "closes": "21:00"
+          }
+        ],
+        "notes": [
+          {
+            "text": "Crossings are cancelled in strong winds.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    },
+    "crossing": {
+      "value": {
+        "departures": "timetabled",
+        "duration_minutes": 40,
+        "capacity_cars": 60,
+        "timetable_url": "https://www.example.com/ferry/timetable"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:05:00Z",
+        "confidence": 0.85,
+        "submission_id": "otwd:submission:01M3DV7Y40KY0Q4Q6Z5F394BK5",
+        "decision_id": "otwd:decision:01M3RJJ8M09M0Z8GBVEFGJ3YSG",
+        "change_seq": 31003
+      }
+    }
+  }
+}

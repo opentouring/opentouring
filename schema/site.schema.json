@@ -3,396 +3,419 @@
   "$id": "https://schema.opentouring.org/otwd/v1/site.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD site",
-  "description": "A site with every fact and its provenance: the full form served by the API with view=full and in GeoJSON bulk downloads. Each fact is an object holding its value and its provenance, so the two always travel together. A fact that is absent from the record is unknown. site-compact.schema.json describes the compact form without provenance.",
+  "description": "A site with every fact and its provenance: the full form served by the API with view=full and in GeoJSON bulk downloads. A site is a place a traveller stops at, with point geometry: its location. Each fact is an object holding its value and its provenance (the shared wrapper in common.schema.json), so the two always travel together, and facilities are facts of their own. A fact that is absent from the record is unknown. site-compact.schema.json describes the compact form.",
   "type": "object",
-  "required": ["schema_version", "id", "status", "created_at", "updated_at", "change_seq"],
-  "properties": {
-    "schema_version": { "$ref": "common.schema.json#/$defs/SchemaVersion" },
-    "id": { "$ref": "common.schema.json#/$defs/SiteId" },
-    "status": { "$ref": "#/$defs/StatusFact" },
-    "redirect_to": {
-      "description": "For a merged site only: the public ID of the surviving site. The API answers requests for this site with a 301 redirect to it.",
-      "$ref": "common.schema.json#/$defs/SiteId"
-    },
-    "created_at": { "type": "string", "format": "date-time" },
-    "updated_at": {
-      "description": "When the latest change to this site was applied.",
-      "type": "string",
-      "format": "date-time"
-    },
-    "change_seq": {
-      "description": "Sequence number of the latest change applied to this site. A submission that changes the site sends it back as base_change_seq so conflicts can be detected.",
-      "$ref": "common.schema.json#/$defs/ChangeSeq"
-    },
-    "derived": { "$ref": "#/$defs/Derived" },
-    "facts": { "$ref": "#/$defs/Facts" },
-    "facilities": { "$ref": "#/$defs/FacilityFacts" },
-    "photos": { "type": "array", "maxItems": 200, "items": { "$ref": "#/$defs/Photo" } }
-  },
-  "additionalProperties": false,
   "allOf": [
     {
-      "if": { "properties": { "status": { "properties": { "value": { "const": "merged" } } } } },
-      "then": {
-        "required": ["redirect_to"],
-        "properties": { "redirect_to": true }
-      },
-      "else": {
-        "required": ["derived", "facts"],
-        "properties": { "derived": true, "facts": true },
-        "not": {
-          "required": ["redirect_to"],
-          "properties": { "redirect_to": true }
-        }
-      }
+      "$ref": "common.schema.json#/$defs/FullRecord"
     }
   ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/SiteId"
+    },
+    "redirect_to": {
+      "$ref": "common.schema.json#/$defs/SiteId"
+    },
+    "derived": {
+      "$ref": "common.schema.json#/$defs/PointDerived"
+    },
+    "facts": {
+      "$ref": "#/$defs/Facts"
+    },
+    "facilities": {
+      "$ref": "#/$defs/FacilityFacts"
+    }
+  },
+  "unevaluatedProperties": false,
   "$defs": {
-    "StatusFact": {
-      "description": "Whether the site operates. closed is a closure: the site keeps its public ID and history. merged means the site was a duplicate and redirect_to names the survivor.",
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "common.schema.json#/$defs/SiteStatus" },
-        "reason": {
-          "description": "Why the site is closed or temporarily closed.",
-          "$ref": "common.schema.json#/$defs/Notes"
-        },
-        "reopens_on": {
-          "description": "For temporarily_closed: the expected reopening date, when known.",
-          "type": "string",
-          "format": "date"
-        },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" }
-      },
-      "additionalProperties": false
-    },
-    "Derived": {
-      "description": "Values OTWD computes from the location using boundary datasets. Contributors never submit them, so they carry no provenance of their own. They are recomputed whenever the location changes.",
-      "type": "object",
-      "required": ["country_code", "time_zone"],
-      "properties": {
-        "country_code": { "$ref": "common.schema.json#/$defs/CountryCode" },
-        "subdivision_code": { "$ref": "common.schema.json#/$defs/SubdivisionCode" },
-        "locality": {
-          "description": "The nearest town or suburb name, for display and web addresses.",
-          "type": "string",
-          "maxLength": 100
-        },
-        "time_zone": { "$ref": "common.schema.json#/$defs/TimeZone" }
-      },
-      "additionalProperties": false
-    },
     "Facts": {
-      "description": "The site's facts, each holding its value and provenance. names, location and site_types are always present on a site that is not merged.",
+      "description": "The site's facts, each holding its value and provenance in the shared fact wrapper. The fact names and their value shapes are the same as in FactValues.",
       "type": "object",
+      "properties": {
+        "names": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Names"
+            }
+          }
+        },
+        "location": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Location"
+            }
+          }
+        },
+        "site_types": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/SiteTypes"
+            }
+          }
+        },
+        "description": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Description"
+            }
+          }
+        },
+        "opening_hours": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/OpeningHours"
+            }
+          }
+        },
+        "reception_hours": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/OpeningHours"
+            }
+          }
+        },
+        "prices": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Prices"
+            }
+          }
+        },
+        "rig_limits": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/RigLimits"
+            }
+          }
+        },
+        "access": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Access"
+            }
+          }
+        },
+        "pets": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Pets"
+            }
+          }
+        },
+        "bookings": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Bookings"
+            }
+          }
+        },
+        "contact": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Contact"
+            }
+          }
+        },
+        "capacity": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Capacity"
+            }
+          }
+        },
+        "stay_limits": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/StayLimits"
+            }
+          }
+        },
+        "fire_district": {
+          "description": "Safety fact. Computed from the location against a seed source's fire district boundaries and recomputed whenever the location changes, so contributors never submit it. Its provenance names that seed source.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FireDistrict"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/RequiredFacts"
+        }
+      ]
+    },
+    "FactValues": {
+      "description": "Every fact of a site as a plain value, without provenance: the facts of the compact form and of submissions. It sets no rule on unknown names, so each user closes it with unevaluatedProperties.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "$ref": "values.schema.json#/$defs/Names"
+        },
+        "location": {
+          "$ref": "values.schema.json#/$defs/Location"
+        },
+        "site_types": {
+          "$ref": "values.schema.json#/$defs/SiteTypes"
+        },
+        "description": {
+          "$ref": "values.schema.json#/$defs/Description"
+        },
+        "opening_hours": {
+          "$ref": "values.schema.json#/$defs/OpeningHours"
+        },
+        "reception_hours": {
+          "$ref": "values.schema.json#/$defs/OpeningHours"
+        },
+        "prices": {
+          "$ref": "values.schema.json#/$defs/Prices"
+        },
+        "rig_limits": {
+          "$ref": "values.schema.json#/$defs/RigLimits"
+        },
+        "access": {
+          "$ref": "values.schema.json#/$defs/Access"
+        },
+        "pets": {
+          "$ref": "values.schema.json#/$defs/Pets"
+        },
+        "bookings": {
+          "$ref": "values.schema.json#/$defs/Bookings"
+        },
+        "contact": {
+          "$ref": "values.schema.json#/$defs/Contact"
+        },
+        "capacity": {
+          "$ref": "values.schema.json#/$defs/Capacity"
+        },
+        "stay_limits": {
+          "$ref": "values.schema.json#/$defs/StayLimits"
+        },
+        "fire_district": {
+          "$ref": "values.schema.json#/$defs/FireDistrict"
+        }
+      }
+    },
+    "RequiredFacts": {
+      "description": "The facts a site always has when it is not merged: names, location, site_types. Shared by the full form, the compact form and the submission that creates one.",
       "required": ["names", "location", "site_types"],
       "properties": {
-        "names": { "$ref": "#/$defs/NamesFact" },
-        "location": { "$ref": "#/$defs/LocationFact" },
-        "site_types": { "$ref": "#/$defs/SiteTypesFact" },
-        "description": { "$ref": "#/$defs/DescriptionFact" },
-        "opening_hours": { "$ref": "#/$defs/OpeningHoursFact" },
-        "reception_hours": { "$ref": "#/$defs/OpeningHoursFact" },
-        "prices": { "$ref": "#/$defs/PricesFact" },
-        "rig_limits": { "$ref": "#/$defs/RigLimitsFact" },
-        "access": { "$ref": "#/$defs/AccessFact" },
-        "pets": { "$ref": "#/$defs/PetsFact" },
-        "bookings": { "$ref": "#/$defs/BookingsFact" },
-        "contact": { "$ref": "#/$defs/ContactFact" },
-        "capacity": { "$ref": "#/$defs/CapacityFact" },
-        "stay_limits": { "$ref": "#/$defs/StayLimitsFact" },
-        "fire_district": { "$ref": "#/$defs/FireDistrictFact" }
-      },
-      "additionalProperties": false
-    },
-    "NamesFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Names" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "LocationFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Location" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "SiteTypesFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/SiteTypes" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "DescriptionFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Description" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "OpeningHoursFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/OpeningHours" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "PricesFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Prices" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "RigLimitsFact": {
-      "description": "Safety fact.",
-      "x-otwd-safety-fact": true,
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/RigLimits" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "AccessFact": {
-      "description": "Safety fact.",
-      "x-otwd-safety-fact": true,
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Access" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "PetsFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Pets" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "BookingsFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Bookings" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "ContactFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Contact" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "CapacityFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/Capacity" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "StayLimitsFact": {
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/StayLimits" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "FireDistrictFact": {
-      "description": "Safety fact. Computed from the location against a seed source's fire district boundaries and recomputed whenever the location changes, so contributors never submit it. Its provenance names that seed source.",
-      "x-otwd-safety-fact": true,
-      "type": "object",
-      "required": ["value", "provenance"],
-      "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/FireDistrict" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
+        "names": true,
+        "location": true,
+        "site_types": true
+      }
     },
     "FacilityFacts": {
       "description": "A map from facility code to a fact holding the facility value and its provenance, so each facility has its own provenance. Codes with defined attributes are checked against their per-code schema. Codes pets_allowed, dog_off_leash and big_rig_access are read from the pets and rig_limits facts and never appear here.",
       "type": "object",
-      "propertyNames": { "$ref": "common.schema.json#/$defs/FacilityCode" },
+      "propertyNames": {
+        "$ref": "common.schema.json#/$defs/FacilityCode"
+      },
       "not": {
         "anyOf": [
           {
             "required": ["pets_allowed"],
-            "properties": { "pets_allowed": true }
+            "properties": {
+              "pets_allowed": true
+            }
           },
           {
             "required": ["dog_off_leash"],
-            "properties": { "dog_off_leash": true }
+            "properties": {
+              "dog_off_leash": true
+            }
           },
           {
             "required": ["big_rig_access"],
-            "properties": { "big_rig_access": true }
+            "properties": {
+              "big_rig_access": true
+            }
           }
         ]
       },
       "properties": {
         "toilets": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/ToiletsValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/ToiletsValue"
+            }
+          }
         },
         "showers": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/ShowersValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/ShowersValue"
+            }
+          }
         },
         "drinking_water": {
           "$ref": "#/$defs/FacilityFact",
           "x-otwd-safety-fact": true,
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/DrinkingWaterValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/DrinkingWaterValue"
+            }
+          }
         },
         "non_potable_water": {
           "$ref": "#/$defs/FacilityFact",
           "x-otwd-safety-fact": true,
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/NonPotableWaterValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/NonPotableWaterValue"
+            }
+          }
         },
         "power": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/PowerValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/PowerValue"
+            }
+          }
         },
         "dump_point_access": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/DumpPointAccessValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/DumpPointAccessValue"
+            }
+          }
         },
         "bbq": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/BbqValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/BbqValue"
+            }
+          }
         },
         "fires_allowed": {
           "$ref": "#/$defs/FacilityFact",
           "x-otwd-safety-fact": true,
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/FiresAllowedValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FiresAllowedValue"
+            }
+          }
         },
         "pool": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/PoolValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/PoolValue"
+            }
+          }
         },
         "laundry": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/LaundryValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/LaundryValue"
+            }
+          }
         },
         "wifi": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/WifiValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/WifiValue"
+            }
+          }
         },
         "mobile_coverage": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/MobileCoverageValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/MobileCoverageValue"
+            }
+          }
         },
         "accessible_facilities": {
           "$ref": "#/$defs/FacilityFact",
           "properties": {
-            "value": { "$ref": "values.schema.json#/$defs/AccessibleFacilitiesValue" }
+            "value": {
+              "$ref": "values.schema.json#/$defs/AccessibleFacilitiesValue"
+            }
           }
         },
         "generators_allowed": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/GeneratorsAllowedValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/GeneratorsAllowedValue"
+            }
+          }
         },
         "ensuite_sites": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/CountedValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/CountedValue"
+            }
+          }
         },
         "cabins": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/CountedValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/CountedValue"
+            }
+          }
         },
         "drive_through_sites": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/CountedValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/CountedValue"
+            }
+          }
         },
         "tent_sites": {
           "$ref": "#/$defs/FacilityFact",
-          "properties": { "value": { "$ref": "values.schema.json#/$defs/CountedValue" } }
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/CountedValue"
+            }
+          }
         }
       },
-      "additionalProperties": { "$ref": "#/$defs/FacilityFact" }
+      "additionalProperties": {
+        "$ref": "#/$defs/FacilityFact"
+      }
     },
     "FacilityFact": {
-      "description": "One facility as a fact: its value and its provenance.",
-      "type": "object",
-      "required": ["value", "provenance"],
+      "description": "One facility as a fact: its value and its provenance, in the shared fact wrapper.",
+      "$ref": "common.schema.json#/$defs/Fact",
       "properties": {
-        "value": { "$ref": "values.schema.json#/$defs/FacilityValue" },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
-        "confirmations": { "$ref": "common.schema.json#/$defs/Confirmations" }
-      },
-      "additionalProperties": false
-    },
-    "Photo": {
-      "description": "A published photo of the site. Photos are licensed CC BY 4.0 by the person who took them, and EXIF location data is removed before publication.",
-      "type": "object",
-      "required": ["id", "url", "width", "height", "licence", "attribution", "provenance"],
-      "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/PhotoId" },
-        "url": {
-          "description": "HTTPS address of the full-size image on the OTWD CDN.",
-          "$ref": "common.schema.json#/$defs/HttpsUrl"
-        },
-        "thumbnail_url": { "$ref": "common.schema.json#/$defs/HttpsUrl" },
-        "width": { "type": "integer", "minimum": 1 },
-        "height": { "type": "integer", "minimum": 1 },
-        "sha256": {
-          "description": "SHA-256 of the published image file.",
-          "$ref": "common.schema.json#/$defs/Sha256"
-        },
-        "caption": { "$ref": "common.schema.json#/$defs/Notes" },
-        "taken_on": { "type": "string", "format": "date" },
-        "licence": { "description": "Always CC-BY-4.0 in schema version 1.", "const": "CC-BY-4.0" },
-        "attribution": {
-          "description": "The credit to show with the photo, as the photographer chose it, for example a display name. Never an email address.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 100
-        },
-        "provenance": { "$ref": "common.schema.json#/$defs/Provenance" }
-      },
-      "additionalProperties": false
+        "value": {
+          "$ref": "values.schema.json#/$defs/FacilityValue"
+        }
+      }
     }
   }
 }

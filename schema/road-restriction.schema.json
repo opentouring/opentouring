@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/road-restriction.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD road restriction",
+  "description": "A road restriction with every fact and its provenance: the full form served by the API with view=full and in GeoJSON bulk downloads. A road restriction is a point where a physical or legal limit applies to vehicles, such as a low rail bridge or a timber bridge with a weight limit. It has point geometry only: its location. A fact that is absent is unknown, and an absent limit is never unlimited. road-restriction-compact.schema.json describes the compact form.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/FullRecord"
+    }
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/RoadRestrictionId"
+    },
+    "redirect_to": {
+      "$ref": "common.schema.json#/$defs/RoadRestrictionId"
+    },
+    "derived": {
+      "$ref": "common.schema.json#/$defs/PointDerived"
+    },
+    "facts": {
+      "$ref": "#/$defs/Facts"
+    }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "Facts": {
+      "description": "The road restriction's facts, each holding its value and provenance. The fact names and their value shapes are the same as in FactValues.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "description": "The structure's name, when it has one, such as the name of a bridge.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Names"
+            }
+          }
+        },
+        "location": {
+          "description": "Safety fact. Moving a road restriction can put a low bridge on the wrong road, so every change to its location needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Location"
+            }
+          }
+        },
+        "road": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Road"
+            }
+          }
+        },
+        "structure": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Structure"
+            }
+          }
+        },
+        "vertical_clearance": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/VerticalClearance"
+            }
+          }
+        },
+        "width_limit": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/WidthLimit"
+            }
+          }
+        },
+        "weight_limit": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/WeightLimit"
+            }
+          }
+        },
+        "length_limit": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/LengthLimit"
+            }
+          }
+        },
+        "description": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Description"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/RequiredFacts"
+        }
+      ]
+    },
+    "FactValues": {
+      "description": "Every fact of a road restriction as a plain value, without provenance: the facts of the compact form and of submissions. It sets no rule on unknown names, so each user closes it with unevaluatedProperties.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "$ref": "values.schema.json#/$defs/Names"
+        },
+        "location": {
+          "$ref": "values.schema.json#/$defs/Location"
+        },
+        "road": {
+          "$ref": "values.schema.json#/$defs/Road"
+        },
+        "structure": {
+          "$ref": "values.schema.json#/$defs/Structure"
+        },
+        "vertical_clearance": {
+          "$ref": "values.schema.json#/$defs/VerticalClearance"
+        },
+        "width_limit": {
+          "$ref": "values.schema.json#/$defs/WidthLimit"
+        },
+        "weight_limit": {
+          "$ref": "values.schema.json#/$defs/WeightLimit"
+        },
+        "length_limit": {
+          "$ref": "values.schema.json#/$defs/LengthLimit"
+        },
+        "description": {
+          "$ref": "values.schema.json#/$defs/Description"
+        }
+      }
+    },
+    "RequiredFacts": {
+      "description": "The facts a road restriction always has when it is not merged: location, structure, and at least one limit. Shared by the full form, the compact form and the submission that creates one.",
+      "required": ["location", "structure"],
+      "properties": {
+        "location": true,
+        "structure": true
+      },
+      "anyOf": [
+        {
+          "required": ["vertical_clearance"],
+          "properties": {
+            "vertical_clearance": true
+          }
+        },
+        {
+          "required": ["width_limit"],
+          "properties": {
+            "width_limit": true
+          }
+        },
+        {
+          "required": ["weight_limit"],
+          "properties": {
+            "weight_limit": true
+          }
+        },
+        {
+          "required": ["length_limit"],
+          "properties": {
+            "length_limit": true
+          }
+        }
+      ]
+    }
+  }
+}

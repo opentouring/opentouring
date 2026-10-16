@@ -1,0 +1,82 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.1",
+  "id": "otwd:road_segment:01M32FADW05SWY4J87AKN7XP34",
+  "status": "active",
+  "created_at": "2026-09-27T03:00:00Z",
+  "updated_at": "2026-09-27T03:05:00Z",
+  "change_seq": 30702,
+  "name": "Snowgum Spur Track",
+  "names": [
+    {
+      "text": "Snowgum Spur Track",
+      "lang": "en",
+      "kind": "primary"
+    }
+  ],
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [146.71204, -37.39125],
+      [146.71988, -37.3941],
+      [146.73172, -37.40236],
+      [146.74415, -37.40801],
+      [146.7563, -37.41922],
+      [146.77011, -37.42588]
+    ]
+  },
+  "road": {
+    "name": "Snowgum Spur Track"
+  },
+  "surface": {
+    "code": "dirt",
+    "condition": "poor",
+    "notes": [
+      {
+        "text": "Rocky steps and deep wheel ruts on the climb to the spur.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "vehicle_access_class": {
+    "code": "four_wd_only"
+  },
+  "towing_permitted": {
+    "permitted": "no",
+    "notes": [
+      {
+        "text": "No room to turn a trailer between the gate and the summit.",
+        "lang": "en-AU"
+      }
+    ]
+  },
+  "seasonal_closure": {
+    "periods": [
+      {
+        "from": "06-10",
+        "to": "10-31",
+        "notes": [
+          {
+            "text": "Gates are locked for the closure.",
+            "lang": "en-AU"
+          }
+        ]
+      }
+    ],
+    "dates_year": 2026,
+    "wet_weather_closure": true,
+    "authority": "Parks Victoria",
+    "info_url": "https://www.parks.vic.gov.au/get-into-nature/safety-in-nature/seasonal-road-closures"
+  },
+  "country_codes": ["AU"],
+  "subdivision_codes": ["AU-VIC"],
+  "localities": ["Licola"],
+  "time_zone": "Australia/Melbourne",
+  "length_km": 6.4,
+  "min_confidence": 0.75,
+  "safety_facts_observed_on": "2026-04-18",
+  "attribution": [
+    "Open Touring contributors, opentouring.org, CC BY 4.0",
+    "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0"
+  ]
+}

@@ -3,18 +3,24 @@
   "$id": "https://schema.opentouring.org/otwd/v1/values.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD fact values",
-  "description": "The value shapes of every fact a site can carry. A site wraps each value with its provenance. A submission proposes bare values, and OTWD adds provenance when the change is applied. This file defines no document of its own.",
+  "description": "The value shapes of every fact a record can carry, for sites, road restrictions, road segments and ferry services. The full form wraps each value with its provenance (common.schema.json#/$defs/Fact). A submission proposes bare values, and OTWD adds provenance when the change is applied. Values that more than one record type uses, such as names, opening hours, weight limits and seasonal closures, are defined once here. This file defines no document of its own.",
   "$defs": {
     "Names": {
       "description": "The names a site is known by. Exactly one entry has kind primary.",
       "type": "array",
       "minItems": 1,
       "maxItems": 20,
-      "items": { "$ref": "#/$defs/NameEntry" },
+      "items": {
+        "$ref": "#/$defs/NameEntry"
+      },
       "contains": {
         "type": "object",
         "required": ["kind"],
-        "properties": { "kind": { "const": "primary" } }
+        "properties": {
+          "kind": {
+            "const": "primary"
+          }
+        }
       },
       "minContains": 1,
       "maxContains": 1
@@ -23,8 +29,14 @@
       "type": "object",
       "required": ["text", "lang", "kind"],
       "properties": {
-        "text": { "type": "string", "minLength": 1, "maxLength": 200 },
-        "lang": { "$ref": "common.schema.json#/$defs/LanguageTag" },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "lang": {
+          "$ref": "common.schema.json#/$defs/LanguageTag"
+        },
         "kind": {
           "description": "primary: the name shown by default. alternative: another current name. traditional: a name in the language of the traditional owners or First Nations people of the area. former: a name no longer used. short: an abbreviation.",
           "type": "string",
@@ -34,12 +46,20 @@
       "additionalProperties": false
     },
     "Location": {
-      "description": "The coordinates of a site in WGS84 (EPSG:4326), in decimal degrees. For a large site such as a campground this is the entrance or office, where a traveller would drive to.",
+      "description": "The coordinates of a site or road restriction in WGS84 (EPSG:4326), in decimal degrees. For a large site such as a campground this is the entrance or office, where a traveller would drive to. For a road restriction it is the point on the road where the limit applies, such as the centre of the road under a bridge.",
       "type": "object",
       "required": ["lat", "lng"],
       "properties": {
-        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
-        "lng": { "type": "number", "minimum": -180, "maximum": 180 },
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lng": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
         "accuracy_m": {
           "description": "Estimated horizontal accuracy in metres (radius).",
           "type": "number",
@@ -54,12 +74,16 @@
       "type": "object",
       "required": ["primary"],
       "properties": {
-        "primary": { "$ref": "common.schema.json#/$defs/SiteTypeCode" },
+        "primary": {
+          "$ref": "common.schema.json#/$defs/SiteTypeCode"
+        },
         "others": {
           "type": "array",
           "maxItems": 10,
           "uniqueItems": true,
-          "items": { "$ref": "common.schema.json#/$defs/SiteTypeCode" }
+          "items": {
+            "$ref": "common.schema.json#/$defs/SiteTypeCode"
+          }
         }
       },
       "additionalProperties": false
@@ -73,13 +97,22 @@
         "type": "object",
         "required": ["text", "lang"],
         "properties": {
-          "text": { "type": "string", "minLength": 20, "maxLength": 500 },
-          "lang": { "$ref": "common.schema.json#/$defs/LanguageTag" }
+          "text": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 500
+          },
+          "lang": {
+            "$ref": "common.schema.json#/$defs/LanguageTag"
+          }
         },
         "additionalProperties": false
       }
     },
-    "Weekday": { "type": "string", "enum": ["mo", "tu", "we", "th", "fr", "sa", "su"] },
+    "Weekday": {
+      "type": "string",
+      "enum": ["mo", "tu", "we", "th", "fr", "sa", "su"]
+    },
     "OpeningHours": {
       "description": "When the site can be used. Times are local to the site's time zone. Give always_open, a weekly pattern, an OSM opening_hours string, or a combination. When both weekly and osm_opening_hours are present they describe the same hours and weekly is authoritative.",
       "type": "object",
@@ -101,9 +134,13 @@
                 "minItems": 1,
                 "maxItems": 7,
                 "uniqueItems": true,
-                "items": { "$ref": "#/$defs/Weekday" }
+                "items": {
+                  "$ref": "#/$defs/Weekday"
+                }
               },
-              "opens": { "$ref": "common.schema.json#/$defs/LocalTime" },
+              "opens": {
+                "$ref": "common.schema.json#/$defs/LocalTime"
+              },
               "closes": {
                 "description": "Closing time. A closing time earlier than the opening time means the period ends after midnight.",
                 "$ref": "common.schema.json#/$defs/LocalTime"
@@ -126,12 +163,26 @@
             "type": "object",
             "required": ["from", "to", "closed"],
             "properties": {
-              "from": { "type": "string", "format": "date" },
-              "to": { "type": "string", "format": "date" },
-              "closed": { "type": "boolean" },
-              "opens": { "$ref": "common.schema.json#/$defs/LocalTime" },
-              "closes": { "$ref": "common.schema.json#/$defs/LocalTime" },
-              "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+              "from": {
+                "type": "string",
+                "format": "date"
+              },
+              "to": {
+                "type": "string",
+                "format": "date"
+              },
+              "closed": {
+                "type": "boolean"
+              },
+              "opens": {
+                "$ref": "common.schema.json#/$defs/LocalTime"
+              },
+              "closes": {
+                "$ref": "common.schema.json#/$defs/LocalTime"
+              },
+              "notes": {
+                "$ref": "common.schema.json#/$defs/Notes"
+              }
             },
             "additionalProperties": false
           }
@@ -140,23 +191,33 @@
           "description": "Periods the site closes every year, such as a wet season closure.",
           "type": "array",
           "maxItems": 12,
-          "items": { "$ref": "#/$defs/AnnualPeriod" }
+          "items": {
+            "$ref": "#/$defs/AnnualPeriod"
+          }
         },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false,
       "anyOf": [
         {
           "required": ["always_open"],
-          "properties": { "always_open": true }
+          "properties": {
+            "always_open": true
+          }
         },
         {
           "required": ["weekly"],
-          "properties": { "weekly": true }
+          "properties": {
+            "weekly": true
+          }
         },
         {
           "required": ["osm_opening_hours"],
-          "properties": { "osm_opening_hours": true }
+          "properties": {
+            "osm_opening_hours": true
+          }
         }
       ]
     },
@@ -165,9 +226,15 @@
       "type": "object",
       "required": ["from", "to"],
       "properties": {
-        "from": { "$ref": "common.schema.json#/$defs/MonthDay" },
-        "to": { "$ref": "common.schema.json#/$defs/MonthDay" },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "from": {
+          "$ref": "common.schema.json#/$defs/MonthDay"
+        },
+        "to": {
+          "$ref": "common.schema.json#/$defs/MonthDay"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false
     },
@@ -181,22 +248,35 @@
           "type": "string",
           "enum": ["free", "donation", "paid"]
         },
-        "items": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/PriceItem" } },
-        "payment_methods": {
+        "items": {
           "type": "array",
-          "uniqueItems": true,
+          "maxItems": 50,
           "items": {
-            "type": "string",
-            "enum": ["cash", "card", "online", "honesty_box", "app", "phone"]
+            "$ref": "#/$defs/PriceItem"
           }
         },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "payment_methods": {
+          "$ref": "#/$defs/PaymentMethods"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false,
-      "if": { "properties": { "charging": { "const": "paid" } } },
+      "if": {
+        "properties": {
+          "charging": {
+            "const": "paid"
+          }
+        }
+      },
       "then": {
         "required": ["items"],
-        "properties": { "items": { "minItems": 1 } }
+        "properties": {
+          "items": {
+            "minItems": 1
+          }
+        }
       }
     },
     "PriceItem": {
@@ -227,41 +307,80 @@
           ]
         },
         "amount": {
-          "description": "Amount in major currency units, for example 32.5 for A$32.50.",
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100000
+          "$ref": "#/$defs/MoneyAmount"
         },
-        "currency": { "$ref": "common.schema.json#/$defs/CurrencyCode" },
+        "currency": {
+          "$ref": "common.schema.json#/$defs/CurrencyCode"
+        },
         "per": {
           "type": "string",
           "enum": ["site", "person", "adult", "child", "family", "vehicle", "pet", "use"]
         },
-        "period": { "type": "string", "enum": ["night", "day", "hour", "week", "stay", "use"] },
-        "conditions": { "$ref": "#/$defs/PriceConditions" }
+        "period": {
+          "type": "string",
+          "enum": ["night", "day", "hour", "week", "stay", "use"]
+        },
+        "conditions": {
+          "$ref": "#/$defs/PriceConditions"
+        }
       },
       "additionalProperties": false
+    },
+    "MoneyAmount": {
+      "description": "Amount in major currency units, for example 32.5 for A$32.50.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "PaymentMethods": {
+      "description": "How a price or fare can be paid.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["cash", "card", "online", "honesty_box", "app", "phone"]
+      }
     },
     "PriceConditions": {
       "description": "When a price applies. All given conditions must hold.",
       "type": "object",
       "properties": {
-        "persons_included": { "type": "integer", "minimum": 1, "maximum": 50 },
-        "min_nights": { "type": "integer", "minimum": 1, "maximum": 365 },
-        "season": { "$ref": "#/$defs/AnnualPeriod" },
+        "persons_included": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "min_nights": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 365
+        },
+        "season": {
+          "$ref": "#/$defs/AnnualPeriod"
+        },
         "days": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "$ref": "#/$defs/Weekday" }
+          "items": {
+            "$ref": "#/$defs/Weekday"
+          }
         },
-        "valid_from": { "type": "string", "format": "date" },
-        "valid_to": { "type": "string", "format": "date" },
+        "valid_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "valid_to": {
+          "type": "string",
+          "format": "date"
+        },
         "concession": {
           "description": "True when the price applies only to holders of a concession, seniors or pensioner card.",
           "type": "boolean"
         },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false
     },
@@ -295,21 +414,15 @@
       "properties": {
         "max_length_m": {
           "description": "Longest total rig, vehicle plus anything towed, that fits, in metres.",
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "maximum": 60
+          "$ref": "#/$defs/VehicleLengthM"
         },
         "max_height_m": {
           "description": "Lowest overhead clearance on the way in or on site, in metres.",
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "maximum": 10
+          "$ref": "#/$defs/VehicleHeightM"
         },
         "max_weight_t": {
           "description": "Lowest gross mass limit on the way in, such as a bridge or causeway limit, in tonnes.",
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "maximum": 200
+          "$ref": "#/$defs/VehicleMassT"
         },
         "big_rig_suitable": {
           "description": "yes: room to enter, turn and park a big rig (roughly 10 m or more combined, or a large motorhome). limited: possible with care or only on some sites. no: unsuitable.",
@@ -320,7 +433,9 @@
           "description": "False when caravans, camper trailers and other towed vehicles are not allowed.",
           "type": "boolean"
         },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false,
       "minProperties": 1
@@ -330,7 +445,7 @@
       "type": "object",
       "properties": {
         "road_surface": {
-          "description": "The worst surface on the last stretch to the site.",
+          "description": "The worst surface on the last stretch to the site. The codes other than mixed are the same as in the surface governed list (surfaces.json).",
           "type": "string",
           "enum": ["sealed", "gravel", "dirt", "sand", "mixed"]
         },
@@ -340,10 +455,18 @@
           "minimum": 0,
           "maximum": 1000
         },
-        "four_wd_required": { "type": "boolean" },
-        "high_clearance_recommended": { "type": "boolean" },
-        "seasonal": { "$ref": "#/$defs/SeasonalAccess" },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "four_wd_required": {
+          "type": "boolean"
+        },
+        "high_clearance_recommended": {
+          "type": "boolean"
+        },
+        "seasonal": {
+          "$ref": "#/$defs/SeasonalAccess"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false,
       "minProperties": 1
@@ -353,7 +476,9 @@
       "type": "object",
       "required": ["affected"],
       "properties": {
-        "affected": { "type": "boolean" },
+        "affected": {
+          "type": "boolean"
+        },
         "wet_weather_closure": {
           "description": "True when the road closes or becomes impassable after rain.",
           "type": "boolean"
@@ -361,9 +486,13 @@
         "typical_closures": {
           "type": "array",
           "maxItems": 12,
-          "items": { "$ref": "#/$defs/AnnualPeriod" }
+          "items": {
+            "$ref": "#/$defs/AnnualPeriod"
+          }
         },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false
     },
@@ -377,8 +506,12 @@
           "type": "string",
           "enum": ["yes", "on_leash", "by_arrangement", "no"]
         },
-        "dog_off_leash_area": { "type": "boolean" },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "dog_off_leash_area": {
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false
     },
@@ -391,11 +524,23 @@
           "type": "string",
           "enum": ["required", "recommended", "optional", "not_accepted"]
         },
-        "url": { "type": "string", "format": "uri", "maxLength": 500 },
-        "phone": { "$ref": "common.schema.json#/$defs/PhoneE164" },
-        "check_in_from": { "$ref": "common.schema.json#/$defs/LocalTime" },
-        "check_out_by": { "$ref": "common.schema.json#/$defs/LocalTime" },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 500
+        },
+        "phone": {
+          "$ref": "common.schema.json#/$defs/PhoneE164"
+        },
+        "check_in_from": {
+          "$ref": "common.schema.json#/$defs/LocalTime"
+        },
+        "check_out_by": {
+          "$ref": "common.schema.json#/$defs/LocalTime"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false
     },
@@ -403,9 +548,19 @@
       "description": "Public contact details of the site's operator. Never a contributor's personal details.",
       "type": "object",
       "properties": {
-        "website": { "type": "string", "format": "uri", "maxLength": 500 },
-        "phone": { "$ref": "common.schema.json#/$defs/PhoneE164" },
-        "email": { "type": "string", "format": "email", "maxLength": 254 }
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 500
+        },
+        "phone": {
+          "$ref": "common.schema.json#/$defs/PhoneE164"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        }
       },
       "additionalProperties": false,
       "minProperties": 1
@@ -414,9 +569,19 @@
       "description": "How many vehicles or groups the site holds.",
       "type": "object",
       "properties": {
-        "sites": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "powered_sites": { "type": "integer", "minimum": 0, "maximum": 10000 },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "sites": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "powered_sites": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false,
       "minProperties": 1
@@ -425,58 +590,662 @@
       "description": "Limits on how long a traveller may stay.",
       "type": "object",
       "properties": {
-        "max_nights": { "type": "integer", "minimum": 0, "maximum": 365 },
+        "max_nights": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 365
+        },
         "period_days": {
           "description": "The period over which max_nights applies, for example 2 nights in any 28 days.",
           "type": "integer",
           "minimum": 1,
           "maximum": 365
         },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false,
       "minProperties": 1
+    },
+    "VehicleLengthM": {
+      "description": "A vehicle or rig length in metres.",
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 60
+    },
+    "VehicleHeightM": {
+      "description": "A vehicle height or vertical clearance in metres, from the road surface. Capped at 10 m, so a figure in feet such as 13.5 fails instead of passing as metres.",
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 10
+    },
+    "VehicleWidthM": {
+      "description": "A vehicle width or width limit in metres. Capped at 10 m, so a figure in feet fails instead of passing as metres.",
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 10
+    },
+    "VehicleMassT": {
+      "description": "A mass in tonnes.",
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 200
+    },
+    "HeadingDeg": {
+      "description": "A compass heading of travel in degrees from true north, 0 up to but not including 360.",
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 360
+    },
+    "LineGeometry": {
+      "description": "The line a road segment or ferry service follows: a GeoJSON LineString or MultiLineString (RFC 7946) in WGS84. Positions run in the order a traveller would follow them from the start of the record, and the direction carries no meaning unless a fact says so.",
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/GeoJsonLineString"
+        },
+        {
+          "$ref": "common.schema.json#/$defs/GeoJsonMultiLineString"
+        }
+      ]
+    },
+    "Road": {
+      "description": "The road a road restriction is on or a road segment is part of, as signposted.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The road's name, for example Princes Highway or Wonnangatta Track.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "ref": {
+          "description": "The route number shown on signs, for example A1, B500 or C142.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "Structure": {
+      "description": "The built thing at a road restriction, from the structure governed list (structures.json), and how the road passes it. passage over: the vehicle drives on or across it, so weight and width matter (a bridge carrying the road, a causeway). under: the vehicle passes beneath it, so vertical clearance matters (a rail bridge over the road, a sign gantry). through: the vehicle passes through it (a tunnel, a gate, a ford). along: a limit signed on the open road. Each structure code lists the passages it allows.",
+      "type": "object",
+      "required": ["code", "passage"],
+      "properties": {
+        "code": {
+          "$ref": "common.schema.json#/$defs/StructureCode"
+        },
+        "passage": {
+          "type": "string",
+          "enum": ["over", "under", "through", "along"]
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LimitBasis": {
+      "description": "What a limit figure is. signed: the figure on the sign, the legal limit, which usually allows a margin. surveyed: measured by the road authority or a surveyor, often with a survey certificate. measured: measured by a contributor, for example with a tape or a height pole. unknown: the source does not say.",
+      "type": "string",
+      "enum": ["signed", "surveyed", "measured", "unknown"]
+    },
+    "LimitMeasurement": {
+      "description": "One figure for a vertical clearance or width limit, in metres. A structure can have several: a signed and a surveyed figure, one per direction of travel, or one per lane.",
+      "type": "object",
+      "required": ["value_m", "basis"],
+      "properties": {
+        "value_m": {
+          "description": "The figure in metres. The fact that holds the measurement sets its range: VehicleHeightM for vertical clearance and VehicleWidthM for width, both capped at 10 m.",
+          "type": "number"
+        },
+        "basis": {
+          "$ref": "#/$defs/LimitBasis"
+        },
+        "heading_deg": {
+          "description": "The heading of travel this figure applies to. Absent when it applies in every direction.",
+          "$ref": "#/$defs/HeadingDeg"
+        },
+        "lane": {
+          "description": "The lane this figure applies to, as the source names it, for example 1, 2 or kerb. Absent when it applies across the road.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        },
+        "observed_on": {
+          "description": "When the figure was signed, surveyed or measured, if the source says.",
+          "type": "string",
+          "format": "date"
+        },
+        "certificate_url": {
+          "description": "A survey certificate for a surveyed figure.",
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        }
+      },
+      "additionalProperties": false
+    },
+    "VerticalClearance": {
+      "description": "Safety fact. The height a vehicle must be under to pass, in metres. measurements holds every figure known, signed, surveyed or measured, and lowest_m is the lowest of them, whatever its basis. That is the figure every rig filter compares a vehicle with.",
+      "type": "object",
+      "required": ["lowest_m", "lowest_basis", "measurements"],
+      "properties": {
+        "lowest_m": {
+          "description": "The lowest figure of any basis in measurements, in metres. Rig filters and apps compare a vehicle with this figure, never with the signed figure alone, because a measured or surveyed figure lower than the sign is the one that strikes the vehicle.",
+          "$ref": "#/$defs/VehicleHeightM"
+        },
+        "lowest_basis": {
+          "description": "The basis of the lowest figure, so an app can say whether it is the signed limit or a lower measured or surveyed one.",
+          "$ref": "#/$defs/LimitBasis"
+        },
+        "measurements": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/LimitMeasurement",
+            "properties": {
+              "value_m": {
+                "$ref": "#/$defs/VehicleHeightM"
+              }
+            }
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WidthLimit": {
+      "description": "Safety fact. The width a vehicle must be under to pass, in metres, such as a single-lane bridge or a gate. lowest_m is the lowest figure of any basis, as for vertical clearance.",
+      "type": "object",
+      "required": ["lowest_m", "lowest_basis", "measurements"],
+      "properties": {
+        "lowest_m": {
+          "description": "The lowest figure of any basis in measurements, in metres. Rig filters and apps compare a vehicle with this figure, never with the signed figure alone, because a measured or surveyed figure lower than the sign is the one that strikes the vehicle.",
+          "$ref": "#/$defs/VehicleWidthM"
+        },
+        "lowest_basis": {
+          "description": "The basis of the lowest figure, so an app can say whether it is the signed limit or a lower measured or surveyed one.",
+          "$ref": "#/$defs/LimitBasis"
+        },
+        "measurements": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/LimitMeasurement",
+            "properties": {
+              "value_m": {
+                "$ref": "#/$defs/VehicleWidthM"
+              }
+            }
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WeightLimit": {
+      "description": "Safety fact. The signed mass limits, in tonnes. gross_t is the gross mass of the vehicle or combination, including anything towed. axle_load_t is the most any one axle may carry. Either or both may be given.",
+      "type": "object",
+      "properties": {
+        "gross_t": {
+          "$ref": "#/$defs/VehicleMassT"
+        },
+        "axle_load_t": {
+          "description": "Most mass any one axle may carry, in tonnes.",
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 50
+        },
+        "assessed_on": {
+          "description": "When the road authority last assessed the limit, if the source says.",
+          "type": "string",
+          "format": "date"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": ["gross_t"],
+          "properties": {
+            "gross_t": true
+          }
+        },
+        {
+          "required": ["axle_load_t"],
+          "properties": {
+            "axle_load_t": true
+          }
+        }
+      ]
+    },
+    "LengthLimit": {
+      "description": "Safety fact. The longest vehicle or combination allowed, as signed, in metres.",
+      "type": "object",
+      "required": ["signed_m"],
+      "properties": {
+        "signed_m": {
+          "$ref": "#/$defs/VehicleLengthM"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Surface": {
+      "description": "What a road segment is made of, from the surface governed list (surfaces.json), and how rough it is. condition is how the surface rides at the time observed: good, fair (some potholes or corrugations, normal speeds with care), poor (slow going for any vehicle), very_poor (high clearance needed) or impassable.",
+      "type": "object",
+      "required": ["code"],
+      "properties": {
+        "code": {
+          "$ref": "common.schema.json#/$defs/SurfaceCode"
+        },
+        "condition": {
+          "type": "string",
+          "enum": ["good", "fair", "poor", "very_poor", "impassable"]
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "VehicleAccessClass": {
+      "description": "Safety fact. The least capable vehicle that can use a road segment, from the vehicle access class governed list (vehicle-access-classes.json).",
+      "type": "object",
+      "required": ["code"],
+      "properties": {
+        "code": {
+          "$ref": "common.schema.json#/$defs/VehicleAccessClassCode"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TowingPermitted": {
+      "description": "Safety fact. Whether vehicles may tow a trailer, caravan or camper trailer. yes: towing allowed. not_recommended: allowed, but the land manager or road authority advises against it. no: towing prohibited. It comes from contributors, who can add a photo of the sign, and a seed source never sets it.",
+      "type": "object",
+      "required": ["permitted"],
+      "properties": {
+        "permitted": {
+          "type": "string",
+          "enum": ["yes", "not_recommended", "no"]
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SeasonalClosure": {
+      "description": "Safety fact. When a road segment or ferry service closes every year or after weather, and the authority that closes it. Declared closures change daily and are never stored: apps send travellers to info_url for current conditions.",
+      "type": "object",
+      "properties": {
+        "periods": {
+          "description": "Periods it closes every year, such as a winter closure of a high country track.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/AnnualPeriod"
+          }
+        },
+        "dates_year": {
+          "description": "The year whose published dates the periods were taken from. Authorities set the exact dates each year, so apps show the periods as typical and link to info_url.",
+          "type": "integer",
+          "minimum": 1990,
+          "maximum": 2200
+        },
+        "wet_weather_closure": {
+          "description": "True when it closes, or becomes impassable, after rain or in floods.",
+          "type": "boolean"
+        },
+        "authority": {
+          "description": "The authority that declares closures, for example Parks Victoria.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "info_url": {
+          "description": "The authority's official page for current closures and conditions.",
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": ["periods"],
+          "properties": {
+            "periods": true
+          }
+        },
+        {
+          "required": ["wet_weather_closure"],
+          "properties": {
+            "wet_weather_closure": true
+          }
+        }
+      ]
+    },
+    "Terminals": {
+      "description": "The two ferry terminals a ferry service runs between: sites whose site types include ferry_terminal. A service that calls at more places is recorded as one ferry service per crossing.",
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/SiteId"
+      }
+    },
+    "Operator": {
+      "description": "The operator of a ferry service: the organisation that runs it, with its public contact details.",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "contact": {
+          "$ref": "#/$defs/Contact"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AcceptedVehicleClasses": {
+      "description": "Safety fact. The vehicle classes a ferry service carries, from the vehicle class governed list (vehicle-classes.json). A class not listed is not carried, so this decides whether a car towing a caravan may board.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/VehicleClassCode"
+      }
+    },
+    "FerryVehicleLimits": {
+      "description": "Safety fact. The ferry vehicle limits: the largest vehicle a ferry service carries, the ferry's counterpart of a site's rig limits. The top-level limits apply to every vehicle. by_vehicle_class gives tighter limits for one class, such as a shorter maximum for a car towing a caravan. Lengths are the combined length of the vehicle and anything it tows, including the drawbar. max_total_load_t is the most the ferry carries on one crossing. A limit that is absent is unknown, not unlimited.",
+      "type": "object",
+      "properties": {
+        "max_length_m": {
+          "$ref": "#/$defs/VehicleLengthM"
+        },
+        "max_height_m": {
+          "$ref": "#/$defs/VehicleHeightM"
+        },
+        "max_width_m": {
+          "$ref": "#/$defs/VehicleWidthM"
+        },
+        "max_weight_t": {
+          "$ref": "#/$defs/VehicleMassT"
+        },
+        "max_total_load_t": {
+          "description": "Most total mass on one crossing, in tonnes.",
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5000
+        },
+        "by_vehicle_class": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "required": ["vehicle_class"],
+            "properties": {
+              "vehicle_class": {
+                "$ref": "common.schema.json#/$defs/VehicleClassCode"
+              },
+              "max_length_m": {
+                "$ref": "#/$defs/VehicleLengthM"
+              },
+              "max_height_m": {
+                "$ref": "#/$defs/VehicleHeightM"
+              },
+              "max_width_m": {
+                "$ref": "#/$defs/VehicleWidthM"
+              },
+              "max_weight_t": {
+                "$ref": "#/$defs/VehicleMassT"
+              },
+              "notes": {
+                "$ref": "common.schema.json#/$defs/Notes"
+              }
+            },
+            "additionalProperties": false,
+            "minProperties": 2
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "Fares": {
+      "description": "What a crossing costs, by vehicle class. charging says whether there is a charge at all. items lists the fares.",
+      "type": "object",
+      "required": ["charging"],
+      "properties": {
+        "charging": {
+          "description": "free: no charge, as on many council river ferries. paid: a fare applies and items lists it.",
+          "type": "string",
+          "enum": ["free", "paid"]
+        },
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/FareItem"
+          }
+        },
+        "payment_methods": {
+          "$ref": "#/$defs/PaymentMethods"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "charging": {
+            "const": "paid"
+          }
+        }
+      },
+      "then": {
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "FareItem": {
+      "description": "One fare: the price for one vehicle of a vehicle class, or one foot passenger, for one crossing or a return crossing. Operators usually price vehicles in length bands, and sometimes height bands, which band gives.",
+      "type": "object",
+      "required": ["vehicle_class", "amount", "currency", "crossings"],
+      "properties": {
+        "vehicle_class": {
+          "$ref": "common.schema.json#/$defs/VehicleClassCode"
+        },
+        "band": {
+          "$ref": "#/$defs/VehicleBand"
+        },
+        "amount": {
+          "$ref": "#/$defs/MoneyAmount"
+        },
+        "currency": {
+          "$ref": "common.schema.json#/$defs/CurrencyCode"
+        },
+        "crossings": {
+          "description": "1 for a one-way fare, 2 for a return fare.",
+          "type": "integer",
+          "enum": [1, 2]
+        },
+        "conditions": {
+          "$ref": "#/$defs/PriceConditions"
+        }
+      },
+      "additionalProperties": false
+    },
+    "VehicleBand": {
+      "description": "A range of vehicle sizes a fare covers, such as a car over 5.5 m or a car towing a caravan from 6 m to 13 m. Lengths are combined, including the drawbar and anything towed. A minimum is exclusive and a maximum inclusive, so bands that meet at 5.5 m do not overlap.",
+      "type": "object",
+      "properties": {
+        "min_length_m": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 60
+        },
+        "max_length_m": {
+          "$ref": "#/$defs/VehicleLengthM"
+        },
+        "min_height_m": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "max_height_m": {
+          "$ref": "#/$defs/VehicleHeightM"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "Crossing": {
+      "description": "How a ferry service runs. departures: on_demand (the ferry crosses when vehicles arrive, as small river ferries do), continuous (it shuttles back and forth without a timetable) or timetabled (fixed departure times, published at timetable_url). duration_minutes is the usual time on the water.",
+      "type": "object",
+      "required": ["departures"],
+      "properties": {
+        "departures": {
+          "type": "string",
+          "enum": ["on_demand", "continuous", "timetabled"]
+        },
+        "duration_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2880
+        },
+        "capacity_cars": {
+          "description": "How many cars the ferry carries on one crossing, as operators of small vehicle ferries publish it.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000
+        },
+        "timetable_url": {
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
     },
     "FacilityValue": {
       "description": "Whether a site has a facility, and its attributes. available false records that the facility is known to be absent, which is different from the facility being missing from the record (unknown). The attributes allowed for each code are listed in facilities.json and checked by the per-code schemas in this file.",
       "type": "object",
       "required": ["available"],
       "properties": {
-        "available": { "type": "boolean" },
+        "available": {
+          "type": "boolean"
+        },
         "attributes": {
           "type": "object",
           "maxProperties": 20,
-          "propertyNames": { "pattern": "^[a-z][a-z0-9_]{0,47}$" }
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]{0,47}$"
+          }
         },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       },
       "additionalProperties": false
     },
     "Facilities": {
       "description": "A map from facility code to facility value. Codes with defined attributes are checked here. Codes not listed are accepted with free-form attributes so that new governed list entries do not break older validators. In stored sites and in submissions the codes pets_allowed, dog_off_leash and big_rig_access are read from the pets and rig_limits facts instead (see StoredFacilities). The compact site form fills them in for convenience.",
       "type": "object",
-      "propertyNames": { "$ref": "common.schema.json#/$defs/FacilityCode" },
-      "properties": {
-        "toilets": { "$ref": "#/$defs/ToiletsValue" },
-        "showers": { "$ref": "#/$defs/ShowersValue" },
-        "drinking_water": { "$ref": "#/$defs/DrinkingWaterValue" },
-        "non_potable_water": { "$ref": "#/$defs/NonPotableWaterValue" },
-        "power": { "$ref": "#/$defs/PowerValue" },
-        "dump_point_access": { "$ref": "#/$defs/DumpPointAccessValue" },
-        "bbq": { "$ref": "#/$defs/BbqValue" },
-        "fires_allowed": { "$ref": "#/$defs/FiresAllowedValue" },
-        "pool": { "$ref": "#/$defs/PoolValue" },
-        "laundry": { "$ref": "#/$defs/LaundryValue" },
-        "wifi": { "$ref": "#/$defs/WifiValue" },
-        "mobile_coverage": { "$ref": "#/$defs/MobileCoverageValue" },
-        "accessible_facilities": { "$ref": "#/$defs/AccessibleFacilitiesValue" },
-        "generators_allowed": { "$ref": "#/$defs/GeneratorsAllowedValue" },
-        "ensuite_sites": { "$ref": "#/$defs/CountedValue" },
-        "cabins": { "$ref": "#/$defs/CountedValue" },
-        "drive_through_sites": { "$ref": "#/$defs/CountedValue" },
-        "tent_sites": { "$ref": "#/$defs/CountedValue" }
+      "propertyNames": {
+        "$ref": "common.schema.json#/$defs/FacilityCode"
       },
-      "additionalProperties": { "$ref": "#/$defs/FacilityValue" }
+      "properties": {
+        "toilets": {
+          "$ref": "#/$defs/ToiletsValue"
+        },
+        "showers": {
+          "$ref": "#/$defs/ShowersValue"
+        },
+        "drinking_water": {
+          "$ref": "#/$defs/DrinkingWaterValue"
+        },
+        "non_potable_water": {
+          "$ref": "#/$defs/NonPotableWaterValue"
+        },
+        "power": {
+          "$ref": "#/$defs/PowerValue"
+        },
+        "dump_point_access": {
+          "$ref": "#/$defs/DumpPointAccessValue"
+        },
+        "bbq": {
+          "$ref": "#/$defs/BbqValue"
+        },
+        "fires_allowed": {
+          "$ref": "#/$defs/FiresAllowedValue"
+        },
+        "pool": {
+          "$ref": "#/$defs/PoolValue"
+        },
+        "laundry": {
+          "$ref": "#/$defs/LaundryValue"
+        },
+        "wifi": {
+          "$ref": "#/$defs/WifiValue"
+        },
+        "mobile_coverage": {
+          "$ref": "#/$defs/MobileCoverageValue"
+        },
+        "accessible_facilities": {
+          "$ref": "#/$defs/AccessibleFacilitiesValue"
+        },
+        "generators_allowed": {
+          "$ref": "#/$defs/GeneratorsAllowedValue"
+        },
+        "ensuite_sites": {
+          "$ref": "#/$defs/CountedValue"
+        },
+        "cabins": {
+          "$ref": "#/$defs/CountedValue"
+        },
+        "drive_through_sites": {
+          "$ref": "#/$defs/CountedValue"
+        },
+        "tent_sites": {
+          "$ref": "#/$defs/CountedValue"
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/FacilityValue"
+      }
     },
     "StoredFacilities": {
       "description": "Facilities as submitted and stored: the codes read from other facts (pets_allowed, dog_off_leash, big_rig_access) are not allowed.",
@@ -485,15 +1254,21 @@
         "anyOf": [
           {
             "required": ["pets_allowed"],
-            "properties": { "pets_allowed": true }
+            "properties": {
+              "pets_allowed": true
+            }
           },
           {
             "required": ["dog_off_leash"],
-            "properties": { "dog_off_leash": true }
+            "properties": {
+              "dog_off_leash": true
+            }
           },
           {
             "required": ["big_rig_access"],
-            "properties": { "big_rig_access": true }
+            "properties": {
+              "big_rig_access": true
+            }
           }
         ]
       }
@@ -503,20 +1278,35 @@
       "type": "object",
       "required": ["available"],
       "properties": {
-        "available": { "type": "boolean" },
-        "notes": { "$ref": "common.schema.json#/$defs/Notes" }
+        "available": {
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
       }
     },
     "ToiletsValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
           "properties": {
-            "kind": { "type": "string", "enum": ["flush", "composting", "pit", "chemical"] },
-            "count": { "type": "integer", "minimum": 1, "maximum": 500 }
+            "kind": {
+              "type": "string",
+              "enum": ["flush", "composting", "pit", "chemical"]
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
           },
           "additionalProperties": false
         }
@@ -524,19 +1314,29 @@
       "additionalProperties": false
     },
     "ShowersValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
           "properties": {
-            "hot": { "type": "boolean" },
+            "hot": {
+              "type": "boolean"
+            },
             "fee": {
               "description": "True when the showers cost extra (coins, tokens or a separate charge).",
               "type": "boolean"
             },
-            "count": { "type": "integer", "minimum": 1, "maximum": 500 }
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
           },
           "additionalProperties": false
         }
@@ -549,7 +1349,11 @@
     },
     "DrinkingWaterValue": {
       "description": "Safety fact.",
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
@@ -564,7 +1368,9 @@
               "description": "True when the supply is treated (chlorinated, filtered or UV).",
               "type": "boolean"
             },
-            "source": { "$ref": "#/$defs/WaterSource" },
+            "source": {
+              "$ref": "#/$defs/WaterSource"
+            },
             "tank_fill": {
               "description": "True when a hose or tap allows filling a vehicle's water tank.",
               "type": "boolean"
@@ -577,15 +1383,23 @@
     },
     "NonPotableWaterValue": {
       "description": "Safety fact.",
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
           "properties": {
-            "source": { "$ref": "#/$defs/WaterSource" },
-            "signed_not_for_drinking": { "type": "boolean" }
+            "source": {
+              "$ref": "#/$defs/WaterSource"
+            },
+            "signed_not_for_drinking": {
+              "type": "boolean"
+            }
           },
           "additionalProperties": false
         }
@@ -593,7 +1407,11 @@
       "additionalProperties": false
     },
     "PowerValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
@@ -628,7 +1446,11 @@
       "additionalProperties": false
     },
     "DumpPointAccessValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
@@ -639,8 +1461,12 @@
               "type": "string",
               "enum": ["cassette_and_tank", "cassette_only", "tank_only"]
             },
-            "drive_over": { "type": "boolean" },
-            "rinse_water": { "type": "boolean" },
+            "drive_over": {
+              "type": "boolean"
+            },
+            "rinse_water": {
+              "type": "boolean"
+            },
             "guests_only": {
               "description": "True when only paying guests may use it.",
               "type": "boolean"
@@ -652,15 +1478,24 @@
       "additionalProperties": false
     },
     "BbqValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
           "properties": {
-            "fuel": { "type": "string", "enum": ["electric", "gas", "wood"] },
-            "fee": { "type": "boolean" }
+            "fuel": {
+              "type": "string",
+              "enum": ["electric", "gas", "wood"]
+            },
+            "fee": {
+              "type": "boolean"
+            }
           },
           "additionalProperties": false
         }
@@ -669,20 +1504,30 @@
     },
     "FiresAllowedValue": {
       "description": "Safety fact. The site's standing policy on campfires. Total fire bans and other bans declared by fire authorities always override it and are not recorded in OTWD.",
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
           "properties": {
-            "fire_rings_only": { "type": "boolean" },
+            "fire_rings_only": {
+              "type": "boolean"
+            },
             "seasonal_restrictions": {
               "type": "array",
               "maxItems": 12,
-              "items": { "$ref": "#/$defs/AnnualPeriod" }
+              "items": {
+                "$ref": "#/$defs/AnnualPeriod"
+              }
             },
-            "bring_own_firewood": { "type": "boolean" }
+            "bring_own_firewood": {
+              "type": "boolean"
+            }
           },
           "additionalProperties": false
         }
@@ -690,29 +1535,51 @@
       "additionalProperties": false
     },
     "PoolValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
-      "properties": {
-        "available": true,
-        "notes": true,
-        "attributes": {
-          "type": "object",
-          "properties": { "heated": { "type": "boolean" } },
-          "additionalProperties": false
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
         }
-      },
-      "additionalProperties": false
-    },
-    "LaundryValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
           "properties": {
-            "washers": { "type": "integer", "minimum": 0, "maximum": 200 },
-            "dryers": { "type": "integer", "minimum": 0, "maximum": 200 },
-            "fee": { "type": "boolean" }
+            "heated": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "LaundryValue": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
+      "properties": {
+        "available": true,
+        "notes": true,
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "washers": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "dryers": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "fee": {
+              "type": "boolean"
+            }
           },
           "additionalProperties": false
         }
@@ -720,13 +1587,21 @@
       "additionalProperties": false
     },
     "WifiValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
-          "properties": { "fee": { "type": "boolean" } },
+          "properties": {
+            "fee": {
+              "type": "boolean"
+            }
+          },
           "additionalProperties": false
         }
       },
@@ -734,7 +1609,11 @@
     },
     "MobileCoverageValue": {
       "description": "Mobile coverage as contributors observed it on site, by carrier. These are observations, not carrier coverage maps. available false means no carrier had any signal when observed.",
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
@@ -759,9 +1638,17 @@
                     "type": "string",
                     "enum": ["5g", "4g", "3g", "satellite", "unknown"]
                   },
-                  "signal": { "type": "string", "enum": ["none", "weak", "fair", "good"] },
-                  "data_usable": { "type": "boolean" },
-                  "observed_on": { "type": "string", "format": "date" }
+                  "signal": {
+                    "type": "string",
+                    "enum": ["none", "weak", "fair", "good"]
+                  },
+                  "data_usable": {
+                    "type": "boolean"
+                  },
+                  "observed_on": {
+                    "type": "string",
+                    "format": "date"
+                  }
                 },
                 "additionalProperties": false
               }
@@ -773,7 +1660,11 @@
       "additionalProperties": false
     },
     "AccessibleFacilitiesValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
@@ -796,16 +1687,26 @@
       "additionalProperties": false
     },
     "GeneratorsAllowedValue": {
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
           "properties": {
-            "from": { "$ref": "common.schema.json#/$defs/LocalTime" },
-            "until": { "$ref": "common.schema.json#/$defs/LocalTime" },
-            "designated_area_only": { "type": "boolean" }
+            "from": {
+              "$ref": "common.schema.json#/$defs/LocalTime"
+            },
+            "until": {
+              "$ref": "common.schema.json#/$defs/LocalTime"
+            },
+            "designated_area_only": {
+              "type": "boolean"
+            }
           },
           "additionalProperties": false
         }
@@ -814,13 +1715,23 @@
     },
     "CountedValue": {
       "description": "A facility whose only attribute is how many there are.",
-      "allOf": [{ "$ref": "#/$defs/FacilityWithAttributes" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/FacilityWithAttributes"
+        }
+      ],
       "properties": {
         "available": true,
         "notes": true,
         "attributes": {
           "type": "object",
-          "properties": { "count": { "type": "integer", "minimum": 1, "maximum": 10000 } },
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            }
+          },
           "additionalProperties": false
         }
       },

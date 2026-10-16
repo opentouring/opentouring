@@ -16,14 +16,18 @@
     "created_at"
   ],
   "properties": {
-    "id": { "$ref": "common.schema.json#/$defs/VerdictId" },
-    "submission_id": { "$ref": "common.schema.json#/$defs/SubmissionId" },
+    "id": {
+      "$ref": "common.schema.json#/$defs/VerdictId"
+    },
+    "submission_id": {
+      "$ref": "common.schema.json#/$defs/SubmissionId"
+    },
     "advisory": {
       "description": "Always true. Marks the record as a recommendation so no consumer mistakes it for a moderation decision.",
       "const": true
     },
     "category": {
-      "description": "plausible: consistent with the evidence and nothing suspicious found. needs_human_judgement: the model cannot tell. likely_duplicate: probably describes an existing site. likely_copied: text or photo appears to be copied from elsewhere. implausible: contradicts the evidence, such as a location at sea or an outlier price. safety_concern: could mislead travellers about a safety fact. spam: advertising or unrelated content. abusive: offensive content or personal information.",
+      "description": "plausible: consistent with the evidence and nothing suspicious found. needs_human_judgement: the model cannot tell. likely_duplicate: probably describes an existing record of the same record type. likely_copied: text or photo appears to be copied from elsewhere. implausible: contradicts the evidence, such as a location at sea or an outlier price. safety_concern: could mislead travellers about a safety fact. spam: advertising or unrelated content. abusive: offensive content or personal information.",
       "type": "string",
       "enum": [
         "plausible",
@@ -51,14 +55,20 @@
         "required": ["code", "text"],
         "properties": {
           "code": {
-            "description": "For example name_matches_nearby_site or price_outlier.",
+            "description": "For example name_matches_nearby_record or price_outlier.",
             "$ref": "common.schema.json#/$defs/ReasonCode"
           },
-          "text": { "type": "string", "minLength": 1, "maxLength": 1000 },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
           "fields": {
             "type": "array",
             "maxItems": 20,
-            "items": { "$ref": "common.schema.json#/$defs/FieldPointer" }
+            "items": {
+              "$ref": "common.schema.json#/$defs/FieldPointer"
+            }
           }
         },
         "additionalProperties": false
@@ -74,7 +84,7 @@
         "properties": {
           "kind": {
             "type": "string",
-            "enum": ["site", "submission", "photo", "seed_record", "fixed_check", "url"]
+            "enum": ["record", "submission", "photo", "seed_record", "fixed_check", "url"]
           },
           "ref": {
             "description": "An OTWD ID, a seed source record reference (seed source ID, a hash sign, the record ID), a fixed check name, or an HTTPS URL.",
@@ -82,22 +92,34 @@
             "minLength": 1,
             "maxLength": 500
           },
-          "note": { "type": "string", "maxLength": 500 }
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
         },
         "additionalProperties": false
       }
     },
     "duplicate_candidates": {
-      "description": "Existing sites the submission may describe, with the distance between them.",
+      "description": "Existing records of the same record type that the submission may describe, with the distance between them. For a road segment or ferry service the distance is between the nearest points of the two lines.",
       "type": "array",
       "maxItems": 10,
       "items": {
         "type": "object",
-        "required": ["site_id", "distance_m"],
+        "required": ["record_id", "distance_m"],
         "properties": {
-          "site_id": { "$ref": "common.schema.json#/$defs/SiteId" },
-          "distance_m": { "type": "number", "minimum": 0 },
-          "name_similarity": { "type": "number", "minimum": 0, "maximum": 1 }
+          "record_id": {
+            "$ref": "common.schema.json#/$defs/RecordId"
+          },
+          "distance_m": {
+            "type": "number",
+            "minimum": 0
+          },
+          "name_similarity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
         },
         "additionalProperties": false
       }
@@ -107,7 +129,11 @@
       "type": "object",
       "required": ["provider", "identifier", "version", "tier"],
       "properties": {
-        "provider": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
         "identifier": {
           "description": "The provider's model name.",
           "type": "string",
@@ -133,7 +159,10 @@
       "type": "string",
       "maxLength": 64
     },
-    "created_at": { "type": "string", "format": "date-time" }
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
   },
   "additionalProperties": false
 }

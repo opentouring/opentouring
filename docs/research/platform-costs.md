@@ -70,7 +70,7 @@ Docs facts (https://techdocs.akamai.com/cloud-computing/docs/aiven-manage-databa
 
 ### Sales pause (resolved: not paused)
 
-**Update 2026-10-16:** Shane checked the Linode Cloud Manager create-cluster screen on 16 October 2026. It offers PostgreSQL v18, v17, v16 and v15, Valkey v9.1 and v8.1, and MySQL v8.4, with Dedicated, Shared and Premium CPU plans. New managed databases can be ordered, so the reported pause does not apply. PostGIS still needs the live test below.
+**Update 2026-10-16:** A maintainer checked the Linode Cloud Manager create-cluster screen on 16 October 2026. It offers PostgreSQL v18, v17, v16 and v15, Valkey v9.1 and v8.1, and MySQL v8.4, with Dedicated, Shared and Premium CPU plans. New managed databases can be ordered, so the reported pause does not apply. PostGIS still needs the live test below.
 
 A web search summary of the Linode docs pages for Managed Databases (Guides, Developers, Resources) reported that Akamai "has paused the sale of our Managed Database offering for all customers who do not have an active database deployed" and that existing deployments stay supported "until our next-generation database solution is available". I could not read those pages directly: https://www.linode.com/docs/... returned HTTP 403 to a scripted fetch. The techdocs.akamai.com Managed Database pages I did read (fetched 2026-10-16, last updated September to October 2026) contain no such notice, and akamai.com product pages still market the service. The pause is therefore **unverified and the sources conflict**. The public API still lists the plans, which does not prove a new account can order one.
 
@@ -187,7 +187,7 @@ Notes on the arithmetic:
 
 ## Live PostGIS test on Linode managed Postgres (16 October 2026)
 
-Run on Shane's `shanelord2` Linode account (not FuelOracle's), with Shane's approval, then deleted.
+Run on a maintainer's Linode account, then deleted.
 
 | Step                 | Result                                                                                                                                                                                                  |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -200,3 +200,7 @@ Run on Shane's `shanelord2` Linode account (not FuelOracle's), with Shane's appr
 | Delete               | `DELETE` returned 200 at 02:03:56 UTC. The instance returned 404 at 02:04:04 and the account listed no databases.                                                                                       |
 
 Conclusion: PostGIS is supported on Linode managed Postgres 18 in Sydney. ADR 0017 is accepted on this basis.
+
+## Object storage decision (16 October 2026)
+
+Sydney has no Linode Object Storage endpoint and Melbourne's is limited availability. The minimum stack therefore keeps one Singapore E3 bucket for encrypted OpenTofu state only (the US$5 a month object storage plan covers it) and uses Bunny Storage in Sydney for every public file. See ADR 0029.

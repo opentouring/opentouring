@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/road-segment.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD road segment",
+  "description": "A road segment with every fact and its provenance: the full form served by the API with view=full and in GeoJSON bulk downloads. A road segment is a stretch of road or track with line geometry, recorded for what a traveller needs to know before driving it: its surface, the vehicles that can use it, whether towing is permitted and when it closes. A fact that is absent is unknown. road-segment-compact.schema.json describes the compact form.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/FullRecord"
+    }
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/RoadSegmentId"
+    },
+    "redirect_to": {
+      "$ref": "common.schema.json#/$defs/RoadSegmentId"
+    },
+    "derived": {
+      "$ref": "common.schema.json#/$defs/LineDerived"
+    },
+    "facts": {
+      "$ref": "#/$defs/Facts"
+    }
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "Facts": {
+      "description": "The road segment's facts, each holding its value and provenance. The fact names and their value shapes are the same as in FactValues.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "description": "A name for the stretch when it differs from the road name, such as a named pass or section of a track.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Names"
+            }
+          }
+        },
+        "geometry": {
+          "description": "Safety fact. Rerouting a 4WD-only track onto the wrong line is as hazardous as a wrong limit, so every change to the geometry needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/LineGeometry"
+            }
+          }
+        },
+        "road": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Road"
+            }
+          }
+        },
+        "surface": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Surface"
+            }
+          }
+        },
+        "vehicle_access_class": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/VehicleAccessClass"
+            }
+          }
+        },
+        "towing_permitted": {
+          "description": "Safety fact. Contributors supply it, directly or through a partner app, so its provenance is never a seed source.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/TowingPermitted"
+            },
+            "provenance": {
+              "properties": {
+                "source_kind": {
+                  "enum": ["contributor", "partner_app"]
+                }
+              }
+            }
+          }
+        },
+        "seasonal_closure": {
+          "description": "Safety fact.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/SeasonalClosure"
+            }
+          }
+        },
+        "weight_limit": {
+          "description": "Safety fact. A limit that applies along the whole segment, such as a road with a weight limit for its full length.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/WeightLimit"
+            }
+          }
+        },
+        "length_limit": {
+          "description": "Safety fact. A limit that applies along the whole segment, such as a ban on long vehicles over a steep, winding pass.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/LengthLimit"
+            }
+          }
+        },
+        "description": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Description"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "$ref": "#/$defs/RequiredFacts"
+        }
+      ]
+    },
+    "FactValues": {
+      "description": "Every fact of a road segment as a plain value, without provenance: the facts of the compact form and of submissions. It sets no rule on unknown names, so each user closes it with unevaluatedProperties.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "$ref": "values.schema.json#/$defs/Names"
+        },
+        "geometry": {
+          "$ref": "values.schema.json#/$defs/LineGeometry"
+        },
+        "road": {
+          "$ref": "values.schema.json#/$defs/Road"
+        },
+        "surface": {
+          "$ref": "values.schema.json#/$defs/Surface"
+        },
+        "vehicle_access_class": {
+          "$ref": "values.schema.json#/$defs/VehicleAccessClass"
+        },
+        "towing_permitted": {
+          "$ref": "values.schema.json#/$defs/TowingPermitted"
+        },
+        "seasonal_closure": {
+          "$ref": "values.schema.json#/$defs/SeasonalClosure"
+        },
+        "weight_limit": {
+          "$ref": "values.schema.json#/$defs/WeightLimit"
+        },
+        "length_limit": {
+          "$ref": "values.schema.json#/$defs/LengthLimit"
+        },
+        "description": {
+          "$ref": "values.schema.json#/$defs/Description"
+        }
+      }
+    },
+    "RequiredFacts": {
+      "description": "The facts a road segment always has when it is not merged: geometry, and a surface or a vehicle access class. Shared by the full form, the compact form and the submission that creates one.",
+      "required": ["geometry"],
+      "properties": {
+        "geometry": true
+      },
+      "anyOf": [
+        {
+          "required": ["surface"],
+          "properties": {
+            "surface": true
+          }
+        },
+        {
+          "required": ["vehicle_access_class"],
+          "properties": {
+            "vehicle_access_class": true
+          }
+        }
+      ]
+    }
+  }
+}

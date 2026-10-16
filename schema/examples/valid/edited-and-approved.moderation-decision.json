@@ -11,6 +11,9 @@
   "routing": {
     "route": "human_review",
     "policy_version": "routing-1.0",
+    "submission_kind": "update_facts",
+    "record_type": "site",
+    "fields": ["/facts/access"],
     "always_human": true
   },
   "reasons": [

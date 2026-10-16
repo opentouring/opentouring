@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+# Ruff settings for the schema tooling. Checked by the git hooks: ruff format --check schema/tools
+line-length = 100
+target-version = "py311"

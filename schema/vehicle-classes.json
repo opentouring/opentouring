@@ -1,0 +1,92 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "vehicle_classes",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "foot_passenger",
+      "label": "Foot passenger",
+      "description": "A person travelling without a vehicle. Listed with the vehicle classes because ferry services carry and charge for foot passengers alongside vehicles.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["foot=yes"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "bicycle",
+      "label": "Bicycle",
+      "description": "A bicycle, with its rider.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["bicycle=yes"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "motorcycle",
+      "label": "Motorcycle",
+      "description": "A motorcycle or scooter.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["motorcycle=yes"], "match": "exact" }],
+      "schema_org": { "type": "Motorcycle", "match": "exact" }
+    },
+    {
+      "code": "car",
+      "label": "Car",
+      "description": "A car, four-wheel drive, ute or van, not towing anything.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["motorcar=yes"], "match": "exact" }],
+      "schema_org": {
+        "type": "Car",
+        "match": "broader",
+        "note": "Car also covers vehicles towing."
+      }
+    },
+    {
+      "code": "car_towing",
+      "label": "Car towing a trailer or caravan",
+      "description": "A car, four-wheel drive or ute towing a trailer, caravan, camper trailer or boat.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [
+        {
+          "tags": ["trailer=yes"],
+          "match": "broader",
+          "note": "Any vehicle towing a trailer."
+        },
+        { "tags": ["caravan=yes"], "match": "narrower", "note": "Caravans only." }
+      ],
+      "schema_org": null
+    },
+    {
+      "code": "motorhome",
+      "label": "Motorhome or campervan",
+      "description": "A motorhome or campervan. One towing a car or trailer is still a motorhome, and its length includes what it tows.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["motorhome=yes"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "heavy_vehicle",
+      "label": "Heavy vehicle",
+      "description": "A truck or other goods vehicle above the country's heavy vehicle mass threshold, 4.5 tonnes gross vehicle mass in Australia.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["hgv=yes"], "match": "exact" }],
+      "schema_org": null
+    },
+    {
+      "code": "bus",
+      "label": "Bus",
+      "description": "A bus or coach.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "osm": [{ "tags": ["bus=yes"], "match": "exact" }],
+      "schema_org": { "type": "BusOrCoach", "match": "exact" }
+    }
+  ]
+}

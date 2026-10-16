@@ -3,7 +3,7 @@
   "$id": "https://schema.opentouring.org/otwd/v1/common.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD common definitions",
-  "description": "Identifiers, codes and the provenance record shared by every OTWD v1 schema. This file defines no document of its own.",
+  "description": "Identifiers, codes, the provenance record and the record-level building blocks every OTWD v1 schema shares: the fact wrapper, status and closure fields, photos, the full and compact record envelopes with their lifecycle rule, derived values, attribution and GeoJSON shapes. This file defines no document of its own.",
   "$defs": {
     "Ulid": {
       "description": "A ULID in canonical form: 26 characters of Crockford base32, upper case.",
@@ -15,6 +15,34 @@
       "type": "string",
       "pattern": "^otwd:site:[0-7][0-9A-HJKMNP-TV-Z]{25}$",
       "examples": ["otwd:site:01JA2V7Q3M8X4K6T9B5N0R2C7D"]
+    },
+    "RoadRestrictionId": {
+      "description": "Stable public ID of a road restriction. It never changes and is never reused. After a merge the losing record's ID redirects to the surviving one.",
+      "type": "string",
+      "pattern": "^otwd:road_restriction:[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+      "examples": ["otwd:road_restriction:01KX3QH8R2M5V7N9P4T6W8Y0ZB"]
+    },
+    "RoadSegmentId": {
+      "description": "Stable public ID of a road segment. It never changes and is never reused. After a merge the losing record's ID redirects to the surviving one.",
+      "type": "string",
+      "pattern": "^otwd:road_segment:[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+      "examples": ["otwd:road_segment:01KX3QJ1A4C6E8G0J2K4M6P8RT"]
+    },
+    "FerryServiceId": {
+      "description": "Stable public ID of a ferry service. It never changes and is never reused. After a merge the losing record's ID redirects to the surviving one.",
+      "type": "string",
+      "pattern": "^otwd:ferry_service:[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+      "examples": ["otwd:ferry_service:01KX3QK5B7D9F1H3K5N7Q9S1VX"]
+    },
+    "RecordId": {
+      "description": "Stable public ID of any record: a site, road restriction, road segment or ferry service. The kind segment names the record type.",
+      "type": "string",
+      "pattern": "^otwd:(site|road_restriction|road_segment|ferry_service):[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "RecordType": {
+      "description": "The record type, as it appears in the kind segment of a record's public ID.",
+      "type": "string",
+      "enum": ["site", "road_restriction", "road_segment", "ferry_service"]
     },
     "SubmissionId": {
       "description": "ID of a submission, assigned by OTWD when the submission is received.",
@@ -59,7 +87,7 @@
       "examples": ["otwd:seed_source:au-qld-parks-camping-areas"]
     },
     "ChangeSeq": {
-      "description": "A position in the change feed. Sequence numbers are global across all sites, start at 1 and only increase.",
+      "description": "A position in the change feed. Sequence numbers are global across all records, start at 1 and only increase.",
       "type": "integer",
       "minimum": 1
     },
@@ -69,8 +97,8 @@
       "pattern": "^1\\.[0-9]+$",
       "examples": ["1.0"]
     },
-    "SiteStatus": {
-      "description": "Whether a site operates. closed is a closure: the site keeps its public ID and history. merged means the site was a duplicate and redirect_to names the survivor.",
+    "RecordStatus": {
+      "description": "Whether a record is in use. active: in use. temporarily_closed: a temporary closure, such as a site shut for repairs, a bridge closed after flood damage or a ferry service suspended. closed: a closure, such as a site that no longer operates, a road restriction removed when its structure was replaced, a road segment closed for good or a ferry service withdrawn. The record keeps its public ID and history. merged: the record was a duplicate and redirect_to names the survivor.",
       "type": "string",
       "enum": ["active", "temporarily_closed", "closed", "merged"]
     },
@@ -87,13 +115,29 @@
       "description": "A code from the governed facility vocabulary (facilities.json). The pattern accepts codes added after this schema version so older validators keep working. Consumers ignore codes they do not recognise.",
       "$ref": "#/$defs/Code"
     },
+    "StructureCode": {
+      "description": "A code from the governed structure vocabulary (structures.json). Consumers ignore codes they do not recognise.",
+      "$ref": "#/$defs/Code"
+    },
+    "SurfaceCode": {
+      "description": "A code from the governed surface vocabulary (surfaces.json). Consumers ignore codes they do not recognise.",
+      "$ref": "#/$defs/Code"
+    },
+    "VehicleAccessClassCode": {
+      "description": "A code from the governed vehicle access class vocabulary (vehicle-access-classes.json). Consumers treat a code they do not recognise as the most restrictive class.",
+      "$ref": "#/$defs/Code"
+    },
+    "VehicleClassCode": {
+      "description": "A code from the governed vehicle class vocabulary (vehicle-classes.json). Consumers ignore codes they do not recognise.",
+      "$ref": "#/$defs/Code"
+    },
     "ReasonCode": {
       "description": "A machine-readable reason in a verdict or a moderation decision, for example price_outlier or duplicate_of_existing_site.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]{1,63}$"
     },
     "FieldPointer": {
-      "description": "JSON Pointer to a fact or facility in the site document, for example /facts/prices or /facilities/wifi. The part after /facilities/ is a facility code and follows Code.",
+      "description": "JSON Pointer to a fact or facility in a record, for example /facts/prices, /facts/vertical_clearance or /facilities/wifi. The part after /facilities/ is a facility code and follows Code. Only sites have facilities.",
       "type": "string",
       "format": "json-pointer",
       "pattern": "^/(facts/[a-z_]+|facilities/[a-z][a-z0-9_]{1,47})$"
@@ -120,8 +164,14 @@
       "type": "object",
       "required": ["text", "lang"],
       "properties": {
-        "text": { "type": "string", "minLength": 1, "maxLength": 1000 },
-        "lang": { "$ref": "#/$defs/LanguageTag" }
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "lang": {
+          "$ref": "#/$defs/LanguageTag"
+        }
       },
       "additionalProperties": false
     },
@@ -133,8 +183,14 @@
         "type": "object",
         "required": ["text", "lang"],
         "properties": {
-          "text": { "type": "string", "minLength": 1, "maxLength": 300 },
-          "lang": { "$ref": "#/$defs/LanguageTag" }
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "lang": {
+            "$ref": "#/$defs/LanguageTag"
+          }
         },
         "additionalProperties": false
       }
@@ -190,7 +246,9 @@
       "type": "object",
       "required": ["id", "dataset_name", "publisher", "licence", "attribution"],
       "properties": {
-        "id": { "$ref": "#/$defs/SeedSourceId" },
+        "id": {
+          "$ref": "#/$defs/SeedSourceId"
+        },
         "dataset_name": {
           "description": "The dataset's name as its publisher gives it.",
           "type": "string",
@@ -203,8 +261,13 @@
           "minLength": 1,
           "maxLength": 200
         },
-        "licence": { "$ref": "#/$defs/SpdxLicence" },
-        "licence_url": { "type": "string", "format": "uri" },
+        "licence": {
+          "$ref": "#/$defs/SpdxLicence"
+        },
+        "licence_url": {
+          "type": "string",
+          "format": "uri"
+        },
         "attribution": {
           "description": "The attribution statement the licence requires. Partner apps that display this fact must show it.",
           "type": "string",
@@ -246,9 +309,15 @@
           "type": "string",
           "enum": ["contributor", "partner_app", "seed_source"]
         },
-        "contributor_id": { "$ref": "#/$defs/ContributorId" },
-        "partner_app_id": { "$ref": "#/$defs/PartnerAppId" },
-        "seed_source": { "$ref": "#/$defs/SeedSourceRef" },
+        "contributor_id": {
+          "$ref": "#/$defs/ContributorId"
+        },
+        "partner_app_id": {
+          "$ref": "#/$defs/PartnerAppId"
+        },
+        "seed_source": {
+          "$ref": "#/$defs/SeedSourceRef"
+        },
         "observed_on": {
           "description": "The date the fact was observed on the ground, or the date the seed source says the record was current. Older observations are less likely to be true today.",
           "type": "string",
@@ -265,8 +334,12 @@
           "minimum": 0,
           "maximum": 1
         },
-        "submission_id": { "$ref": "#/$defs/SubmissionId" },
-        "decision_id": { "$ref": "#/$defs/DecisionId" },
+        "submission_id": {
+          "$ref": "#/$defs/SubmissionId"
+        },
+        "decision_id": {
+          "$ref": "#/$defs/DecisionId"
+        },
         "change_seq": {
           "description": "The change that set this fact. Submissions are checked for conflicts against it.",
           "$ref": "#/$defs/ChangeSeq"
@@ -280,41 +353,73 @@
       "additionalProperties": false,
       "allOf": [
         {
-          "if": { "properties": { "source_kind": { "const": "contributor" } } },
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "contributor"
+              }
+            }
+          },
           "then": {
             "required": ["contributor_id"],
-            "properties": { "contributor_id": true },
+            "properties": {
+              "contributor_id": true
+            },
             "not": {
               "required": ["seed_source"],
-              "properties": { "seed_source": true }
+              "properties": {
+                "seed_source": true
+              }
             }
           }
         },
         {
-          "if": { "properties": { "source_kind": { "const": "partner_app" } } },
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "partner_app"
+              }
+            }
+          },
           "then": {
             "required": ["partner_app_id"],
-            "properties": { "partner_app_id": true },
+            "properties": {
+              "partner_app_id": true
+            },
             "not": {
               "required": ["seed_source"],
-              "properties": { "seed_source": true }
+              "properties": {
+                "seed_source": true
+              }
             }
           }
         },
         {
-          "if": { "properties": { "source_kind": { "const": "seed_source" } } },
+          "if": {
+            "properties": {
+              "source_kind": {
+                "const": "seed_source"
+              }
+            }
+          },
           "then": {
             "required": ["seed_source"],
-            "properties": { "seed_source": true },
+            "properties": {
+              "seed_source": true
+            },
             "not": {
               "anyOf": [
                 {
                   "required": ["contributor_id"],
-                  "properties": { "contributor_id": true }
+                  "properties": {
+                    "contributor_id": true
+                  }
                 },
                 {
                   "required": ["partner_app_id"],
-                  "properties": { "partner_app_id": true }
+                  "properties": {
+                    "partner_app_id": true
+                  }
                 }
               ]
             }
@@ -327,8 +432,520 @@
       "type": "object",
       "required": ["count", "last_confirmed_on"],
       "properties": {
-        "count": { "type": "integer", "minimum": 1 },
-        "last_confirmed_on": { "type": "string", "format": "date" }
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "last_confirmed_on": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Fact": {
+      "description": "One fact in the full form of a record: its value beside its provenance, so the two always travel together. Every record type uses this wrapper and constrains value with the fact's own value shape, for example { \"$ref\": \"common.schema.json#/$defs/Fact\", \"properties\": { \"value\": { \"$ref\": \"values.schema.json#/$defs/Names\" } } }.",
+      "type": "object",
+      "required": ["value", "provenance"],
+      "properties": {
+        "value": true,
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "confirmations": {
+          "$ref": "#/$defs/Confirmations"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ClosureAuthority": {
+      "description": "The authority that declared a closure, such as a road authority closing a flood-damaged bridge.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "ClosureInfoUrl": {
+      "description": "The authority's official page for a closure. Short incident closures belong there, not in OTWD.",
+      "$ref": "#/$defs/HttpsUrl"
+    },
+    "StatusFact": {
+      "description": "The status of a record in the full form, with the reason for a closure and its provenance.",
+      "type": "object",
+      "required": ["value", "provenance"],
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/RecordStatus"
+        },
+        "reason": {
+          "description": "Why the record is closed or temporarily closed.",
+          "$ref": "#/$defs/Notes"
+        },
+        "reopens_on": {
+          "description": "For temporarily_closed: the expected reopening date, when known.",
+          "type": "string",
+          "format": "date"
+        },
+        "closed_on": {
+          "description": "For temporarily_closed or closed: the date the closure began, when known.",
+          "type": "string",
+          "format": "date"
+        },
+        "closure_authority": {
+          "$ref": "#/$defs/ClosureAuthority"
+        },
+        "closure_info_url": {
+          "$ref": "#/$defs/ClosureInfoUrl"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Photo": {
+      "description": "A published photo of a record, such as a site or the sign at a road restriction. Photos are licensed CC BY 4.0 by the person who took them, and EXIF location data is removed before publication.",
+      "type": "object",
+      "required": ["id", "url", "width", "height", "licence", "attribution", "provenance"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/PhotoId"
+        },
+        "url": {
+          "description": "HTTPS address of the full-size image on the OTWD CDN.",
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "thumbnail_url": {
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "description": "SHA-256 of the published image file.",
+          "$ref": "#/$defs/Sha256"
+        },
+        "caption": {
+          "$ref": "#/$defs/Notes"
+        },
+        "taken_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "licence": {
+          "description": "Always CC-BY-4.0 in schema version 1.",
+          "const": "CC-BY-4.0"
+        },
+        "attribution": {
+          "description": "The credit to show with the photo, as the photographer chose it, for example a display name. Never an email address.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Photos": {
+      "description": "A record's published photos in the full form.",
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/Photo"
+      }
+    },
+    "CompactPhotos": {
+      "description": "A record's published photos in the compact form: each photo without its provenance.",
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "required": ["id", "url", "width", "height", "licence", "attribution"],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/PhotoId"
+          },
+          "url": {
+            "$ref": "#/$defs/HttpsUrl"
+          },
+          "thumbnail_url": {
+            "$ref": "#/$defs/HttpsUrl"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "caption": {
+            "$ref": "#/$defs/Notes"
+          },
+          "taken_on": {
+            "type": "string",
+            "format": "date"
+          },
+          "licence": {
+            "const": "CC-BY-4.0"
+          },
+          "attribution": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "FullRecord": {
+      "description": "The envelope every record shares in the full form: identity, status, timestamps, change_seq and photos, with the lifecycle rule. A merged record is a stub that names the survivor in redirect_to. Any other record has derived values and facts, and no redirect_to. Each record type's schema narrows id and redirect_to to its own public ID kind and adds derived and facts.",
+      "type": "object",
+      "required": ["schema_version", "id", "status", "created_at", "updated_at", "change_seq"],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/RecordId"
+        },
+        "status": {
+          "$ref": "#/$defs/StatusFact"
+        },
+        "redirect_to": {
+          "description": "For a merged record only: the public ID of the surviving record, of the same record type. The API answers requests for this record with a 301 redirect to it.",
+          "$ref": "#/$defs/RecordId"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "description": "When the latest change to this record was applied.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "change_seq": {
+          "description": "Sequence number of the latest change applied to this record. A submission that changes the record sends it back as base_change_seq so conflicts can be detected.",
+          "$ref": "#/$defs/ChangeSeq"
+        },
+        "photos": {
+          "$ref": "#/$defs/Photos"
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "properties": {
+              "value": {
+                "const": "merged"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "required": ["redirect_to"],
+        "properties": {
+          "redirect_to": true
+        }
+      },
+      "else": {
+        "required": ["derived", "facts"],
+        "properties": {
+          "derived": true,
+          "facts": true
+        },
+        "not": {
+          "required": ["redirect_to"],
+          "properties": {
+            "redirect_to": true
+          }
+        }
+      }
+    },
+    "CompactRecord": {
+      "description": "The envelope every record shares in the compact form: identity, status with the closure fields flattened, timestamps, the primary name, photos, and the attribution list, min_confidence and safety_facts_observed_on that stand in for per-fact provenance. A merged record names the survivor in redirect_to, and no other record has one. Each compact schema narrows id and redirect_to, adds its derived values and facts, and lists the fields its record type always has when it is not merged.",
+      "type": "object",
+      "required": [
+        "schema_version",
+        "id",
+        "status",
+        "created_at",
+        "updated_at",
+        "change_seq",
+        "attribution"
+      ],
+      "properties": {
+        "schema_version": {
+          "$ref": "#/$defs/SchemaVersion"
+        },
+        "id": {
+          "$ref": "#/$defs/RecordId"
+        },
+        "status": {
+          "$ref": "#/$defs/RecordStatus"
+        },
+        "status_reason": {
+          "$ref": "#/$defs/Notes"
+        },
+        "reopens_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "closed_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "closure_authority": {
+          "$ref": "#/$defs/ClosureAuthority"
+        },
+        "closure_info_url": {
+          "$ref": "#/$defs/ClosureInfoUrl"
+        },
+        "redirect_to": {
+          "$ref": "#/$defs/RecordId"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "change_seq": {
+          "$ref": "#/$defs/ChangeSeq"
+        },
+        "name": {
+          "description": "The primary name, copied from names for convenience.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "photos": {
+          "$ref": "#/$defs/CompactPhotos"
+        },
+        "min_confidence": {
+          "$ref": "#/$defs/MinConfidence"
+        },
+        "safety_facts_observed_on": {
+          "$ref": "#/$defs/SafetyFactsObservedOn"
+        },
+        "attribution": {
+          "$ref": "#/$defs/AttributionList"
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "const": "merged"
+          }
+        }
+      },
+      "then": {
+        "required": ["redirect_to"],
+        "properties": {
+          "redirect_to": true
+        }
+      },
+      "else": {
+        "not": {
+          "required": ["redirect_to"],
+          "properties": {
+            "redirect_to": true
+          }
+        }
+      }
+    },
+    "PointDerivedValues": {
+      "description": "The values OTWD computes from the location of a site or road restriction using boundary datasets. Contributors never submit them, so they carry no provenance of their own, and they are recomputed whenever the location changes. The full form holds them in derived (PointDerived), and the compact form at the top level.",
+      "properties": {
+        "country_code": {
+          "$ref": "#/$defs/CountryCode"
+        },
+        "subdivision_code": {
+          "$ref": "#/$defs/SubdivisionCode"
+        },
+        "locality": {
+          "description": "The nearest town or suburb name, for display and web addresses.",
+          "type": "string",
+          "maxLength": 100
+        },
+        "time_zone": {
+          "$ref": "#/$defs/TimeZone"
+        }
+      }
+    },
+    "PointDerived": {
+      "description": "The derived object of a point record in the full form.",
+      "type": "object",
+      "required": ["country_code", "time_zone"],
+      "$ref": "#/$defs/PointDerivedValues",
+      "unevaluatedProperties": false
+    },
+    "CountryCodes": {
+      "description": "The countries a line passes through.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/CountryCode"
+      }
+    },
+    "SubdivisionCodes": {
+      "description": "The subdivisions a line passes through.",
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/SubdivisionCode"
+      }
+    },
+    "Localities": {
+      "description": "Town or suburb names along a line, in order from its start, for display.",
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "maxLength": 100
+      }
+    },
+    "LengthKm": {
+      "description": "Length of a line's geometry along the ground, in kilometres.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5000
+    },
+    "LineDerivedValues": {
+      "description": "The values OTWD computes from the geometry of a road segment or ferry service. Contributors never submit them, so they carry no provenance of their own, and they are recomputed whenever the geometry changes. A line can cross a border, so countries and subdivisions are lists. The full form holds them in derived (LineDerived), and the compact form at the top level.",
+      "properties": {
+        "country_codes": {
+          "$ref": "#/$defs/CountryCodes"
+        },
+        "subdivision_codes": {
+          "$ref": "#/$defs/SubdivisionCodes"
+        },
+        "localities": {
+          "$ref": "#/$defs/Localities"
+        },
+        "time_zone": {
+          "description": "The time zone at the start of the line. Times in the record's facts are local to it.",
+          "$ref": "#/$defs/TimeZone"
+        },
+        "length_km": {
+          "$ref": "#/$defs/LengthKm"
+        }
+      }
+    },
+    "LineDerived": {
+      "description": "The derived object of a line record in the full form.",
+      "type": "object",
+      "required": ["country_codes", "time_zone", "length_km"],
+      "$ref": "#/$defs/LineDerivedValues",
+      "unevaluatedProperties": false
+    },
+    "AttributionList": {
+      "description": "Every credit a record's facts require, in the compact form. The first entry is always the Open Touring credit. Seed source credits follow, once each.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      }
+    },
+    "MinConfidence": {
+      "description": "The lowest confidence of any fact on the record, so a reader of the compact form can tell when to fetch the full form.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "SafetyFactsObservedOn": {
+      "description": "The oldest observed date among the record's safety facts, when known. Apps can warn when it is old.",
+      "type": "string",
+      "format": "date"
+    },
+    "Position": {
+      "description": "A GeoJSON position (RFC 7946): longitude then latitude in WGS84 decimal degrees. OTWD positions have no altitude.",
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "GeoJsonPoint": {
+      "description": "A GeoJSON Point geometry (RFC 7946) in WGS84. Bulk downloads and GeoJSON responses use it for sites and road restrictions, built from the location fact.",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "const": "Point"
+        },
+        "coordinates": {
+          "$ref": "#/$defs/Position"
+        }
+      },
+      "additionalProperties": false
+    },
+    "GeoJsonLineString": {
+      "description": "A GeoJSON LineString geometry (RFC 7946) in WGS84, with at least two positions.",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "const": "LineString"
+        },
+        "coordinates": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 20000,
+          "items": {
+            "$ref": "#/$defs/Position"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "GeoJsonMultiLineString": {
+      "description": "A GeoJSON MultiLineString geometry (RFC 7946) in WGS84: several lines that together make one record, such as the two carriageways of a divided road.",
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": {
+          "const": "MultiLineString"
+        },
+        "coordinates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 20000,
+            "items": {
+              "$ref": "#/$defs/Position"
+            }
+          }
+        }
       },
       "additionalProperties": false
     }

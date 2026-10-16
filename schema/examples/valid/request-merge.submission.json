@@ -2,7 +2,7 @@
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "schema_version": "1.0",
   "kind": "request_merge",
-  "site_id": "otwd:site:01M2AJGZD7MVYA4ZNJPYN3T04J",
+  "record_id": "otwd:site:01M2AJGZD7MVYA4ZNJPYN3T04J",
   "base_change_seq": 20990,
   "contributor": {
     "kind": "direct",
@@ -14,7 +14,7 @@
   },
   "contributor_submitted_at": "2026-09-19T09:00:00+10:00",
   "proposed": {
-    "duplicate_site_ids": ["otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ"],
+    "duplicate_record_ids": ["otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ"],
     "suggested_survivor": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
     "reason": [
       {

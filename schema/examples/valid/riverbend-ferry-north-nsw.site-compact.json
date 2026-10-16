@@ -1,0 +1,42 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.1",
+  "id": "otwd:site:01M33A2K4RZ8T6W1N0P5Q7S9V3",
+  "status": "active",
+  "created_at": "2026-10-06T06:00:00Z",
+  "updated_at": "2026-10-06T06:00:00Z",
+  "change_seq": 31010,
+  "name": "Riverbend Ferry North Bank",
+  "names": [
+    {
+      "text": "Riverbend Ferry North Bank",
+      "lang": "en",
+      "kind": "primary"
+    }
+  ],
+  "location": {
+    "lat": -35.92114,
+    "lng": 144.95012,
+    "accuracy_m": 15
+  },
+  "country_code": "AU",
+  "subdivision_code": "AU-NSW",
+  "locality": "Riverbend",
+  "time_zone": "Australia/Sydney",
+  "site_types": {
+    "primary": "ferry_terminal"
+  },
+  "description": [
+    {
+      "text": "Gravel ramp on the north bank with room for a car and caravan to wait off the road.",
+      "lang": "en-AU"
+    }
+  ],
+  "facilities": {
+    "toilets": {
+      "available": false
+    }
+  },
+  "min_confidence": 0.85,
+  "attribution": ["Open Touring contributors, opentouring.org, CC BY 4.0"]
+}

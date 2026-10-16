@@ -11,6 +11,9 @@
   "routing": {
     "route": "human_review",
     "policy_version": "routing-1.0",
+    "submission_kind": "update_facts",
+    "record_type": "site",
+    "fields": ["/facts/prices"],
     "always_human": false
   },
   "verdict_ids": ["otwd:verdict:01KKDWVD3XYQJNHQST38MMK124"],

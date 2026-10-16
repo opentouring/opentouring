@@ -22,4 +22,4 @@ During the Preview only the latest commit on `main` and the running Preview envi
 
 ## Wrong data
 
-Incorrect or unsafe data about a site (for example drinking water that is not drinkable, or a wrong height limit) is a data problem, not a vulnerability. Report it through a submission or by email to hello@opentouring.org so it goes through moderation.
+Incorrect or unsafe data about a site (for example drinking water that is not drinkable, or a wrong vertical clearance) is a data problem, not a vulnerability. Report it through a submission or by email to hello@opentouring.org so it goes through moderation.

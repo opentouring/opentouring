@@ -1,7 +1,7 @@
 {
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "id": "otwd:decision:01KMJRZ8Q85DNT80BCN2HS4HBV",
-  "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ3",
+  "submission_id": "otwd:submission:01KM6TTZAS7NWN1Y37TYEA9BJ4",
   "outcome": "approved",
   "decided_by": {
     "kind": "routing_rule",
@@ -12,6 +12,9 @@
   "routing": {
     "route": "auto_approval",
     "policy_version": "routing-1.0",
+    "submission_kind": "update_facts",
+    "record_type": "site",
+    "fields": ["/facilities/toilets"],
     "always_human": false
   },
   "verdict_ids": ["otwd:verdict:01KKS1RPGCFYJK8VCTP4V7BMX8"],
@@ -20,5 +23,5 @@
       "code": "trusted_contributor_confirmation"
     }
   ],
-  "change_seqs": [10412]
+  "change_seqs": [10418]
 }
