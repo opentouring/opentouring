@@ -14,9 +14,6 @@
     "id": {
       "$ref": "common.schema.json#/$defs/FerryServiceId"
     },
-    "redirect_to": {
-      "$ref": "common.schema.json#/$defs/FerryServiceId"
-    },
     "derived": {
       "$ref": "common.schema.json#/$defs/LineDerived"
     },
@@ -187,7 +184,7 @@
       }
     },
     "RequiredFacts": {
-      "description": "The facts a ferry service always has when it is not merged: names, geometry, terminals, accepted_vehicle_classes. Shared by the full form, the compact form and the submission that creates one.",
+      "description": "The facts a ferry service always has when it is not a stub (merged, replaced or retracted): names, geometry, terminals, accepted_vehicle_classes. Shared by the full form, the compact form and the submission that creates one.",
       "required": ["names", "geometry", "terminals", "accepted_vehicle_classes"],
       "properties": {
         "names": true,

@@ -1,0 +1,13 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "seq": 33610,
+  "record_id": "otwd:site:01KR6JW0QBNHM90XV3GS9Y2G26",
+  "kind": "facts_confirmed",
+  "origin": "submission",
+  "applied_at": "2026-10-15T08:00:00Z",
+  "previous_seq": 33120,
+  "changed_fields": ["/facts/prices", "/facilities/toilets"],
+  "safety_fact_changed": false,
+  "submission_id": "otwd:submission:01M4R98N7R4E5HQJ7XH62J005T",
+  "decision_id": "otwd:decision:01M72CFTA7WAFA6VRJGYM6DM21"
+}

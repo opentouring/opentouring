@@ -55,5 +55,14 @@
   "i18n/en-IE/site-types.json": "/$comment: must be 'SPDX-License-Identifier: Apache-2.0'",
   "i18n/en-ca/site-types.json": "/language: the folder en-ca must be the tag in canonical case, en-CA",
   "submission-id-as-record-id.change.json": "should not be valid under {'$ref': '#/$defs/NonRecordId'}",
-  "unknown-change-kind.change.json": "'facts_reordered' is not a known value of this open enumeration"
+  "unknown-change-kind.change.json": "'facts_reordered' is not a known value of this open enumeration",
+  "recompute-changes-a-fact.change.json": "'/derived' was expected",
+  "takedown-names-submission.change.json": "should not be valid under {'required': ['submission_id']",
+  "revert-without-target.change.json": "'reverts_seq' is a required property",
+  "replaced-by-same-type.site.json": "a replacement is another record type",
+  "retracted-keeps-name.site-compact.json": "a retracted record keeps only its stub",
+  "replacement-same-type.submission.json": "is site, the record's own type",
+  "confirm-without-base-seq.submission.json": "'base_change_seq' is a required property",
+  "routing-rule-reverts.moderation-decision.json": "'moderator' was expected",
+  "routing-rule-on-split.moderation-decision.json": "a routing rule cannot decide this: request_split is on the always-human list"
 }

@@ -1,0 +1,13 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "seq": 33310,
+  "record_id": "otwd:site:01M384G7ZWYRD6Z1RV0WHE6M11",
+  "kind": "record_replaced",
+  "origin": "submission",
+  "applied_at": "2026-10-15T02:10:00Z",
+  "previous_seq": 28770,
+  "changed_fields": ["/status", "/redirect_to"],
+  "replaced_by": "otwd:road_restriction:01M328EPM08TJWB6EH3A30YPTQ",
+  "submission_id": "otwd:submission:01MTZPTP0NX1EBB5G2451W0HFH",
+  "decision_id": "otwd:decision:01M7BPJ4AAGAHJXMZY71KRNTCG"
+}

@@ -111,7 +111,16 @@ GOVERNED_LISTS = {
 
 # Submission kinds on the always-human list for every record type, besides the
 # kinds that create a record (new_<record type>).
-ALWAYS_HUMAN_KINDS = {"report_closure", "request_merge"}
+ALWAYS_HUMAN_KINDS = {
+    "report_closure",
+    "request_merge",
+    "request_unmerge",
+    "request_split",
+    "request_replacement",
+}
+# The top-level fields of a retracted stub: everything else was removed with the record.
+STUB_FIELDS = {"schema_version", "id", "status", "created_at", "updated_at", "change_seq"}
+STUB_FIELDS_COMPACT = STUB_FIELDS | {"status_reason", "attribution"}
 
 
 def schema_file(stem: str) -> str:
@@ -557,6 +566,14 @@ class SemanticChecker:
             elif record_type_of(other) != record_type_of(record_id):
                 self.fail(f"{where}/{index}", f"{other} is not a {record_type_of(record_id).code}")
 
+    def other_type(self, record_id: str, other: str, where: str) -> None:
+        """A replacement is a record of another record type."""
+        if record_type_of(other) == record_type_of(record_id):
+            self.fail(
+                where,
+                f"{other} is a {record_type_of(record_id).code} too: a replacement is another record type",
+            )
+
     def always_human_reasons(self, kind: str, record_type: str, fields: list[str]) -> list[str]:
         """Why a submission is on the always-human list, from its kind and the schema's markers."""
         reasons = []
@@ -581,8 +598,18 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
     checker.schedule_zones(values, record_zones(derived), facts_where, suffix)
     checker.facts(values, facts_where, suffix)
     checker.facilities(document.get("facilities", {}), "/facilities")
-    if document.get("redirect_to") == document["id"]:
+    status = document["status"]["value"] if full else document["status"]
+    target = document.get("redirect_to")
+    if target == document["id"]:
         checker.fail("/redirect_to", "a record cannot redirect to itself")
+    elif target and status == "merged":
+        checker.same_type(document["id"], [target], "/redirect_to")
+    elif target and status == "replaced":
+        checker.other_type(document["id"], target, "/redirect_to")
+    if status == "retracted":
+        allowed = STUB_FIELDS if full else STUB_FIELDS_COMPACT
+        for name in sorted(document.keys() - allowed):
+            checker.fail(f"/{name}", "a retracted record keeps only its stub")
 
 
 def check_submission(document: dict, checker: SemanticChecker) -> None:
@@ -592,9 +619,20 @@ def check_submission(document: dict, checker: SemanticChecker) -> None:
     if document["kind"] == "request_merge":
         duplicates = proposed["duplicate_record_ids"]
         checker.same_type(document["record_id"], duplicates, "/proposed/duplicate_record_ids")
+    for index, part in enumerate(proposed.get("parts", [])):
+        where = f"/proposed/parts/{index}"
+        checker.facts(part["facts"], f"{where}/facts", "")
+        checker.facilities(part.get("facilities", {}), f"{where}/facilities")
+    if document["kind"] == "request_replacement":
+        new_type = proposed["record_type"]
+        if new_type == record_type_of(document["record_id"]).code:
+            checker.fail("/proposed/record_type", f"is {new_type}, the record's own type")
 
 
 def check_moderation_decision(document: dict, checker: SemanticChecker) -> None:
+    check_decision_results(document, checker)
+    if "routing" not in document:
+        return
     routing = document["routing"]
     kind, record_type = routing["submission_kind"], routing["record_type"]
     if kind.startswith("new_") and kind != RECORD_TYPE_BY_CODE[record_type].new_kind:
@@ -604,16 +642,38 @@ def check_moderation_decision(document: dict, checker: SemanticChecker) -> None:
         checker.fail("/routing/always_human", f"must be true: {'; '.join(reasons)}")
     if reasons and document["decided_by"]["kind"] == "routing_rule":
         checker.fail("/decided_by", f"a routing rule cannot decide this: {'; '.join(reasons)}")
+
+
+def check_decision_results(document: dict, checker: SemanticChecker) -> None:
+    """Merges, unmerges and splits stay within one record type, and a replacement leaves it."""
     merge = document.get("merge")
     if merge:
         survivor = merge["surviving_record_id"]
         checker.same_type(survivor, merge["merged_record_ids"], "/merge/merged_record_ids")
+    unmerge = document.get("unmerge")
+    if unmerge:
+        checker.same_type(
+            unmerge["record_id"], [unmerge["unmerged_from"]], "/unmerge/unmerged_from"
+        )
+    split = document.get("split")
+    if split:
+        checker.same_type(split["record_id"], split["new_record_ids"], "/split/new_record_ids")
+    replacement = document.get("replacement")
+    if replacement:
+        checker.other_type(
+            replacement["record_id"], replacement["replaced_by"], "/replacement/replaced_by"
+        )
 
 
 def check_change(document: dict, checker: SemanticChecker) -> None:
     record_id = document["record_id"]
-    if "merged_into" in document:
-        checker.same_type(record_id, [document["merged_into"]], "/merged_into")
+    for field in ("merged_into", "unmerged_from", "split_from"):
+        if field in document:
+            checker.same_type(record_id, [document[field]], f"/{field}")
+    if "split_into" in document:
+        checker.same_type(record_id, document["split_into"], "/split_into")
+    if "replaced_by" in document:
+        checker.other_type(record_id, document["replaced_by"], "/replaced_by")
     safety = checker.context.safety_fields[record_type_of(record_id).code]
     changed = [field for field in document["changed_fields"] if field in safety]
     if changed and document.get("safety_fact_changed") is False:

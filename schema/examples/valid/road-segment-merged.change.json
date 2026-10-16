@@ -3,6 +3,7 @@
   "seq": 30950,
   "record_id": "otwd:road_segment:01M32P654048WNDY1WZ4SV2KT5",
   "kind": "record_merged",
+  "origin": "submission",
   "applied_at": "2026-10-09T23:00:00Z",
   "previous_seq": 30760,
   "changed_fields": ["/status", "/redirect_to"],

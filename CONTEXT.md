@@ -122,6 +122,26 @@ _Avoid_: outage, suspension (as the term)
 Combining duplicate records of one record type, where the losing record's public ID redirects to the surviving one.
 _Avoid_: dedupe (as a noun), deletion
 
+**Unmerge**:
+Undoing a wrong merge, so the merged record is a record of its own again under the same public ID, with the facts it had before.
+_Avoid_: split (for this), restore
+
+**Split**:
+Making new records of the same record type from part of a record that described more than one thing. The record keeps its public ID and the rest of its facts.
+_Avoid_: unmerge (for this), fork
+
+**Replacement**:
+Closing a record that was recorded as the wrong record type, such as a low bridge recorded as a site, and redirecting its public ID to a new record of the right type. The record's status becomes replaced.
+_Avoid_: retype, conversion, move
+
+**Retraction**:
+Reducing a record that should never have been published, because the thing does not exist or a takedown removed it, to a stub that keeps only its public ID and status. The API answers it with 410.
+_Avoid_: deletion, purge, withdrawal
+
+**Stub**:
+What remains of a merged, replaced or retracted record: its public ID, status and timestamps, and for a merge or replacement the public ID it redirects to. A stub has no facts and is never listed.
+_Avoid_: tombstone, placeholder
+
 ### Roads and ferries
 
 **Road restriction**:
@@ -255,7 +275,7 @@ Opening hours, ferry operating hours, check-in times, seasonal closures and othe
 _Avoid_: UTC schedule, timetable (for the stored hours)
 
 **Confirmation**:
-A later report that an existing fact is still true, recorded as provenance without changing the value.
+A later report that an existing fact is still true, sent as a confirm_facts submission and recorded as provenance without changing the value. A fact publishes how many different contributors confirmed it and when, never who.
 _Avoid_: re-verification, upvote
 
 ### People and applications
@@ -327,7 +347,7 @@ The fixed code that sends each submission to a human queue or, where allowed, to
 _Avoid_: triage (by the AI), dispatch
 
 **Always-human list**:
-The kinds of submission that routing always sends to a person: new records of every record type, closures, merges and any change to a safety fact. Membership follows from the submission's kind and the safety facts it touches, never from a flag routing sets for itself.
+The kinds of submission that routing always sends to a person: new records of every record type, closures, merges, unmerges, splits, replacements and any submission that changes or confirms a safety fact. Membership follows from the submission's kind and the safety facts it touches, never from a flag routing sets for itself.
 _Avoid_: exceptions, manual list
 
 **Moderation decision**:
@@ -342,6 +362,14 @@ _Avoid_: edit, override, moderator change
 A contributor's request for a moderator to reconsider a moderation decision.
 _Avoid_: dispute, complaint
 
+**Revert**:
+A change that undoes an earlier change on a moderator's decision, such as after an upheld appeal or to remove everything an abused API key sent, restoring the earlier values with their provenance.
+_Avoid_: rollback, undo
+
+**Takedown**:
+A change that removes content, such as a photo showing a person or text copied without permission, on a moderator's decision for a stated reason. Who asked for it is never published.
+_Avoid_: deletion, removal request, DMCA
+
 **Evaluation set**:
 The collection of human moderation decisions used to measure how well verdicts predict them.
 _Avoid_: training data, ground truth
@@ -353,8 +381,12 @@ The current state of every record, built from approved changes, which the API an
 _Avoid_: production table, master data
 
 **Change**:
-An approved submission once applied to the live data, with a sequence number in the change feed.
+One update to the live data, with a sequence number in the change feed. Its kind says what happened to the record and its change origin says why.
 _Avoid_: update, edit, commit
+
+**Change origin**:
+Why a change happened: an approved submission, a revert of an earlier change, a takedown, or a recompute of derived values. Only a recompute has no moderation decision behind it.
+_Avoid_: source, cause, trigger
 
 **Change feed**:
 The ordered stream of changes, by sequence number, that partner apps on paid tiers can follow or receive as webhooks.

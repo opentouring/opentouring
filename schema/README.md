@@ -41,7 +41,9 @@ The ULID part is 128 bits, so it fits a Postgres `uuid` column. It can be genera
 
 Colons are allowed in a URL path segment (RFC 3986), so the API uses the full ID in paths, for example `/v1/sites/otwd:site:01KR6JW0QBNHM90XV3GS9Y2G26`, without percent-encoding. Website addresses use only the ULID part, as in `/sites/nt/pandanus-flats-caravan-park-01KR6JW0QBNHM90XV3GS9Y2G26`, which converts back to the full ID without loss.
 
-A public ID never changes and is never reused. A closure keeps its ID. A merge leaves the losing record as a stub with `status` merged and `redirect_to` naming the survivor, and the API answers it with a 301. These rules are the same for every record type, and merges only join records of one record type.
+A public ID never changes and is never reused. A closure keeps its ID. A merge leaves the losing record as a stub with `status` merged and `redirect_to` naming the survivor, and the API answers it with a 301. A record recorded as the wrong record type becomes a `replaced` stub whose `redirect_to` names its replacement, of another type, also answered with a 301. A record that should never have been published becomes a `retracted` stub with nothing but its ID and status, answered with a 410. An unmerge brings a merged stub back as a record under the same ID, and a split keeps the record's ID for one part and gives the others new IDs ([ADR 0036](../docs/adr/0036-record-lifecycle-and-change-origins.md)). These rules are the same for every record type: merges, unmerges and splits stay within one record type, and a replacement always leaves it.
+
+Each change in `change.schema.json` has a `kind`, what happened to the record, and an `origin`, why: a `submission` names its submission and decision, a `revert` names the change it undoes in `reverts_seq`, a `takedown` names its reason and never its requester, and a `recompute` updates only `/derived` and has no decision. `confirm_facts` submissions become `facts_confirmed` changes, which add to `confirmations` without changing a value.
 
 ## Facts and provenance
 

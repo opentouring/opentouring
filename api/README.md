@@ -69,9 +69,13 @@ The change feed pages by sequence number instead of a cursor, because the sequen
 
 Record, governed list and download list responses carry `Cache-Control` and an `ETag`. A record's ETag changes exactly when its `change_seq` changes. Send the ETag back in `If-None-Match` and the API answers 304 with no body when nothing changed. Responses may be served by the CDN, stale for a short while during revalidation (`stale-while-revalidate`), and change events purge them.
 
-## Merged records
+## Merged, replaced and retracted records
 
-The get endpoint of every record type answers 301 for a merged record, with `Location` set to the surviving record and the same query string, plus a small JSON body naming `redirect_to`. Update the ID you store when you follow it. The change feed also announces every merge as a `record_merged` change with `merged_into`.
+A record's public ID never changes and is never reused, but the record can become a stub ([ADR 0036](../docs/adr/0036-record-lifecycle-and-change-origins.md)). The get endpoint of every record type answers 301 for a merged record (a duplicate of another record of the same type) and for a replaced record (one that turned out to be another record type, such as a low bridge recorded as a site), with `Location` set to the record that took its place and the same query string, plus a small JSON body naming `redirect_to`. Update the ID you store when you follow it, and skip it if it names a record type you do not know. A retracted record, one that should never have been published, answers 410: remove it from your copy. Stubs are never listed.
+
+The change feed announces each of these: `record_merged` with `merged_into`, `record_replaced` with `replaced_by` and `record_retracted`. A wrong merge is undone as `record_unmerged`, which brings the stub back as a record with its own facts. A record that described two things is split with `record_split`: it keeps its ID and part of its facts, and each new part arrives as a `record_created` naming it in `split_from`.
+
+Every change also has an `origin`. Most apply a submission. A `revert` undoes the change named in `reverts_seq`, a `takedown` removes content for the reason in `takedown_reason`, never naming who asked, and a `recompute` updates derived values with `derived_updated`, for example after a boundary dataset changes. Treat all of them like any other change: fetch or patch the record.
 
 ## Submissions
 
@@ -79,7 +83,9 @@ The get endpoint of every record type answers 301 for a merged record, with `Loc
 
 Before submitting for a contributor, a partner app must have their acceptance of the contributor terms and send it in `consent`. Identify the contributor with a stable pseudonymous ID that means nothing outside your app (`contributor.kind` pseudonymous), or with their OTWD contributor ID if they signed in to Open Touring (`contributor.kind` direct). Never send names or email addresses: the schema rejects an `@` in a pseudonymous ID.
 
-Each record type has its own creation kind: `new_site`, `new_road_restriction`, `new_road_segment` and `new_ferry_service`. The kinds that change an existing record (`update_facts`, `add_photo`, `report_closure`, `request_merge`, `report_problem`) name it in `record_id`, and the facts allowed depend on its record type, which the ID's kind segment gives. New records of every type, closures, merges and changes to safety facts always go to a moderator.
+Each record type has its own creation kind: `new_site`, `new_road_restriction`, `new_road_segment` and `new_ferry_service`. The kinds about an existing record (`update_facts`, `confirm_facts`, `add_photo`, `report_closure`, `request_merge`, `request_unmerge`, `request_split`, `request_replacement`, `report_problem`) name it in `record_id`, and the facts allowed depend on its record type, which the ID's kind segment gives. New records of every type, closures, merges, unmerges, splits, replacements and any submission that touches a safety fact, including a confirmation of one, always go to a moderator.
+
+`confirm_facts` reports that facts the contributor saw on the ground are still true, as the record showed them at `base_change_seq`. It changes no value: it adds to each fact's confirmations, which count distinct contributors, and raises its confidence. Use it when a contributor checks a site and everything still matches, because a fact confirmed recently is worth more to the next traveller than one nobody has looked at for years.
 
 Photos are uploaded first, and a photo can be of any record, such as a site or the clearance sign at a road restriction. `POST /v1/photo-uploads` returns a short-lived upload URL on the API host and an `upload_id`. PUT the file to that URL: the API checks its size, type and SHA-256 and strips EXIF location data before it writes the file to storage, and the URL is never a presigned storage URL. Then send an `add_photo` submission naming the `upload_id`.
 
@@ -89,7 +95,7 @@ Photos are uploaded first, and a photo can be of any record, such as a site or t
 
 ### Conflicts and base_change_seq
 
-Every record has a `change_seq`: the sequence number of the latest change applied to it, and every fact records the `change_seq` that last set it. Submissions that edit a record (`update_facts`, `report_closure`, `request_merge`) must send `base_change_seq`, the record's `change_seq` as the contributor saw it.
+Every record has a `change_seq`: the sequence number of the latest change applied to it, and every fact records the `change_seq` that last set it. Submissions that edit or confirm a record (`update_facts`, `confirm_facts`, `report_closure`, `request_merge`, `request_unmerge`, `request_split`, `request_replacement`) must send `base_change_seq`, the record's `change_seq` as the contributor saw it.
 
 The check is per fact. When every fact the submission touches is unchanged since `base_change_seq`, it is accepted even if other facts on the record changed in the meantime. When a touched fact did change, the API answers 409 with `current_change_seq` and `conflicting_fields` (JSON Pointers such as `/facts/prices`). Fetch the record again, show the contributor the newer values, and submit again with the new `base_change_seq` if they still want the change. This keeps two contributors from overwriting each other without either of them seeing the other's report.
 

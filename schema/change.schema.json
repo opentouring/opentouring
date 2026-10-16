@@ -3,37 +3,40 @@
   "$id": "https://schema.opentouring.org/otwd/v1/change.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD change",
-  "description": "An approved submission once applied to the live data, as it appears in the change feed (GET /v1/changes), in change webhooks and in delta files. It covers every record type and names the record in record_id. Every change comes from a moderation decision. Sequence numbers are global, strictly increasing in the order changes are applied, and never reused. They may have gaps, so use previous_seq to detect a missed change to one record.",
+  "description": "A change applied to the live data, as it appears in the change feed (GET /v1/changes), in change webhooks and in delta files. It covers every record type and names the record in record_id. kind says what the change did to the record and origin says why it happened: most changes apply an approved submission, and the others revert an earlier change, carry out a takedown or recompute derived values (ADR 0036). Sequence numbers are global, strictly increasing in the order changes are applied, and never reused. They may have gaps, so use previous_seq to detect a missed change to one record. The change feed is retained for 90 days, and a consumer that falls further behind starts again from a full bulk download.",
   "type": "object",
-  "required": [
-    "seq",
-    "record_id",
-    "kind",
-    "applied_at",
-    "changed_fields",
-    "submission_id",
-    "decision_id"
-  ],
+  "required": ["seq", "record_id", "kind", "origin", "applied_at", "changed_fields"],
   "properties": {
     "seq": {
       "description": "This change's sequence number, which also becomes the record's change_seq.",
       "$ref": "common.schema.json#/$defs/ChangeSeq"
     },
     "record_id": {
-      "description": "The record changed, of any record type.",
+      "description": "The record changed, of any record type. Skip a change to a record type you do not know.",
       "$ref": "common.schema.json#/$defs/RecordId"
     },
     "kind": {
-      "description": "What the change did to the record. record_created: a new record. facts_updated: facts or facilities set or removed. photo_added and photo_removed: a photo of the record published or withdrawn. status_changed: a closure, temporary closure or reopening. record_merged: the record became a duplicate and now redirects to merged_into. Open: a consumer that meets a kind it does not know fetches the record again, using changed_fields to see what moved.",
+      "description": "What the change did to the record. record_created: a new record. facts_updated: facts or facilities set or removed. facts_confirmed: contributors confirmed facts are still true, so their confirmations changed and their values did not. photo_added and photo_removed: a photo of the record published or taken down. status_changed: a closure, temporary closure or reopening. record_merged: the record became a duplicate and now redirects to merged_into. record_unmerged: a wrongly merged record became a record again, separate from unmerged_from. record_split: part of the record became new records of the same type, named in split_into, and the record keeps the rest. record_replaced: the record turned out to be another record type and now redirects to replaced_by. record_retracted: the record should never have been published and only its stub remains. derived_updated: derived values were recomputed. Open: a consumer that meets a kind it does not know fetches the record again, using changed_fields to see what moved.",
       "$ref": "common.schema.json#/$defs/EnumCode",
       "x-otwd-known-values": [
         "record_created",
         "facts_updated",
+        "facts_confirmed",
         "photo_added",
         "photo_removed",
         "status_changed",
-        "record_merged"
+        "record_merged",
+        "record_unmerged",
+        "record_split",
+        "record_replaced",
+        "record_retracted",
+        "derived_updated"
       ]
+    },
+    "origin": {
+      "description": "Why the change happened. submission: a moderation decision approved a submission. revert: a moderator undid an earlier change, named in reverts_seq, for example after an appeal or when an abused API key's changes are reverted in bulk. takedown: a moderator removed content for a reason in takedown_reason, such as personal information or a copyright claim. Who asked for a takedown is never published. recompute: OTWD recomputed derived values, for example after a boundary dataset was updated, with no decision because no fact changed. Open: a consumer treats a change of an origin it does not know like any other change.",
+      "$ref": "common.schema.json#/$defs/EnumCode",
+      "x-otwd-known-values": ["submission", "revert", "takedown", "recompute"]
     },
     "applied_at": {
       "$ref": "common.schema.json#/$defs/Timestamp"
@@ -43,7 +46,7 @@
       "$ref": "common.schema.json#/$defs/ChangeSeq"
     },
     "changed_fields": {
-      "description": "JSON Pointers to the parts of the record this change set or removed, for example /facts/prices, /facts/vertical_clearance, /facilities/power, /status or /photos.",
+      "description": "JSON Pointers to the parts of the record this change set, removed or confirmed, for example /facts/prices, /facts/vertical_clearance, /facilities/power, /status or /photos.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
@@ -78,16 +81,60 @@
       "description": "For record_merged: the surviving record, of the same record type.",
       "$ref": "common.schema.json#/$defs/RecordId"
     },
+    "unmerged_from": {
+      "description": "For record_unmerged: the record this one had been merged into, of the same record type.",
+      "$ref": "common.schema.json#/$defs/RecordId"
+    },
+    "split_into": {
+      "description": "For record_split: the new records made from part of this one, of the same record type. Each has its own record_created change naming this record in split_from.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/RecordId"
+      }
+    },
+    "split_from": {
+      "description": "For a record_created that comes from a split: the record it was split from.",
+      "$ref": "common.schema.json#/$defs/RecordId"
+    },
+    "replaced_by": {
+      "description": "For record_replaced: the record of another record type that replaces this one.",
+      "$ref": "common.schema.json#/$defs/RecordId"
+    },
+    "reverts_seq": {
+      "description": "For origin revert: the change this one undoes. The facts it touched return to their values and provenance before that change, with this change's sequence number as their change_seq.",
+      "$ref": "common.schema.json#/$defs/ChangeSeq"
+    },
+    "takedown_reason": {
+      "description": "For origin takedown: why the content was removed. personal_information: it identified a person. copyright: it was not the contributor's to license. legal_requirement: a law or court order required it. offensive_content: abusive or offensive text or images. private_property: it disclosed a private place without permission. Open: a consumer shows the change without a reason it does not know.",
+      "$ref": "common.schema.json#/$defs/EnumCode",
+      "x-otwd-known-values": [
+        "personal_information",
+        "copyright",
+        "legal_requirement",
+        "offensive_content",
+        "private_property"
+      ]
+    },
+    "recompute_reason": {
+      "description": "For origin recompute: what made OTWD recompute. boundary_update: a boundary dataset, such as subdivisions, localities or time zones, was updated. tz_database_update: a new release of the IANA time zone database. geometry_reprocessed: the length of a line was measured again. Open: a consumer shows the change without a reason it does not know.",
+      "$ref": "common.schema.json#/$defs/EnumCode",
+      "x-otwd-known-values": ["boundary_update", "tz_database_update", "geometry_reprocessed"]
+    },
     "submission_id": {
       "$ref": "common.schema.json#/$defs/SubmissionId"
     },
     "decision_id": {
+      "description": "The moderation decision behind the change. Absent for origin recompute, which no one decides.",
       "$ref": "common.schema.json#/$defs/DecisionId"
     }
   },
   "additionalProperties": false,
   "allOf": [
     {
+      "description": "record_merged names merged_into, and no other kind does.",
       "if": {
         "properties": {
           "kind": {
@@ -111,6 +158,79 @@
       }
     },
     {
+      "description": "record_unmerged names unmerged_from, and no other kind does.",
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "record_unmerged"
+          }
+        }
+      },
+      "then": {
+        "required": ["unmerged_from"],
+        "properties": {
+          "unmerged_from": true
+        }
+      },
+      "else": {
+        "not": {
+          "required": ["unmerged_from"],
+          "properties": {
+            "unmerged_from": true
+          }
+        }
+      }
+    },
+    {
+      "description": "record_split names split_into, and no other kind does.",
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "record_split"
+          }
+        }
+      },
+      "then": {
+        "required": ["split_into"],
+        "properties": {
+          "split_into": true
+        }
+      },
+      "else": {
+        "not": {
+          "required": ["split_into"],
+          "properties": {
+            "split_into": true
+          }
+        }
+      }
+    },
+    {
+      "description": "record_replaced names replaced_by, and no other kind does.",
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "record_replaced"
+          }
+        }
+      },
+      "then": {
+        "required": ["replaced_by"],
+        "properties": {
+          "replaced_by": true
+        }
+      },
+      "else": {
+        "not": {
+          "required": ["replaced_by"],
+          "properties": {
+            "replaced_by": true
+          }
+        }
+      }
+    },
+    {
+      "description": "Only a record_created has no previous_seq, and only it can name split_from.",
       "if": {
         "properties": {
           "kind": {
@@ -127,9 +247,179 @@
         }
       },
       "else": {
-        "required": ["previous_seq"],
+        "allOf": [
+          {
+            "required": ["previous_seq"],
+            "properties": {
+              "previous_seq": true
+            }
+          },
+          {
+            "not": {
+              "required": ["split_from"],
+              "properties": {
+                "split_from": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "description": "A change that applies a submission names the submission and the decision.",
+      "if": {
         "properties": {
-          "previous_seq": true
+          "origin": {
+            "const": "submission"
+          }
+        }
+      },
+      "then": {
+        "required": ["submission_id", "decision_id"],
+        "properties": {
+          "submission_id": true,
+          "decision_id": true
+        }
+      }
+    },
+    {
+      "description": "A revert names the change it undoes and the decision that ordered it, never a submission.",
+      "if": {
+        "properties": {
+          "origin": {
+            "const": "revert"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "required": ["reverts_seq", "decision_id"],
+            "properties": {
+              "reverts_seq": true,
+              "decision_id": true
+            }
+          },
+          {
+            "not": {
+              "required": ["submission_id"],
+              "properties": {
+                "submission_id": true
+              }
+            }
+          }
+        ]
+      },
+      "else": {
+        "not": {
+          "required": ["reverts_seq"],
+          "properties": {
+            "reverts_seq": true
+          }
+        }
+      }
+    },
+    {
+      "description": "A takedown names its reason and the decision, never a submission, so the requester is never exposed.",
+      "if": {
+        "properties": {
+          "origin": {
+            "const": "takedown"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "required": ["takedown_reason", "decision_id"],
+            "properties": {
+              "takedown_reason": true,
+              "decision_id": true
+            }
+          },
+          {
+            "not": {
+              "required": ["submission_id"],
+              "properties": {
+                "submission_id": true
+              }
+            }
+          }
+        ]
+      },
+      "else": {
+        "not": {
+          "required": ["takedown_reason"],
+          "properties": {
+            "takedown_reason": true
+          }
+        }
+      }
+    },
+    {
+      "description": "A recompute changes derived values only, names its reason, and has no submission or decision. derived_updated comes only from a recompute.",
+      "if": {
+        "properties": {
+          "origin": {
+            "const": "recompute"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "required": ["recompute_reason"],
+            "properties": {
+              "recompute_reason": true
+            }
+          },
+          {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["submission_id"],
+                  "properties": {
+                    "submission_id": true
+                  }
+                },
+                {
+                  "required": ["decision_id"],
+                  "properties": {
+                    "decision_id": true
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "kind": {
+            "const": "derived_updated"
+          },
+          "changed_fields": {
+            "items": {
+              "const": "/derived"
+            }
+          }
+        }
+      },
+      "else": {
+        "allOf": [
+          {
+            "not": {
+              "required": ["recompute_reason"],
+              "properties": {
+                "recompute_reason": true
+              }
+            }
+          }
+        ],
+        "properties": {
+          "kind": {
+            "not": {
+              "const": "derived_updated"
+            }
+          }
         }
       }
     }

@@ -1,0 +1,10 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01M3KJZS2YFSTBQQ5W6ASQZ1Y2",
+  "status": "retracted",
+  "created_at": "2026-07-20T04:00:00Z",
+  "updated_at": "2026-10-14T05:40:00Z",
+  "change_seq": 33150,
+  "attribution": ["Open Touring contributors, opentouring.org, CC BY 4.0"]
+}

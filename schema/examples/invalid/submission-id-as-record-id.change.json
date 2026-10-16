@@ -3,6 +3,7 @@
   "seq": 19305,
   "record_id": "otwd:submission:01KQD421AHHMAWVJBSW9WJR571",
   "kind": "facts_updated",
+  "origin": "submission",
   "applied_at": "2026-08-30T02:02:44Z",
   "previous_seq": 15120,
   "changed_fields": ["/facts/prices"],

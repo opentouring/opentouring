@@ -1,0 +1,47 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "request_replacement",
+  "record_id": "otwd:site:01M384G7ZWYRD6Z1RV0WHE6M11",
+  "base_change_seq": 28770,
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "u_7f3d2a9b41c8"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-12T05:00:00Z",
+  "observed_on": "2026-10-12",
+  "proposed": {
+    "record_type": "road_restriction",
+    "facts": {
+      "location": {
+        "lat": -37.55102,
+        "lng": 145.11845,
+        "accuracy_m": 10
+      },
+      "structure": {
+        "code": "bridge",
+        "passage": "under"
+      },
+      "vertical_clearance": {
+        "measurements": [
+          {
+            "value_m": 3.6,
+            "basis": "signed"
+          }
+        ],
+        "lowest_m": 3.6,
+        "lowest_basis": "signed"
+      }
+    },
+    "reason": [
+      {
+        "text": "This is the low rail bridge on the road into town, not a place to stop.",
+        "lang": "en-AU"
+      }
+    ]
+  }
+}

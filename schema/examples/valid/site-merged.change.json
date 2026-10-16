@@ -3,6 +3,7 @@
   "seq": 21003,
   "record_id": "otwd:site:01M2AJGZD7MVYA4ZNJPYN3T04J",
   "kind": "record_merged",
+  "origin": "submission",
   "applied_at": "2026-09-22T01:00:00Z",
   "previous_seq": 20990,
   "changed_fields": ["/status", "/redirect_to"],

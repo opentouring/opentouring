@@ -88,6 +88,16 @@
       "type": "string",
       "pattern": "^otwd:partner_app:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
     },
+    "ApiKeyId": {
+      "description": "ID of one API key of a partner app. It names the key in key management, rate limit and audit records, and is never the secret itself.",
+      "type": "string",
+      "pattern": "^otwd:api_key:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "AppealId": {
+      "description": "ID of an appeal against a moderation decision.",
+      "type": "string",
+      "pattern": "^otwd:appeal:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
     "SeedSourceId": {
       "description": "ID of a seed source. Seed sources are curated by OTWD maintainers, so the ID is a readable slug that names the publisher and dataset.",
       "type": "string",
@@ -107,9 +117,17 @@
       "examples": ["1.0"]
     },
     "RecordStatus": {
-      "description": "Whether a record is in use. A closed enumeration: a consumer decides what to show from it, so it gains a value only in a new major version. active: in use. temporarily_closed: a temporary closure, such as a site shut for repairs, a bridge closed after flood damage or a ferry service suspended. closed: a closure, such as a site that no longer operates, a road restriction removed when its structure was replaced, a road segment closed for good or a ferry service withdrawn. The record keeps its public ID and history. merged: the record was a duplicate and redirect_to names the survivor.",
+      "description": "Whether a record is in use. A closed enumeration: a consumer decides what to show from it, so it gains a value only in a new major version. active: in use. temporarily_closed: a temporary closure, such as a site shut for repairs, a bridge closed after flood damage or a ferry service suspended. closed: a closure, such as a site that no longer operates, a road restriction removed when its structure was replaced, a road segment closed for good or a ferry service withdrawn. The record keeps its public ID and history. merged: the record was a duplicate and redirect_to names the survivor, of the same record type. replaced: the record turned out to be another record type, such as a low bridge recorded as a site, and redirect_to names the record of the right type that replaced it. retracted: the record should never have been published, for example because the thing does not exist or a takedown removed it, so only its public ID and status remain. merged, replaced and retracted records are stubs without facts (StubStatus).",
       "type": "string",
-      "enum": ["active", "temporarily_closed", "closed", "merged"]
+      "enum": ["active", "temporarily_closed", "closed", "merged", "replaced", "retracted"]
+    },
+    "StubStatus": {
+      "description": "The statuses of a record that is only a stub: merged and replaced redirect to another record, and retracted has nothing left to show. A stub has no derived values or facts, and the API answers a request for it with 301 (merged, replaced) or 410 (retracted).",
+      "enum": ["merged", "replaced", "retracted"]
+    },
+    "RedirectStatus": {
+      "description": "The statuses of a stub that names another record in redirect_to: merged (same record type) and replaced (another record type).",
+      "enum": ["merged", "replaced"]
     },
     "Code": {
       "description": "A governed list code: lower case letters, digits and underscores, starting with a letter. Codes are never renamed or reused.",
@@ -130,9 +148,13 @@
         "new_road_segment",
         "new_ferry_service",
         "update_facts",
+        "confirm_facts",
         "add_photo",
         "report_closure",
         "request_merge",
+        "request_unmerge",
+        "request_split",
+        "request_replacement",
         "report_problem"
       ]
     },
@@ -471,11 +493,12 @@
       ]
     },
     "Confirmations": {
-      "description": "Later reports that the fact is still true, without changing its value.",
+      "description": "Later reports that the fact is still true, from confirm_facts submissions, without changing its value. They reset when the value changes. Only counts are published, never who confirmed (ADR 0038).",
       "type": "object",
       "required": ["count", "last_confirmed_on"],
       "properties": {
         "count": {
+          "description": "How many different contributors confirmed the current value. A contributor counts once however often they confirm, and the contributor who supplied the value does not count.",
           "type": "integer",
           "minimum": 1
         },
@@ -643,7 +666,7 @@
       }
     },
     "FullRecord": {
-      "description": "The envelope every record shares in the full form: identity, status, timestamps, change_seq and photos, with the lifecycle rule. A merged record is a stub that names the survivor in redirect_to. Any other record has derived values and facts, and no redirect_to. Each record type's schema narrows id and redirect_to to its own public ID kind and adds derived and facts.",
+      "description": "The envelope every record shares in the full form: identity, status, timestamps, change_seq and photos, with the lifecycle rule. A merged, replaced or retracted record is a stub (StubStatus) without derived values or facts. A merged record names the survivor in redirect_to, of the same record type, and a replaced record names its replacement, of another record type (tools/validate.py checks both). Any other record has derived values and facts, and no redirect_to. Each record type's schema narrows id to its own public ID kind and adds derived and facts.",
       "type": "object",
       "required": ["schema_version", "id", "status", "created_at", "updated_at", "change_seq"],
       "properties": {
@@ -657,7 +680,7 @@
           "$ref": "#/$defs/StatusFact"
         },
         "redirect_to": {
-          "description": "For a merged record only: the public ID of the surviving record, of the same record type. The API answers requests for this record with a 301 redirect to it.",
+          "description": "For a merged record: the public ID of the surviving record, of the same record type. For a replaced record: the public ID of the record of another type that replaced it. The API answers requests for this record with a 301 redirect to it. A consumer that holds this record's ID follows redirect_to, whatever record type it names, and skips it if it does not know that record type.",
           "$ref": "#/$defs/RecordId"
         },
         "created_at": {
@@ -675,39 +698,97 @@
           "$ref": "#/$defs/Photos"
         }
       },
-      "if": {
-        "properties": {
-          "status": {
+      "allOf": [
+        {
+          "description": "A merged or replaced record names the record it redirects to, and no other record has redirect_to.",
+          "if": {
             "properties": {
-              "value": {
-                "const": "merged"
+              "status": {
+                "properties": {
+                  "value": {
+                    "$ref": "#/$defs/RedirectStatus"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": ["redirect_to"],
+            "properties": {
+              "redirect_to": true
+            }
+          },
+          "else": {
+            "not": {
+              "required": ["redirect_to"],
+              "properties": {
+                "redirect_to": true
               }
             }
           }
-        }
-      },
-      "then": {
-        "required": ["redirect_to"],
-        "properties": {
-          "redirect_to": true
-        }
-      },
-      "else": {
-        "required": ["derived", "facts"],
-        "properties": {
-          "derived": true,
-          "facts": true
         },
-        "not": {
-          "required": ["redirect_to"],
-          "properties": {
-            "redirect_to": true
+        {
+          "description": "A record that is not a stub has derived values and facts. A retracted stub keeps none of them, nor photos.",
+          "if": {
+            "properties": {
+              "status": {
+                "properties": {
+                  "value": {
+                    "$ref": "#/$defs/StubStatus"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "if": {
+              "properties": {
+                "status": {
+                  "properties": {
+                    "value": {
+                      "const": "retracted"
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": ["derived"],
+                    "properties": {
+                      "derived": true
+                    }
+                  },
+                  {
+                    "required": ["facts"],
+                    "properties": {
+                      "facts": true
+                    }
+                  },
+                  {
+                    "required": ["photos"],
+                    "properties": {
+                      "photos": true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "else": {
+            "required": ["derived", "facts"],
+            "properties": {
+              "derived": true,
+              "facts": true
+            }
           }
         }
-      }
+      ]
     },
     "CompactRecord": {
-      "description": "The envelope every record shares in the compact form: identity, status with the closure fields flattened, timestamps, the primary name, photos, and the attribution list, min_confidence and safety_facts_observed_on that stand in for per-fact provenance. A merged record names the survivor in redirect_to, and no other record has one. Each compact schema narrows id and redirect_to, adds its derived values and facts, and lists the fields its record type always has when it is not merged.",
+      "description": "The envelope every record shares in the compact form: identity, status with the closure fields flattened, timestamps, the primary name, photos, and the attribution list, min_confidence and safety_facts_observed_on that stand in for per-fact provenance. A merged or replaced record names the record it redirects to in redirect_to, and no other record has one. Each compact schema narrows id, adds its derived values and facts, and lists the fields its record type always has when it is not a stub. A retracted stub carries only the envelope (tools/validate.py checks this).",
       "type": "object",
       "required": [
         "schema_version",
@@ -777,7 +858,7 @@
       "if": {
         "properties": {
           "status": {
-            "const": "merged"
+            "$ref": "#/$defs/RedirectStatus"
           }
         }
       },

@@ -216,9 +216,10 @@ paths:
         Returns one site by its public ID. The colons in the ID are allowed in a URL path
         segment and do not need percent-encoding.
 
-        A merged site answers with 301 and a Location header pointing at the surviving site.
-        Closed sites are returned normally with status closed: they keep their public ID and
-        history.
+        A merged site answers with 301 and a Location header pointing at the surviving site, and
+        a replaced site with 301 to the record of another type that replaced it. A retracted site
+        answers with 410. Closed sites are returned normally with status closed: they keep their
+        public ID and history.
 
         Responses carry an ETag. Send it back in If-None-Match to get 304 when nothing changed.
       parameters:
@@ -253,6 +254,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -432,9 +435,9 @@ paths:
       operationId: getRoadRestriction
       summary: Get a road restriction
       description: |
-        Returns one road restriction by its public ID. A merged record answers with 301 and a
-        Location header pointing at the surviving one, and a closed record is returned with
-        status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
+        Returns one road restriction by its public ID. A merged or replaced record answers with 301
+        and a Location header pointing at the record that took its place, a retracted record
+        with 410, and a closed record is returned with status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
       parameters:
         - $ref: "#/components/parameters/RoadRestrictionId"
         - $ref: "#/components/parameters/View"
@@ -467,6 +470,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -583,9 +588,9 @@ paths:
       operationId: getRoadSegment
       summary: Get a road segment
       description: |
-        Returns one road segment by its public ID. A merged record answers with 301 and a
-        Location header pointing at the surviving one, and a closed record is returned with
-        status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
+        Returns one road segment by its public ID. A merged or replaced record answers with 301
+        and a Location header pointing at the record that took its place, a retracted record
+        with 410, and a closed record is returned with status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
       parameters:
         - $ref: "#/components/parameters/RoadSegmentId"
         - $ref: "#/components/parameters/View"
@@ -618,6 +623,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -704,9 +711,9 @@ paths:
       operationId: getFerryService
       summary: Get a ferry service
       description: |
-        Returns one ferry service by its public ID. A merged record answers with 301 and a
-        Location header pointing at the surviving one, and a closed record is returned with
-        status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
+        Returns one ferry service by its public ID. A merged or replaced record answers with 301
+        and a Location header pointing at the record that took its place, a retracted record
+        with 410, and a closed record is returned with status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
       parameters:
         - $ref: "#/components/parameters/FerryServiceId"
         - $ref: "#/components/parameters/View"
@@ -739,6 +746,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -1213,7 +1222,7 @@ components:
     Status:
       name: status
       in: query
-      description: Record statuses to include. Merged records are never listed.
+      description: Record statuses to include. Merged, replaced and retracted records are stubs and are never listed.
       style: form
       explode: false
       schema:
@@ -1470,7 +1479,7 @@ components:
           schema:
             $ref: "#/components/schemas/Problem"
     MergedRecord:
-      description: The record was merged. Follow Location to the surviving record.
+      description: The record was merged into another of the same type, or replaced by a record of another type. Follow Location to it, and store its ID in place of this one. If it is a record type you do not know, skip it.
       headers:
         Location:
           description: URL of the surviving record, with the same query string.
@@ -1483,6 +1492,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Redirect"
+    RetractedRecord:
+      description: The record was retracted. It should never have been published, for example because the thing does not exist or a takedown removed it, so nothing is served but its ID and status. Remove it from your copy. The change feed announces it as record_retracted.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
     GovernedList:
       description: The governed list.
       headers:
@@ -1564,7 +1579,7 @@ components:
               items:
                 type: string
     Redirect:
-      description: Body of a 301 for a merged record.
+      description: Body of a 301 for a merged or replaced record.
       type: object
       required: [redirect_to, location]
       properties:

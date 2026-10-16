@@ -3,6 +3,7 @@
   "seq": 40211,
   "record_id": "otwd:fuel_depot:01M4B8R2T6W0Y4A8C2E6G0J4M8",
   "kind": "record_created",
+  "origin": "submission",
   "applied_at": "2027-03-02T04:10:00Z",
   "changed_fields": ["/facts/names", "/facts/location"],
   "safety_fact_changed": false,
