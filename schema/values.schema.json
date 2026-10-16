@@ -243,6 +243,22 @@
       },
       "additionalProperties": false
     },
+    "AuthorityLink": {
+      "description": "The authority that sets a rule or issues a notice, and its official information page. The record that uses it says which of the two it requires and what the page covers.",
+      "type": "object",
+      "properties": {
+        "authority": {
+          "description": "The authority or land manager, as it names itself, for example Parks Victoria.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "info_url": {
+          "description": "The authority's official page for the rule, the notice or current conditions.",
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        }
+      }
+    },
     "Prices": {
       "description": "What it costs to use the site. charging says whether there is a charge at all. items lists the prices.",
       "type": "object",
@@ -322,8 +338,7 @@
           "enum": ["site", "person", "adult", "child", "family", "vehicle", "pet", "use"]
         },
         "period": {
-          "type": "string",
-          "enum": ["night", "day", "hour", "week", "stay", "use"]
+          "$ref": "#/$defs/ChargePeriod"
         },
         "conditions": {
           "$ref": "#/$defs/PriceConditions"
@@ -336,6 +351,11 @@
       "type": "number",
       "minimum": 0,
       "maximum": 100000
+    },
+    "ChargePeriod": {
+      "description": "The period a price or fee is charged for: per night, day, hour, week, stay or use (one crossing or one visit).",
+      "type": "string",
+      "enum": ["night", "day", "hour", "week", "stay", "use"]
     },
     "PaymentMethods": {
       "description": "How a price or fare can be paid.",
@@ -500,14 +520,23 @@
       "additionalProperties": false
     },
     "Pets": {
-      "description": "The site's pet policy. The facilities pets_allowed and dog_off_leash are read from this fact.",
+      "description": "The site's pet policy. allowed is the general rule for pets. species gives the rule for each species where it differs or is known, and allowed must not be no when any species is allowed. The facilities pets_allowed and dog_off_leash are read from this fact.",
       "type": "object",
       "required": ["allowed"],
       "properties": {
         "allowed": {
-          "description": "yes: pets allowed. on_leash: allowed on a leash at all times. by_arrangement: only with prior approval. no: not allowed (assistance animals are covered by law, not by this field).",
-          "type": "string",
-          "enum": ["yes", "on_leash", "by_arrangement", "no"]
+          "$ref": "#/$defs/PetAllowed"
+        },
+        "species": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/PetSpeciesRule"
+          }
+        },
+        "conditions": {
+          "$ref": "#/$defs/PetConditions"
         },
         "dog_off_leash_area": {
           "type": "boolean"
@@ -517,6 +546,470 @@
         }
       },
       "additionalProperties": false
+    },
+    "PetAllowed": {
+      "description": "yes: pets allowed. on_leash: allowed on a leash at all times. by_arrangement: only with prior approval. no: not allowed (assistance animals are covered by law, not by this field).",
+      "type": "string",
+      "enum": ["yes", "on_leash", "by_arrangement", "no"]
+    },
+    "PetSpeciesRule": {
+      "description": "The rule for one species, from the pet species governed list (pet-species.json), with the same values as pets.allowed (PetAllowed). max_number is the most of that species per pitch or booking.",
+      "type": "object",
+      "required": ["species", "allowed"],
+      "properties": {
+        "species": {
+          "$ref": "common.schema.json#/$defs/PetSpeciesCode"
+        },
+        "allowed": {
+          "$ref": "#/$defs/PetAllowed"
+        },
+        "max_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PetConditions": {
+      "description": "Conditions on pets that are allowed. areas says where pets may stay: whole_site anywhere on the site, designated_pitches only on the pitches set aside for pets, all_pitches on any pitch but not in cabins, cabins only in pet-friendly cabins, day_use_area only in the day use area. not_allowed_periods are periods each year, as local month and day, when pets are not allowed, such as the summer school holidays.",
+      "type": "object",
+      "properties": {
+        "max_pets": {
+          "description": "Most pets per pitch or booking, of all species together.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "size_or_breed_restrictions": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        },
+        "fee": {
+          "$ref": "#/$defs/PetFee"
+        },
+        "areas": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["whole_site", "designated_pitches", "all_pitches", "cabins", "day_use_area"]
+          }
+        },
+        "not_allowed_periods": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/AnnualPeriod"
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "PetFee": {
+      "description": "A charge per pet in the shared money shape: amount (MoneyAmount) and currency as in a price item, for each period from ChargePeriod, such as A$10 per pet per night, or per crossing (use) on a ferry service.",
+      "type": "object",
+      "required": ["amount", "currency", "period"],
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/MoneyAmount"
+        },
+        "currency": {
+          "$ref": "common.schema.json#/$defs/CurrencyCode"
+        },
+        "period": {
+          "$ref": "#/$defs/ChargePeriod"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FerryPetPolicy": {
+      "description": "How a ferry service carries pets. carried no: pets are not carried. carried yes: pets travel in one or more arrangements. in_vehicle: the pet stays in the traveller's vehicle on the vehicle deck. kennel: in a kennel on board. pet_friendly_cabin: in a cabin set aside for pets and their owners. on_deck_on_leash: on an open deck on a leash. in_carrier: in a closed carrier in the passenger areas. Assistance animals are covered by law, not by this fact.",
+      "type": "object",
+      "required": ["carried"],
+      "properties": {
+        "carried": {
+          "type": "string",
+          "enum": ["yes", "no"]
+        },
+        "arrangements": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "required": ["arrangement"],
+            "properties": {
+              "arrangement": {
+                "type": "string",
+                "enum": [
+                  "in_vehicle",
+                  "kennel",
+                  "pet_friendly_cabin",
+                  "on_deck_on_leash",
+                  "in_carrier"
+                ]
+              },
+              "species": {
+                "description": "The species this arrangement takes. Absent means every species the operator carries.",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "$ref": "common.schema.json#/$defs/PetSpeciesCode"
+                }
+              },
+              "booking_required": {
+                "type": "boolean"
+              },
+              "fee": {
+                "$ref": "#/$defs/PetFee"
+              },
+              "notes": {
+                "$ref": "common.schema.json#/$defs/Notes"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "carried": {
+            "const": "no"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "arrangements": false
+        }
+      }
+    },
+    "PetTransit": {
+      "description": "Whether travellers may take pets along a road segment, such as a road through a national park. yes: allowed. in_vehicle_only: allowed in transit if the pet stays in the vehicle. no: not allowed even in a vehicle. The authority that sets the rule and its information page are required, because the rule is the authority's to change. info_url is the authority's page for its rules on pets.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["permitted", "authority", "info_url"],
+      "properties": {
+        "permitted": {
+          "type": "string",
+          "enum": ["yes", "in_vehicle_only", "no"]
+        },
+        "species": {
+          "description": "The species the rule applies to. Absent means every pet.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/PetSpeciesCode"
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "BaitNotices": {
+      "description": "Safety fact. Notices that poison baits for pest animals, such as 1080 (sodium fluoroacetate) or PAPP baits, are laid in or next to the site or road segment. A bait can kill a dog that finds it. OTWD records the notice as signed or published, with its area, local dates and the authority's link, and never the authority's live baiting programme: apps send travellers to info_url for current baiting.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/BaitNotice"
+      }
+    },
+    "BaitNotice": {
+      "description": "One bait notice. from and to are local dates as the notice gives them, read in the record's time zone or in time_zone when it is given. A notice with no to stays until the authority withdraws it. authority is the authority or land manager running the baiting, and info_url its page for current baiting programmes.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["area", "authority", "info_url", "from"],
+      "properties": {
+        "area": {
+          "description": "The area baited, as the notice describes it, for example the reserve north of the campground.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "poison": {
+          "description": "The poison named on the notice, for example 1080.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "time_zone": {
+          "$ref": "#/$defs/ScheduleTimeZone"
+        },
+        "from": {
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        },
+        "to": {
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "AccessFeature": {
+      "description": "Wheelchair access to one feature. yes: a wheelchair user can reach and use it without help. limited: usable with help or with difficulty, such as a ramp steeper than the standard allows or a door narrower than a modern chair. no: a wheelchair user cannot reach or use it. notes says what limits it.",
+      "type": "object",
+      "required": ["access"],
+      "properties": {
+        "access": {
+          "$ref": "#/$defs/WheelchairAccess"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WheelchairAccess": {
+      "description": "Wheelchair access, as in OSM wheelchair=*: yes, limited or no. AccessFeature describes each value.",
+      "type": "string",
+      "enum": ["yes", "limited", "no"]
+    },
+    "SiteAccessFeature": {
+      "description": "A feature of a site whose wheelchair access is recorded. arrival: the entrance, reception or the point where a traveller arrives. pitches: the pitches, the individual camping spots for one rig or tent. camp_kitchen: the camp kitchen. The rest are the toilets, showers, parking, paths between the features and cabins.",
+      "type": "string",
+      "enum": [
+        "arrival",
+        "toilets",
+        "showers",
+        "parking",
+        "paths",
+        "pitches",
+        "cabins",
+        "camp_kitchen"
+      ]
+    },
+    "AccessibilityBasis": {
+      "description": "What the accessibility fact rests on, alongside its provenance. assessed_to_standard: assessed against a named access standard, given in standard, such as AS 1428.1 in Australia. signposted: the operator or land manager signs the features as accessible, for example with the International Symbol of Access. operator_reported: stated by the operator or land manager, or a seed source, without a named standard. contributor_observation: what a contributor saw or used on site.",
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "assessed_to_standard",
+            "signposted",
+            "operator_reported",
+            "contributor_observation"
+          ]
+        },
+        "standard": {
+          "description": "The standard assessed against, as its publisher names it, for example AS 1428.1-2021.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "assessed_on": {
+          "description": "The local date of the assessment.",
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "assessed_to_standard"
+          }
+        }
+      },
+      "then": {
+        "required": ["standard"],
+        "properties": {
+          "standard": true
+        }
+      }
+    },
+    "AccessibleToilets": {
+      "description": "Toilets for people with disability. accessible_count counts wheelchair accessible toilets and ambulant_count toilets with grab rails for people who walk with difficulty, recorded only when someone counted them: a count of 0 records that there are none. A source that only says whether there is an accessible toilet sets wheelchair.toilets, and one that only says whether there is an ambulant toilet sets ambulant, never a count. changing_places is true when there is a Changing Places toilet, with a hoist and an adult change table. key_scheme names the central key that opens the toilets, from the key scheme governed list (key-schemes.json), and must be a scheme used in the site's country.",
+      "type": "object",
+      "properties": {
+        "accessible_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "ambulant_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "ambulant": {
+          "description": "True when there is at least one ambulant toilet, false when there is none. It must agree with ambulant_count when both are given.",
+          "type": "boolean"
+        },
+        "changing_places": {
+          "type": "boolean"
+        },
+        "changing_places_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "key_required": {
+          "description": "True when a key is needed, from a key scheme or from the operator.",
+          "type": "boolean"
+        },
+        "key_scheme": {
+          "$ref": "common.schema.json#/$defs/KeySchemeCode"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1,
+      "dependentSchemas": {
+        "key_scheme": {
+          "required": ["key_required"],
+          "properties": {
+            "key_required": {
+              "const": true
+            }
+          }
+        },
+        "changing_places_count": {
+          "required": ["changing_places"],
+          "properties": {
+            "changing_places": {
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "AccessiblePaths": {
+      "description": "The paths between the accessible features: the main path surface and notes on gradient, such as a steep ramp to the amenities block. path_surface has its own values, chosen for wheelchairs: they are not the surface governed list (surfaces.json), which describes roads and shares only sealed and sand with it.",
+      "type": "object",
+      "properties": {
+        "path_surface": {
+          "type": "string",
+          "enum": [
+            "sealed",
+            "compacted_gravel",
+            "loose_gravel",
+            "boardwalk",
+            "grass",
+            "sand",
+            "mixed"
+          ]
+        },
+        "gradient_notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "SiteAccessibility": {
+      "description": "Access for people with disability at a site. wheelchair gives yes, limited or no per feature. basis says what the fact rests on. The accessible_facilities facility is read from this fact. A change that raises access to yes goes to a person (the accessibility_raised fixed check), because a wrong yes can strand a traveller who relied on it.",
+      "type": "object",
+      "required": ["basis"],
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/AccessibilityBasis"
+        },
+        "wheelchair": {
+          "description": "Wheelchair access to each feature of the site, keyed by SiteAccessFeature. A feature that is absent is unknown.",
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/SiteAccessFeature"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/AccessFeature"
+          },
+          "minProperties": 1
+        },
+        "toilets": {
+          "$ref": "#/$defs/AccessibleToilets"
+        },
+        "accessible_parking_spaces": {
+          "description": "Parking spaces marked for people with disability.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "step_free_access": {
+          "description": "True when the features recorded as yes or limited can be reached from arrival without steps.",
+          "type": "boolean"
+        },
+        "paths": {
+          "$ref": "#/$defs/AccessiblePaths"
+        },
+        "hearing_loop": {
+          "description": "True when reception or the main building has a hearing loop.",
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 2
+    },
+    "FerryServiceAccessibility": {
+      "description": "Access for people with disability on a ferry service. boarding covers getting on and off with the ferry terminal ramp or gangway, and seating the passenger areas. Access at the ferry terminals themselves is recorded on the terminal sites. A change that raises access to yes goes to a person (the accessibility_raised fixed check), because a wrong yes can strand a traveller who relied on it.",
+      "type": "object",
+      "required": ["basis"],
+      "properties": {
+        "basis": {
+          "$ref": "#/$defs/AccessibilityBasis"
+        },
+        "wheelchair": {
+          "description": "Wheelchair access to each feature of the ferry service. A feature that is absent is unknown.",
+          "type": "object",
+          "properties": {
+            "boarding": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "seating": {
+              "$ref": "#/$defs/AccessFeature"
+            },
+            "toilets": {
+              "$ref": "#/$defs/AccessFeature"
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "toilets": {
+          "$ref": "#/$defs/AccessibleToilets"
+        },
+        "step_free_access": {
+          "description": "True when a wheelchair user can board and reach the passenger areas without steps.",
+          "type": "boolean"
+        },
+        "hearing_loop": {
+          "description": "True when the passenger areas have a hearing loop.",
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 2
     },
     "Bookings": {
       "description": "Whether and how to book.",
@@ -890,8 +1383,9 @@
       "additionalProperties": false
     },
     "SeasonalClosure": {
-      "description": "Safety fact. When a road segment or ferry service closes every year or after weather, and the authority that closes it. Declared closures change daily and are never stored: apps send travellers to info_url for current conditions. The periods are local calendar days, read in the record's time zone or in time_zone when it is given.",
+      "description": "Safety fact. When a road segment or ferry service closes every year or after weather, and the authority that closes it. Declared closures change daily and are never stored: apps send travellers to info_url for current conditions. The periods are local calendar days, read in the record's time zone or in time_zone when it is given. authority is the authority that declares closures, and info_url its official page for current closures and conditions",
       "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
       "properties": {
         "time_zone": {
           "$ref": "#/$defs/ScheduleTimeZone"
@@ -915,21 +1409,11 @@
           "description": "True when it closes, or becomes impassable, after rain or in floods.",
           "type": "boolean"
         },
-        "authority": {
-          "description": "The authority that declares closures, for example Parks Victoria.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 200
-        },
-        "info_url": {
-          "description": "The authority's official page for current closures and conditions.",
-          "$ref": "common.schema.json#/$defs/HttpsUrl"
-        },
         "notes": {
           "$ref": "common.schema.json#/$defs/Notes"
         }
       },
-      "additionalProperties": false,
+      "unevaluatedProperties": false,
       "anyOf": [
         {
           "required": ["periods"],
@@ -1189,7 +1673,7 @@
       "additionalProperties": false
     },
     "Facilities": {
-      "description": "A map from facility code to facility value. Codes with defined attributes are checked here. Codes not listed are accepted with free-form attributes so that new governed list entries do not break older validators. In stored sites and in submissions the codes pets_allowed, dog_off_leash and big_rig_access are read from the pets and rig_limits facts instead (see StoredFacilities). The compact site form fills them in for convenience.",
+      "description": "A map from facility code to facility value. Codes with defined attributes are checked here. Codes not listed are accepted with free-form attributes so that new governed list entries do not break older validators. In stored sites and in submissions the codes facilities.json marks with stored_as are read from other facts instead (see StoredFacilities). The compact site form fills them in for convenience.",
       "type": "object",
       "propertyNames": {
         "$ref": "common.schema.json#/$defs/FacilityCode"
@@ -1255,7 +1739,7 @@
       }
     },
     "StoredFacilities": {
-      "description": "Facilities as submitted and stored: the codes read from other facts (pets_allowed, dog_off_leash, big_rig_access) are not allowed.",
+      "description": "Facilities as submitted and stored: the codes read from other facts are not allowed. The anyOf lists exactly the codes facilities.json marks with stored_as, and tools/validate.py checks that the two agree.",
       "$ref": "#/$defs/Facilities",
       "not": {
         "anyOf": [
@@ -1275,6 +1759,12 @@
             "required": ["big_rig_access"],
             "properties": {
               "big_rig_access": true
+            }
+          },
+          {
+            "required": ["accessible_facilities"],
+            "properties": {
+              "accessible_facilities": true
             }
           }
         ]
@@ -1666,6 +2156,7 @@
       "additionalProperties": false
     },
     "AccessibleFacilitiesValue": {
+      "description": "Read from the accessibility fact, and absent when no wheelchair feature is recorded. available is false, with no attributes, when arrival is no or every recorded feature is no. Otherwise available is true, and wheelchair is yes when arrival is yes and every recorded feature is yes, and limited in every other case: arrival limited, any feature limited or no, or arrival not recorded, since an unknown arrival gives limited at best. features lists the features whose access is yes.",
       "allOf": [
         {
           "$ref": "#/$defs/FacilityWithAttributes"
@@ -1677,20 +2168,35 @@
         "attributes": {
           "type": "object",
           "properties": {
+            "wheelchair": {
+              "type": "string",
+              "enum": ["yes", "limited"]
+            },
             "features": {
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
               "items": {
-                "type": "string",
-                "enum": ["toilet", "shower", "parking", "path", "campsite", "cabin"]
+                "$ref": "#/$defs/SiteAccessFeature"
               }
             }
           },
           "additionalProperties": false
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "available": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "attributes": false
+        }
+      }
     },
     "GeneratorsAllowedValue": {
       "allOf": [

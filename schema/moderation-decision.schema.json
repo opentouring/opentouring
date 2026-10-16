@@ -71,6 +71,16 @@
         "always_human": {
           "description": "True when the submission is on the always-human list. The fixed checks derive it, and it must be true whenever the kind or a field puts the submission on the list.",
           "type": "boolean"
+        },
+        "fixed_check_flags": {
+          "description": "Fixed-check results that send a submission outside the always-human list to a person all the same. Like always_human, the fixed checks set them and routing only reads them. accessibility_raised: the submission raises wheelchair access for any feature of a site or ferry service to yes, sets step_free_access or changing_places to true, or sets toilets.key_required to false. A wrong yes there can strand a traveller, while a wrong no costs far less, so only the raise goes to a person.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["accessibility_raised"]
+          }
         }
       },
       "additionalProperties": false,
@@ -240,7 +250,7 @@
       }
     },
     {
-      "description": "A routing rule may only approve, only on the auto_approval route, and only a submission outside the always-human list. The fixed checks derive membership of the list from routing's submission_kind, record_type and fields, so the always_human false required here is a cross-check, never the rule itself.",
+      "description": "A routing rule may only approve, only on the auto_approval route, and only a submission outside the always-human list that no fixed check flagged for a person. The fixed checks derive membership of the list from routing's submission_kind, record_type and fields, so the always_human false required here is a cross-check, never the rule itself.",
       "if": {
         "properties": {
           "decided_by": {
@@ -264,6 +274,13 @@
               },
               "always_human": {
                 "const": false
+              },
+              "fixed_check_flags": {
+                "not": {
+                  "contains": {
+                    "const": "accessibility_raised"
+                  }
+                }
               }
             }
           }

@@ -42,6 +42,10 @@ _Avoid_: entity type, layer, collection
 Any place a traveller stops at that OTWD records, such as a campsite, caravan park, rest area, dump point, ferry terminal or attraction. A point record.
 _Avoid_: POI, place, listing, location
 
+**Pitch**:
+An individual camping spot within a site, for one rig or one tent, powered or unpowered.
+_Avoid_: site, campsite, bay, lot (for one camping spot)
+
 **Location**:
 The latitude and longitude of a site or road restriction, and nothing more.
 _Avoid_: address, site (when only the coordinates are meant)
@@ -63,7 +67,7 @@ A typed detail of a facility, defined with the facility in the governed list, su
 _Avoid_: property, option, sub-field
 
 **Governed list**:
-A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes and vehicle classes, which the community extends by proposal and the steering group approves.
+A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
 **Reference language**:
@@ -79,7 +83,7 @@ One field value about a record, such as a facility, a price, opening hours, a ri
 _Avoid_: property, field (when the value is meant)
 
 **Safety fact**:
-A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans and day-to-day road closures are never facts: OTWD links to the authority instead.
+A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures and live baiting programmes are never facts: OTWD links to the authority instead.
 _Avoid_: critical field
 
 **Fire district**:
@@ -89,6 +93,34 @@ _Avoid_: fire ban, fire danger rating, fire zone
 **Rig limit**:
 A fact that restricts which vehicles can use a site, such as maximum length, height, weight or a ban on towing. Each is the largest vehicle that fits.
 _Avoid_: vehicle restriction, size limit
+
+**Accessibility**:
+Access for people with disability at a site or on a ferry service: wheelchair access per feature (yes, limited or no), accessible and ambulant toilets, Changing Places, the key scheme, accessible parking, step-free access, paths and hearing loops, with its accessibility basis. Not a safety fact, but a change that raises access to yes goes to a person, because a wrong yes can strand a traveller.
+_Avoid_: disability access, wheelchair friendly, accessible (as a yes or no flag)
+
+**Accessibility basis**:
+What an accessibility fact rests on: an assessment against a named access standard, signs at the site, the operator's or a seed source's own statement, or a contributor's observation. It sits beside provenance, which says who reported the fact.
+_Avoid_: certification, accessibility rating
+
+**Key scheme**:
+A central key that opens accessible toilets and other facilities for people with disability, from a governed list with the countries each is used in, such as MLAK in Australia.
+_Avoid_: disability key, access key (on its own)
+
+**Pet policy**:
+The rule on pets at a site (the pets fact) or on a ferry service: whether pets are allowed or carried, the rule per pet species, and conditions such as a maximum number, fees, areas and periods when pets are not allowed. Assistance animals are covered by law, not by a pet policy.
+_Avoid_: pet friendly, dog policy (for the whole rule)
+
+**Pet species**:
+A governed category of animal a pet policy names, such as dog, cat or horse.
+_Avoid_: animal type, pet type
+
+**Pet transit**:
+Whether travellers may take pets along a road segment, such as a road through a national park: yes, in the vehicle only, or no, with the authority that sets the rule and its link.
+_Avoid_: dog access, pet access (for a road)
+
+**Bait notice**:
+A notice that poison baits for pest animals, such as 1080, are laid in or next to a site or road segment, with the area, local dates and the authority's link. A safety fact, because a bait can kill a dog. OTWD records the notice and never the authority's live baiting programme.
+_Avoid_: baiting alert, 1080 warning
 
 **Description**:
 A short original text about a record, written by a contributor and published under the data licence.

@@ -1,0 +1,7 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/high-country-track-vic.road-segment.json",
+  "$patch": [
+    { "op": "add", "path": "/facts/bait_notices/value/0/time_zone", "value": "Australia/Perth" }
+  ]
+}

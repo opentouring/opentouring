@@ -276,6 +276,69 @@
         "change_seq": 4120
       }
     },
+    "bait_notices": {
+      "value": [
+        {
+          "area": "The reserve east of the campground, signed at the entry gate.",
+          "poison": "1080",
+          "authority": "Example Parks Agency",
+          "info_url": "https://www.example.org/parks/pest-baiting",
+          "from": "2026-09-01",
+          "to": "2026-11-30",
+          "notes": [
+            {
+              "text": "Keep dogs out of the park. Pets are not allowed here in any case.",
+              "lang": "en-AU"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-09-20",
+        "recorded_at": "2026-09-24T01:00:00Z",
+        "confidence": 0.9,
+        "submission_id": "otwd:submission:01M3XB41TQ7Z9K2W8N5R6D3HEA",
+        "decision_id": "otwd:decision:01M3XC8P2V6N4K9T7R5W3Q1HZB",
+        "change_seq": 30410
+      }
+    },
+    "accessibility": {
+      "value": {
+        "basis": {
+          "kind": "contributor_observation"
+        },
+        "wheelchair": {
+          "arrival": {
+            "access": "no",
+            "notes": [
+              {
+                "text": "Six timber steps lead down from the car park to the camping area, with no ramp.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "toilets": {
+            "access": "yes"
+          }
+        },
+        "toilets": {
+          "accessible_count": 1,
+          "ambulant": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-09-20",
+        "recorded_at": "2026-09-24T01:00:00Z",
+        "confidence": 0.9,
+        "submission_id": "otwd:submission:01M3XB41TQ7Z9K2W8N5R6D3HEA",
+        "decision_id": "otwd:decision:01M3XC8P2V6N4K9T7R5W3Q1HZB",
+        "change_seq": 30410
+      }
+    },
     "rig_limits": {
       "value": {
         "max_length_m": 7,

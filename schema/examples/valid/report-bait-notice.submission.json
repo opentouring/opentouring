@@ -1,0 +1,31 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "update_facts",
+  "record_id": "otwd:road_segment:01M32FADW05SWY4J87AKN7XP34",
+  "base_change_seq": 30702,
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "fo-7Qm2xK9pLr4T"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-12T03:45:00Z",
+  "observed_on": "2026-10-11",
+  "proposed": {
+    "facts": {
+      "bait_notices": [
+        {
+          "area": "The camping area at the river crossing and 1 km either side.",
+          "poison": "1080",
+          "authority": "Example Land Management Agency",
+          "info_url": "https://www.example.org/land/wild-dog-baiting",
+          "from": "2026-10-01",
+          "to": "2026-12-31"
+        }
+      ]
+    }
+  }
+}

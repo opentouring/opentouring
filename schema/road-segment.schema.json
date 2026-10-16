@@ -122,6 +122,25 @@
             }
           }
         },
+        "pet_transit": {
+          "description": "Whether travellers may take pets along the road segment, with the authority that sets the rule and its link. Not a safety fact: a wrong rule costs a traveller a detour or a fine.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/PetTransit"
+            }
+          }
+        },
+        "bait_notices": {
+          "description": "Safety fact. Poison bait notices in or next to the road segment, recorded as the notice gives them with the authority's link, never as a live baiting programme. A bait can kill a dog, so every change needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/BaitNotices"
+            }
+          }
+        },
         "description": {
           "$ref": "common.schema.json#/$defs/Fact",
           "properties": {
@@ -168,6 +187,12 @@
         },
         "length_limit": {
           "$ref": "values.schema.json#/$defs/LengthLimit"
+        },
+        "pet_transit": {
+          "$ref": "values.schema.json#/$defs/PetTransit"
+        },
+        "bait_notices": {
+          "$ref": "values.schema.json#/$defs/BaitNotices"
         },
         "description": {
           "$ref": "values.schema.json#/$defs/Description"

@@ -63,52 +63,60 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 
 ## Facilities
 
-| Code                    | OSM tags                          | Match    | Note                                                                                    |
-| ----------------------- | --------------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `toilets`               | `toilets=yes`                     | exact    |                                                                                         |
-| `toilets`               | `toilets:disposal=flush`          | related  | Maps the kind attribute value flush.                                                    |
-| `toilets`               | `toilets:disposal=pitlatrine`     | related  | Maps the kind attribute value pit. Add composting=yes when the pit toilet composts.     |
-| `toilets`               | `toilets:disposal=chemical`       | related  | Maps the kind attribute value chemical.                                                 |
-| `toilets`               | `toilets:disposal=dry_toilet`     | related  | Maps the kind attribute value composting where the toilet dehydrates or composts waste. |
-| `showers`               | `shower=yes`                      | exact    |                                                                                         |
-| `showers`               | `hot_water=yes`                   | narrower | Hot water available. Key:shower treats shower=hot as a tagging mistake.                 |
-| `showers`               | `shower:fee=yes`                  | related  | Maps the fee attribute.                                                                 |
-| `drinking_water`        | `drinking_water=yes`              | exact    |                                                                                         |
-| `non_potable_water`     | `drinking_water=no`               | related  | On the tap or water point, for example man_made=water_tap.                              |
-| `power`                 | `power_supply=yes`                | exact    |                                                                                         |
-| `dump_point_access`     | `sanitary_dump_station=yes`       | exact    |                                                                                         |
-| `dump_point_access`     | `sanitary_dump_station=customers` | narrower | Equivalent to guests_only true.                                                         |
-| `bins`                  | `bin=yes`                         | exact    | A bin is available at the camp site or caravan site.                                    |
-| `bins`                  | `amenity=waste_basket`            | related  | Small bins, mapped as separate features.                                                |
-| `bins`                  | `amenity=waste_disposal`          | related  | Large bins or skips.                                                                    |
-| `recycling`             | `amenity=recycling`               | exact    |                                                                                         |
-| `bbq`                   | `bbq=yes`                         | exact    |                                                                                         |
-| `bbq`                   | `amenity=bbq`                     | related  | A barbecue mapped as a separate feature.                                                |
-| `fire_pit`              | `firepit=yes`                     | exact    | Key:fireplace is for chimneys and enclosed fireplaces, not fire pits.                   |
-| `fire_pit`              | `leisure=firepit`                 | related  | A fire pit mapped as a separate feature.                                                |
-| `fires_allowed`         | `openfire=yes`                    | exact    |                                                                                         |
-| `shade`                 | `shade=yes`                       | related  | Marks a feature that is in shade. Used mostly on ways and rare on camp sites.           |
-| `picnic_tables`         | `picnic_table=yes`                | exact    | A picnic table is available at the camp site or caravan site.                           |
-| `picnic_tables`         | `leisure=picnic_table`            | related  | Tables mapped as separate features.                                                     |
-| `playground`            | `leisure=playground`              | related  | Mapped as a separate feature.                                                           |
-| `pool`                  | `swimming_pool=yes`               | exact    |                                                                                         |
-| `pool`                  | `leisure=swimming_pool`           | related  | A pool mapped as a separate feature.                                                    |
-| `laundry`               | `washing_machine=yes`             | exact    |                                                                                         |
-| `wifi`                  | `internet_access=wlan`            | exact    |                                                                                         |
-| `mobile_coverage`       | none                              |          |                                                                                         |
-| `pets_allowed`          | `dog=yes`                         | narrower | Dogs only. dog=leashed when pets.allowed is on_leash.                                   |
-| `dog_off_leash`         | `leisure=dog_park`                | related  |                                                                                         |
-| `dog_off_leash`         | `dog=unleashed`                   | related  | Dogs may be off the lead. Documented on Key:dog.                                        |
-| `accessible_facilities` | `wheelchair=yes`                  | exact    |                                                                                         |
-| `generators_allowed`    | none                              |          |                                                                                         |
-| `big_rig_access`        | `maxlength=*`                     | related  | Length limits on the access road, not a property of the site.                           |
-| `big_rig_access`        | `maxheight=*`                     | related  | Height limits on the access road, not a property of the site.                           |
-| `big_rig_access`        | `maxweight=*`                     | related  | Weight limits on the access road, not a property of the site.                           |
-| `drive_through_sites`   | none                              |          |                                                                                         |
-| `ensuite_sites`         | none                              |          |                                                                                         |
-| `cabins`                | `cabins=yes`                      | exact    |                                                                                         |
-| `tent_sites`            | `tents=yes`                       | exact    |                                                                                         |
-| `camp_kitchen`          | `kitchen=yes`                     | exact    |                                                                                         |
+| Code                    | OSM tags                          | Match    | Note                                                                                                             |
+| ----------------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| `toilets`               | `toilets=yes`                     | exact    |                                                                                                                  |
+| `toilets`               | `toilets:disposal=flush`          | related  | Maps the kind attribute value flush.                                                                             |
+| `toilets`               | `toilets:disposal=pitlatrine`     | related  | Maps the kind attribute value pit. Add composting=yes when the pit toilet composts.                              |
+| `toilets`               | `toilets:disposal=chemical`       | related  | Maps the kind attribute value chemical.                                                                          |
+| `toilets`               | `toilets:disposal=dry_toilet`     | related  | Maps the kind attribute value composting where the toilet dehydrates or composts waste.                          |
+| `showers`               | `shower=yes`                      | exact    |                                                                                                                  |
+| `showers`               | `hot_water=yes`                   | narrower | Hot water available. Key:shower treats shower=hot as a tagging mistake.                                          |
+| `showers`               | `shower:fee=yes`                  | related  | Maps the fee attribute.                                                                                          |
+| `drinking_water`        | `drinking_water=yes`              | exact    |                                                                                                                  |
+| `non_potable_water`     | `drinking_water=no`               | related  | On the tap or water point, for example man_made=water_tap.                                                       |
+| `power`                 | `power_supply=yes`                | exact    |                                                                                                                  |
+| `dump_point_access`     | `sanitary_dump_station=yes`       | exact    |                                                                                                                  |
+| `dump_point_access`     | `sanitary_dump_station=customers` | narrower | Equivalent to guests_only true.                                                                                  |
+| `bins`                  | `bin=yes`                         | exact    | A bin is available at the camp site or caravan site.                                                             |
+| `bins`                  | `amenity=waste_basket`            | related  | Small bins, mapped as separate features.                                                                         |
+| `bins`                  | `amenity=waste_disposal`          | related  | Large bins or skips.                                                                                             |
+| `recycling`             | `amenity=recycling`               | exact    |                                                                                                                  |
+| `bbq`                   | `bbq=yes`                         | exact    |                                                                                                                  |
+| `bbq`                   | `amenity=bbq`                     | related  | A barbecue mapped as a separate feature.                                                                         |
+| `fire_pit`              | `firepit=yes`                     | exact    | Key:fireplace is for chimneys and enclosed fireplaces, not fire pits.                                            |
+| `fire_pit`              | `leisure=firepit`                 | related  | A fire pit mapped as a separate feature.                                                                         |
+| `fires_allowed`         | `openfire=yes`                    | exact    |                                                                                                                  |
+| `shade`                 | `shade=yes`                       | related  | Marks a feature that is in shade. Used mostly on ways and rare on camp sites.                                    |
+| `picnic_tables`         | `picnic_table=yes`                | exact    | A picnic table is available at the camp site or caravan site.                                                    |
+| `picnic_tables`         | `leisure=picnic_table`            | related  | Tables mapped as separate features.                                                                              |
+| `playground`            | `leisure=playground`              | related  | Mapped as a separate feature.                                                                                    |
+| `pool`                  | `swimming_pool=yes`               | exact    |                                                                                                                  |
+| `pool`                  | `leisure=swimming_pool`           | related  | A pool mapped as a separate feature.                                                                             |
+| `laundry`               | `washing_machine=yes`             | exact    |                                                                                                                  |
+| `wifi`                  | `internet_access=wlan`            | exact    |                                                                                                                  |
+| `mobile_coverage`       | none                              |          |                                                                                                                  |
+| `pets_allowed`          | `pets=yes`                        | exact    | Documented on Key:pets as in use. pets=no when pets.allowed is no.                                               |
+| `pets_allowed`          | `dog=yes`                         | narrower | Dogs only. dog=leashed when the dog rule is on_leash. See pet-species.json for other species.                    |
+| `dog_off_leash`         | `leisure=dog_park`                | related  |                                                                                                                  |
+| `dog_off_leash`         | `dog=unleashed`                   | related  | Dogs may be off the lead. Documented on Key:dog.                                                                 |
+| `accessible_facilities` | `wheelchair=yes`                  | exact    | When the wheelchair attribute is yes.                                                                            |
+| `accessible_facilities` | `wheelchair=limited`              | exact    | When the wheelchair attribute is limited.                                                                        |
+| `accessible_facilities` | `wheelchair=no`                   | exact    | When available is false: arrival is no or every recorded feature is no.                                          |
+| `accessible_facilities` | `toilets:wheelchair=yes`          | related  | When toilets is in features. Approved on the OSM wiki.                                                           |
+| `accessible_facilities` | `capacity:disabled=*`             | related  | The count in accessibility.accessible_parking_spaces.                                                            |
+| `accessible_facilities` | `centralkey=*`                    | related  | The key scheme in accessibility.toilets.key_scheme. See key-schemes.json.                                        |
+| `accessible_facilities` | `changing_table:adult=yes`        | related  | When accessibility.toilets.changing_places is true. An adult change table alone is not a Changing Places toilet. |
+| `accessible_facilities` | `wheelchair:description=*`        | related  | The accessibility notes.                                                                                         |
+| `generators_allowed`    | none                              |          |                                                                                                                  |
+| `big_rig_access`        | `maxlength=*`                     | related  | Length limits on the access road, not a property of the site.                                                    |
+| `big_rig_access`        | `maxheight=*`                     | related  | Height limits on the access road, not a property of the site.                                                    |
+| `big_rig_access`        | `maxweight=*`                     | related  | Weight limits on the access road, not a property of the site.                                                    |
+| `drive_through_sites`   | none                              |          |                                                                                                                  |
+| `ensuite_sites`         | none                              |          |                                                                                                                  |
+| `cabins`                | `cabins=yes`                      | exact    |                                                                                                                  |
+| `tent_sites`            | `tents=yes`                       | exact    |                                                                                                                  |
+| `camp_kitchen`          | `kitchen=yes`                     | exact    |                                                                                                                  |
 
 ## Structures
 
@@ -175,6 +183,23 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `heavy_vehicle`  | `hgv=yes`        | exact    |                               |
 | `bus`            | `bus=yes`        | exact    |                               |
 
+## Key schemes
+
+| Code      | OSM tags             | Match | Note                                            |
+| --------- | -------------------- | ----- | ----------------------------------------------- |
+| `mlak`    | `centralkey=mlak`    | exact |                                                 |
+| `radar`   | `centralkey=nks`     | exact | OSM names the scheme nks (National Key Scheme). |
+| `eurokey` | `centralkey=eurokey` | exact |                                                 |
+
+## Pet species
+
+| Code    | OSM tags      | Match   | Note                                                                          |
+| ------- | ------------- | ------- | ----------------------------------------------------------------------------- |
+| `dog`   | `dog=yes`     | exact   |                                                                               |
+| `dog`   | `dog=leashed` | exact   | When the species is allowed on_leash.                                         |
+| `cat`   | `cat=yes`     | exact   | Documented on Key:cat as in use.                                              |
+| `horse` | `horse=yes`   | related | Key:horse is access for riders on a way or area, not whether horses may stay. |
+
 ## Record types and their facts
 
 Road restrictions, road segments and ferry services are not governed lists, so their mapping is given here only. OSM records most of these facts as tags on the road way or ferry route a limit applies to.
@@ -198,6 +223,15 @@ Road restrictions, road segments and ferry services are not governed lists, so t
 | `towing_permitted` not_recommended                           | none                                                                                       |         | OSM has no advisory value.                                                                                                                  |
 | `seasonal_closure`                                           | `motor_vehicle:conditional=no @ (Jun 10-Oct 31)`                                           | related | OSM conditional restrictions hold the period. OTWD also records the authority and its link.                                                 |
 | Ferry service                                                | `route=ferry`                                                                              | exact   | On the ferry route way, with `motorcar=*`, `hgv=*`, `bicycle=*` and `foot=*` for the vehicle classes carried.                               |
+| `accessibility.wheelchair` feature yes, limited or no        | `wheelchair=yes`, `wheelchair=limited`, `wheelchair=no`                                    | related | OSM tags one value on the feature itself, such as a toilet block or a path. OTWD gives one per feature of the site.                         |
+| `accessibility.wheelchair.toilets` yes                       | `toilets:wheelchair=yes`                                                                   | related | OSM has no documented count for `accessibility.toilets.accessible_count`.                                                                   |
+| `accessibility.toilets.ambulant` and `ambulant_count`        | none                                                                                       |         | No documented OSM key for ambulant toilets.                                                                                                 |
+| `accessibility.hearing_loop`                                 | `hearing_loop=yes`                                                                         | related | Used, but the hearing loop proposal is still a draft.                                                                                       |
+| `accessibility.step_free_access`                             | none                                                                                       |         | OSM records steps (`step_count=*`) and kerbs on ways and entrances, not for a whole site.                                                   |
+| `pet_transit` no                                             | `dog=no` on the road way                                                                   | related | Dogs only, and OSM dog access means walking a dog, not carrying one in a vehicle.                                                           |
+| `pet_transit` in_vehicle_only                                | none                                                                                       |         | OSM has no value for pets carried in a vehicle.                                                                                             |
+| `bait_notices`                                               | none                                                                                       |         | No documented tag. `hazard=poison` has 6 uses and no wiki page.                                                                             |
+| `pet_policy` on a ferry service                              | none                                                                                       |         | No documented tag for pets on a ferry.                                                                                                      |
 | Ferry terminal                                               | `amenity=ferry_terminal`                                                                   | exact   | A site with the `ferry_terminal` site type.                                                                                                 |
 | `vehicle_limits.max_length_m` and the like                   | `maxlength=*`, `maxheight=*`, `maxweight=*` on the ferry route                             | related | Per-class limits and vehicle bands have no OSM equivalent.                                                                                  |
 

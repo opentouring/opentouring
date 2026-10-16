@@ -131,6 +131,14 @@
       "description": "A code from the governed vehicle class vocabulary (vehicle-classes.json). Consumers ignore codes they do not recognise.",
       "$ref": "#/$defs/Code"
     },
+    "KeySchemeCode": {
+      "description": "A code from the governed key scheme vocabulary (key-schemes.json). Consumers ignore codes they do not recognise.",
+      "$ref": "#/$defs/Code"
+    },
+    "PetSpeciesCode": {
+      "description": "A code from the governed pet species vocabulary (pet-species.json). Consumers ignore codes they do not recognise.",
+      "$ref": "#/$defs/Code"
+    },
     "ReasonCode": {
       "description": "A machine-readable reason in a verdict or a moderation decision, for example price_outlier or duplicate_of_existing_site.",
       "type": "string",

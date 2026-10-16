@@ -1,0 +1,10 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/caravan-park-nt.site.json",
+  "$patch": [
+    {
+      "op": "remove",
+      "path": "/facts/accessibility/value/basis/standard"
+    }
+  ]
+}

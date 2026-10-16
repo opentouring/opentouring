@@ -1,0 +1,10 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/national-park-campsite-nsw.site.json",
+  "$patch": [
+    {
+      "op": "remove",
+      "path": "/facts/bait_notices/value/0/info_url"
+    }
+  ]
+}

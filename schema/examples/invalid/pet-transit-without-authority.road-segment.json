@@ -1,0 +1,10 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/high-country-track-vic.road-segment.json",
+  "$patch": [
+    {
+      "op": "remove",
+      "path": "/facts/pet_transit/value/authority"
+    }
+  ]
+}
