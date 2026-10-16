@@ -37,6 +37,8 @@ Every request carries an API key in the `OTWD-API-Key` header, including bulk do
 
 ## Versioning
 
+Until version 1.0.0 is released, the schema and the API are a draft. Release means a `v1.0.0` tag on this repository, made before any partner app outside the project integrates ([ADR 0030](../docs/adr/0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md)). Before that tag, any field, code or endpoint can change or be removed without a new major version, and documents carry `schema_version` `1.0`. From the tag on, the rules below apply.
+
 The major version is in the path (`/v1`). Within v1, changes are additive only: new endpoints, new optional query parameters, new optional response fields, and new governed list codes. Clients must ignore response fields and codes they do not recognise. A breaking change ships as `/v2` with schema version 2, and `/v1` keeps running alongside it for at least 12 months after `/v2` is released. Each response body that is a record carries its `schema_version`.
 
 ## Compact and full forms

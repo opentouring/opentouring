@@ -1,6 +1,6 @@
 {
   "$comment": "SPDX-License-Identifier: Apache-2.0",
-  "schema_version": "1.1",
+  "schema_version": "1.0",
   "id": "otwd:ferry_service:01M32SM0R0YSSMC1FDQP01T3DF",
   "status": "active",
   "created_at": "2026-10-06T06:05:00Z",

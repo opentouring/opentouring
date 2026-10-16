@@ -2,7 +2,7 @@
 openapi: 3.1.0
 info:
   title: OTWD API
-  version: 1.1.0
+  version: 1.0.0-draft
   summary: Read Open Touring records and send contributors' submissions back for moderation.
   description: |
     The OTWD API serves the Open Touring and Waypoint Database: the sites travellers stop at on

@@ -117,6 +117,8 @@ The fuel site type records that a fuel station is there and its non-fuel facts. 
 
 ## Versioning
 
+Until version 1.0.0 is released, the schema and the API are a draft. Release means a `v1.0.0` tag on this repository, made before any partner app outside the project integrates ([ADR 0030](../docs/adr/0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md)). Before that tag, any field, code or endpoint can change or be removed without a new major version, and documents carry `schema_version` `1.0`. From the tag on, the rules below apply.
+
 Documents carry `schema_version` (for example `1.0`). Minor versions only add optional fields and governed list entries, so a document valid under 1.0 stays valid under every 1.x, and a consumer written for 1.0 can read any 1.x document by ignoring what it does not know. Removing or changing the meaning of a field or code needs version 2, published under a new `$id` base (`.../otwd/v2/`) and served under `/v2` of the API alongside `/v1`.
 
 ## Validating

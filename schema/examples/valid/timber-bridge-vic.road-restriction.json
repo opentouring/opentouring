@@ -1,6 +1,6 @@
 {
   "$comment": "SPDX-License-Identifier: Apache-2.0",
-  "schema_version": "1.1",
+  "schema_version": "1.0",
   "id": "otwd:road_restriction:01M32BWJ80SX7VTP3E1YEM98G9",
   "status": {
     "value": "active",
