@@ -106,7 +106,7 @@ Every submission follows the same stages, whoever sent it and whatever tier thei
 6. **Apply.** An approved submission becomes a change: live data is updated, the change gets the next sequence number, and a change event goes to the outbox in the same transaction.
 7. **Publish.** Change events drive the bulk download builder, the cache purger and the webhook sender.
 
-Human decisions are kept as the evaluation set used to measure the AI review. Contributors can appeal a moderation decision, and an appeal is reviewed by a different moderator. Trust scores are recalculated from decision outcomes.
+The rules for each stage are published in [the moderation policy](policies/moderation.md), whose version every moderation decision records. Human decisions are kept as the evaluation set used to measure the AI review. Contributors can appeal a moderation decision, and an appeal is reviewed by a different moderator. Trust scores are recalculated from decision outcomes.
 
 ## Scaling
 
@@ -117,5 +117,7 @@ The platform starts at minimum size (a small cluster, one database plus a replic
 **Preview** is the environment running now. It is the production stack at minimum size, with seeded government data for Victoria, the first state ([ADR 0024](adr/0024-one-state-first.md)), and only the maintainer's submissions. Outside contributions are switched off at the gateway. FuelOracle, as founding partner, sends contribute-back submissions to a separate **staging** environment only, which mirrors preview and is where partner integrations are tested.
 
 **Production** opens once a host agreement is signed and the contributor terms are in force. It is the same code and infrastructure definitions as preview, sized up, with outside contributions switched on.
+
+Database backups, restores and restore tests follow [the disaster recovery runbook](operations/disaster-recovery.md) ([ADR 0041](adr/0041-disaster-recovery-and-backups.md)).
 
 OpenTofu state is kept, encrypted, in one Linode Object Storage bucket in Singapore, the only use of Linode Object Storage ([ADR 0029](adr/0029-object-storage-deferred-singapore-bucket-for-infrastructure-state-only.md)). All environments are defined with OpenTofu and deployed by Argo CD from this repository, so a new environment, or a move to the host's own accounts, is a matter of applying the same code with different settings.
