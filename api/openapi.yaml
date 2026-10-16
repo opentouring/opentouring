@@ -70,6 +70,16 @@ info:
     `source_url` and `changes`, which must be shown with the photo. GET /v1/seed-sources lists
     every seed source with its licence and credit.
 
+    ## Deprecation
+
+    Within v1 nothing is removed. An endpoint, parameter or field that has a better replacement
+    is deprecated: it keeps working for the life of v1, the schema marks a deprecated field with
+    `deprecated: true`, and responses from a deprecated endpoint carry the `Deprecation` header
+    (RFC 9745) with the date it was deprecated and a `Link` with `rel="deprecation"` to the
+    notice. `Sunset` (RFC 8594) appears only on `/v1` once `/v2` is released, with a date at least
+    12 months away and never earlier than the deprecation date, plus a `Link` with `rel="sunset"`.
+    Watch for both headers in your logs.
+
     ## Licences
 
     The data is CC BY 4.0. This specification and the OTWD JSON Schema it uses are Apache-2.0.
@@ -112,6 +122,8 @@ tags:
     description: Every change applied to the live data, in order. Paid tiers.
   - name: Submissions
     description: Send a contributor's new records, corrections, confirmations, photos, closures, merge, unmerge, split and replacement requests and problem reports for moderation.
+  - name: Moderation
+    description: Not for partner apps. The moderation queue, cases, decisions, reverts and takedowns the website's moderate pages use, for moderators signed in through OIDC.
   - name: Partner keys and tokens
     description: Manage a partner app's API keys, and mint short-lived contributor tokens so mobile apps never hold an API key.
 
@@ -194,6 +206,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -247,6 +263,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -416,6 +436,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -463,6 +487,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -569,6 +597,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -616,6 +648,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -692,6 +728,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -739,6 +779,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -972,6 +1016,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -993,6 +1041,12 @@ paths:
         send it as `after_seq` on the next call. Sequence numbers may have gaps, so never count
         on seq + 1. A change whose `previous_seq` differs from the change_seq you hold for that
         record means you missed one: fetch the record again. The feed covers every record type.
+        Skip changes to record types you do not know.
+
+        The feed keeps changes for 90 days. Full bulk downloads are built at least once a week, so
+        a consumer that falls behind always has a full download newer than the oldest retained
+        change. If `after_seq` is older than the retained feed the response is 410: load the
+        latest full bulk download of each record type you follow and resume from its `to_seq`.
 
         Needs a paid tier. The response for a free key is 403 with problem type tier-required.
       parameters:
@@ -1032,6 +1086,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -1041,7 +1099,7 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "410":
-          description: after_seq is older than the retained feed. Start again from the latest full bulk download.
+          description: after_seq is older than the 90 days the feed retains. Load the latest full bulk download of each record type you follow and resume from its to_seq. The problem type is change-feed-gap.
           content:
             application/problem+json:
               schema:
@@ -1104,6 +1162,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -1162,6 +1224,114 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
+  /v1/submissions/{submission_id}/appeals:
+    post:
+      tags: [Submissions]
+      operationId: createAppeal
+      summary: Appeal a moderation decision
+      description: |
+        Asks for a moderator to reconsider a decision on the contributor's submission, before the
+        decision's `appealable_until`. Any contributor can appeal this way, including a
+        partner app's pseudonymous contributors, who have no Open Touring account. A different
+        moderator from the one who decided reviews the appeal, and the outcome is a new
+        decision that names the earlier one in `appeal_of`. It arrives like any other decision:
+        in the submission's status and through the submissionDecided webhook.
+
+        Only the partner app that sent the submission, with its key or a contributor token for
+        the same contributor, or the direct contributor who made it, can appeal. One appeal is
+        open per decision at a time.
+      security:
+        - ApiKey: []
+        - ContributorToken: []
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppealRequest"
+      responses:
+        "201":
+          description: The appeal was received.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appeal"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: The decision cannot be appealed now, because appealable_until has passed or an appeal of it is already open (problem type appeal-closed or appeal-open).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/submissions/{submission_id}/replies:
+    post:
+      tags: [Submissions]
+      operationId: replyToNeedsInfo
+      summary: Answer a request for more information
+      description: |
+        Answers a needs_info decision: the contributor's message to the moderator and, if the
+        moderator asked for a correction, revised proposed values in the shape of the
+        submission's own kind. The submission goes back to the moderator's queue with status
+        in_review. A reply is accepted only while the submission's status is needs_info.
+        Partner apps relay the decision's public_note to the contributor and send their answer
+        here, because OTWD cannot contact a pseudonymous contributor itself (ADR 0011).
+      security:
+        - ApiKey: []
+        - ContributorToken: []
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplyRequest"
+      responses:
+        "202":
+          description: The reply was added and the submission is back in review.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmissionStatus"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: The submission is not waiting for information (problem type not-needs-info).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: The reply does not validate, or the revised values do not fit the submission's kind.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
   /v1/photo-uploads:
     post:
       tags: [Submissions]
@@ -1212,6 +1382,289 @@ paths:
                 $ref: "#/components/schemas/ValidationProblem"
         "429":
           $ref: "#/components/responses/TooManyRequests"
+
+  /v1/moderation/queue:
+    get:
+      tags: [Moderation]
+      operationId: listModerationQueue
+      summary: List the moderation queue
+      description: |
+        Not for partner apps. The submissions and appeals waiting for a moderator, oldest first,
+        for the website's moderate pages ([ADR 0023](https://github.com/opentouring/opentouring/blob/main/docs/adr/0023-the-website-is-just-another-api-client.md)).
+        Needs a moderator signed in through OIDC. Every read and decision is logged against the
+        moderator. Items name the contributor only by their trust summary.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - name: record_type
+          in: query
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/RecordType"
+        - name: submission_kind
+          in: query
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
+        - name: always_human
+          in: query
+          schema:
+            type: boolean
+        - name: item
+          in: query
+          description: submissions, appeals or both.
+          schema:
+            type: string
+            enum: [submissions, appeals, both]
+            default: both
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: A page of the queue.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, next_cursor]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ModerationQueueItem"
+                  next_cursor:
+                    type: [string, "null"]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+
+  /v1/moderation/submissions/{submission_id}:
+    get:
+      tags: [Moderation]
+      operationId: getModerationCase
+      summary: Get a submission for moderation
+      description: Not for partner apps. Everything a moderator needs to decide a submission, an appeal of it or a reply to needs_info, including the private contributor reference for trust and abuse handling.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+      responses:
+        "200":
+          description: The case.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModerationCase"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/moderation/submissions/{submission_id}/claim:
+    post:
+      tags: [Moderation]
+      operationId: claimSubmission
+      summary: Claim a submission
+      description: Not for partner apps. Marks the submission as being reviewed by the signed-in moderator for 30 minutes, so two moderators do not decide it at once. Claiming again extends the claim.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+      responses:
+        "200":
+          description: Claimed.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [claimed_until]
+                properties:
+                  claimed_until:
+                    $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Another moderator holds the claim (problem type claimed).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /v1/moderation/submissions/{submission_id}/decisions:
+    post:
+      tags: [Moderation]
+      operationId: decideSubmission
+      summary: Decide a submission or an appeal
+      description: |
+        Not for partner apps. Records the signed-in moderator's decision on a submission, or on
+        an appeal of an earlier decision when appeal_id is given. An appeal must be decided by a
+        different moderator from the one who made the appealed decision. The response is the
+        full moderation decision. Approving applies the change at once.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModeratorDecisionRequest"
+      responses:
+        "201":
+          description: The decision.
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/moderation-decision.schema.json"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: The submission is claimed by another moderator, already decided, or the record changed since the submission's base_change_seq (problem type claimed, already-decided or conflict).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConflictProblem"
+        "422":
+          description: The decision does not validate against moderation-decision.schema.json once completed, for example a rejection without a public note.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+
+  /v1/moderation/api-keys/{api_key_id}/changes:
+    get:
+      tags: [Moderation]
+      operationId: listApiKeyChanges
+      summary: List changes produced through an API key
+      description: Not for partner apps. The changes produced by submissions sent with an API key, or with contributor tokens minted with it, from a moment on, so a moderator can review a compromised or abused key's work and revert it with POST /v1/moderation/reverts (ADR 0039).
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - name: api_key_id
+          in: path
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+        - name: since
+          in: query
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: A page of changes.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, next_cursor]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../schema/change.schema.json"
+                  next_cursor:
+                    type: [string, "null"]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/moderation/reverts:
+    post:
+      tags: [Moderation]
+      operationId: revertChanges
+      summary: Revert changes
+      description: Not for partner apps. Records a moderator's decision to undo earlier changes (subject revert) and applies it, producing one change with origin revert for each change undone (ADR 0036).
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevertRequest"
+      responses:
+        "201":
+          description: The decision, with the changes it produced.
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/moderation-decision.schema.json"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "409":
+          description: A later change touched the same facts, so the revert needs a moderator to resolve it by hand (problem type conflict).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConflictProblem"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+
+  /v1/moderation/takedowns:
+    post:
+      tags: [Moderation]
+      operationId: takeDownContent
+      summary: Take content down
+      description: Not for partner apps. Records a moderator's decision to remove facts, photos or a whole record for a stated reason (subject takedown) and applies it as changes with origin takedown. Who asked for the takedown is kept in the restricted case under the moderation policy, never in the decision or the change feed (ADR 0036).
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TakedownRequest"
+      responses:
+        "201":
+          description: The decision, with the changes it produced.
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/moderation-decision.schema.json"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
 
   /v1/contributor-tokens:
     post:
@@ -1439,6 +1892,10 @@ components:
       type: http
       scheme: bearer
       description: A short-lived token for one contributor of a partner app, minted by the partner app's server with POST /v1/contributor-tokens. Opaque, valid for at most one hour, and good only for that contributor's submissions, photo uploads, appeals, replies and their status.
+    Moderator:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.opentouring.org/.well-known/openid-configuration
+      description: A moderator signed in through Open Touring's OIDC provider, with the moderator scope. Partner apps cannot obtain it.
     PartnerAdmin:
       type: openIdConnect
       openIdConnectUrl: https://auth.opentouring.org/.well-known/openid-configuration
@@ -1636,6 +2093,12 @@ components:
         type: string
         maxLength: 200
       example: de-AT, de;q=0.8, en;q=0.5
+    SubmissionIdPath:
+      name: submission_id
+      in: path
+      required: true
+      schema:
+        $ref: "../schema/common.schema.json#/$defs/SubmissionId"
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -1676,6 +2139,17 @@ components:
       description: The quota policy applied to the API key, for example "default";q=1000;w=60 (1000 requests per 60 seconds).
       schema:
         type: string
+    Deprecation:
+      description: Present when the endpoint is deprecated (RFC 9745). A Structured Field Date, the Unix time of the deprecation, for example @1798761600. A Link header with rel="deprecation" points to the notice, which names the replacement. The endpoint keeps working for the life of v1.
+      schema:
+        type: string
+        pattern: "^@-?[0-9]+$"
+      example: "@1798761600"
+    Sunset:
+      description: Present only on /v1 once /v2 is released (RFC 8594). An HTTP date when the endpoint stops working, at least 12 months away and never earlier than its Deprecation date. A Link header with rel="sunset" points to the retirement notice.
+      schema:
+        type: string
+      example: Fri, 01 Jun 2029 00:00:00 GMT
     RetryAfter:
       description: Seconds to wait before retrying.
       schema:
@@ -1747,6 +2221,12 @@ components:
           $ref: "#/components/headers/RateLimit"
         RateLimit-Policy:
           $ref: "#/components/headers/RateLimitPolicy"
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    ModeratorOnly:
+      description: The caller is not a signed-in moderator (problem type moderator-role-required), or is the moderator who made the decision under appeal (problem type same-moderator).
       content:
         application/problem+json:
           schema:
@@ -2206,6 +2686,11 @@ components:
           $ref: "#/components/schemas/Timestamp"
         decision:
           $ref: "#/components/schemas/DecisionSummary"
+        appeals:
+          description: The contributor's appeals of decisions on this submission, newest first.
+          type: array
+          items:
+            $ref: "#/components/schemas/Appeal"
     DecisionSummary:
       description: What a partner app may show its contributor about a moderation decision. The full decision record, including verdicts and moderator identity, is not exposed.
       type: object
@@ -2232,8 +2717,60 @@ components:
           items:
             $ref: "../schema/common.schema.json#/$defs/ChangeSeq"
         appealable_until:
-          description: Last moment the contributor can appeal through the Open Touring website.
+          description: Last moment the contributor can appeal, with POST /v1/submissions/{submission_id}/appeals or on the Open Touring website.
           $ref: "#/components/schemas/Timestamp"
+        appeal_of:
+          description: When this decision answers an appeal, the decision appealed against.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+    AppealRequest:
+      type: object
+      required: [decision_id, reason]
+      properties:
+        decision_id:
+          description: The decision appealed against. It must be the latest decision on the submission.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+        reason:
+          description: Why the contributor thinks the decision is wrong, in their words. Shown to the reviewing moderator, never published.
+          type: string
+          minLength: 10
+          maxLength: 2000
+      additionalProperties: false
+    Appeal:
+      type: object
+      required: [id, submission_id, decision_id, status, received_at]
+      properties:
+        id:
+          $ref: "../schema/common.schema.json#/$defs/AppealId"
+        submission_id:
+          $ref: "../schema/common.schema.json#/$defs/SubmissionId"
+        decision_id:
+          description: The decision appealed against.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+        status:
+          description: received, in_review or decided. An open enumeration. Treat a status you do not know as in_review.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [received, in_review, decided]
+        received_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        decided_by_decision:
+          description: Once decided, the decision that answered the appeal.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+    ReplyRequest:
+      type: object
+      required: [message]
+      properties:
+        message:
+          description: The contributor's answer to the moderator's public note. Never published.
+          type: string
+          minLength: 1
+          maxLength: 2000
+        proposed:
+          description: Revised proposed values, replacing the submission's proposed in full, in the shape its kind takes in submission.schema.json.
+          type: object
+        observed_on:
+          description: When the contributor observed the revised values, if they went back to check.
+          $ref: "../schema/common.schema.json#/$defs/LocalDate"
+      additionalProperties: false
     PhotoUploadRequest:
       type: object
       required: [content_type, size_bytes, sha256]
@@ -2268,6 +2805,144 @@ components:
             type: string
         expires_at:
           $ref: "#/components/schemas/Timestamp"
+    ModerationQueueItem:
+      type: object
+      required: [submission_id, kind, record_type, received_at, always_human, waiting_for]
+      properties:
+        submission_id:
+          $ref: "../schema/common.schema.json#/$defs/SubmissionId"
+        kind:
+          $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
+        record_type:
+          $ref: "../schema/common.schema.json#/$defs/RecordType"
+        record_id:
+          $ref: "../schema/common.schema.json#/$defs/RecordId"
+        received_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        always_human:
+          type: boolean
+        waiting_for:
+          description: decision (a new submission), reply_review (a reply to needs_info) or appeal. An open enumeration.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [decision, reply_review, appeal]
+        appeal_id:
+          $ref: "../schema/common.schema.json#/$defs/AppealId"
+        verdict_category:
+          description: The latest verdict's category, as advice.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+        claimed_until:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+    ModerationCase:
+      type: object
+      required: [submission, status, contributor, fixed_checks, verdicts, decisions]
+      properties:
+        submission:
+          $ref: "../schema/submission.schema.json"
+        status:
+          $ref: "#/components/schemas/SubmissionStatus"
+        contributor:
+          description: The identity link for this submission, private to moderators (ADR 0038). The contributor ID, never the pseudonymous ID, with the trust signals routing used.
+          type: object
+          required: [contributor_id, trust_score]
+          properties:
+            contributor_id:
+              $ref: "../schema/common.schema.json#/$defs/ContributorId"
+            partner_app_id:
+              $ref: "../schema/common.schema.json#/$defs/PartnerAppId"
+            api_key_id:
+              $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+            trust_score:
+              type: number
+              minimum: 0
+              maximum: 1
+            api_key_trust_score:
+              type: number
+              minimum: 0
+              maximum: 1
+            attestation_method:
+              description: The attestation method the partner app reported when it minted the contributor token used, if one was.
+              $ref: "../schema/common.schema.json#/$defs/EnumCode"
+            decided_submissions:
+              description: How many of this contributor's earlier submissions were decided, by outcome.
+              type: object
+              additionalProperties:
+                type: integer
+                minimum: 0
+        fixed_checks:
+          description: The result of each fixed check.
+          type: array
+          items:
+            type: object
+            required: [check, result]
+            properties:
+              check:
+                type: string
+              result:
+                description: pass, flag or fail. An open enumeration.
+                $ref: "../schema/common.schema.json#/$defs/EnumCode"
+                x-otwd-known-values: [pass, flag, fail]
+              details:
+                type: string
+        verdicts:
+          type: array
+          items:
+            $ref: "../schema/verdict.schema.json"
+        decisions:
+          description: Earlier decisions on this submission, oldest first.
+          type: array
+          items:
+            $ref: "../schema/moderation-decision.schema.json"
+        replies:
+          description: The contributor's replies to needs_info, oldest first.
+          type: array
+          items:
+            $ref: "#/components/schemas/ReplyRequest"
+        appeals:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/Appeal"
+              - type: object
+                properties:
+                  reason:
+                    type: string
+    ModeratorDecisionRequest:
+      description: The parts of a moderation decision the moderator chooses. OTWD fills in the ID, subject, decider, time, routing, verdicts and change sequence numbers, and validates the result against moderation-decision.schema.json.
+      type: object
+      required: [outcome, reasons]
+      properties:
+        outcome:
+          $ref: "../schema/common.schema.json#/$defs/ModerationOutcome"
+        appeal_id:
+          description: Set when this decision answers an appeal.
+          $ref: "../schema/common.schema.json#/$defs/AppealId"
+        reasons:
+          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
+        public_note:
+          $ref: "../schema/moderation-decision.schema.json#/properties/public_note"
+        amendments:
+          $ref: "../schema/moderation-decision.schema.json#/properties/amendments"
+        merge:
+          $ref: "../schema/moderation-decision.schema.json#/properties/merge"
+      additionalProperties: false
+    RevertRequest:
+      type: object
+      required: [revert, reasons]
+      properties:
+        revert:
+          $ref: "../schema/moderation-decision.schema.json#/properties/revert"
+        reasons:
+          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
+      additionalProperties: false
+    TakedownRequest:
+      type: object
+      required: [takedown, reasons]
+      properties:
+        takedown:
+          $ref: "../schema/moderation-decision.schema.json#/properties/takedown"
+        reasons:
+          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
+      additionalProperties: false
     ContributorTokenRequest:
       type: object
       required: [pseudonymous_id, consent, scopes]

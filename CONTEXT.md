@@ -387,7 +387,7 @@ A moderator's correction to a submission before approving it, recorded in the mo
 _Avoid_: edit, override, moderator change
 
 **Appeal**:
-A contributor's request for a moderator to reconsider a moderation decision.
+A contributor's request for a moderator to reconsider a moderation decision, made through the API or the website before the decision's appeal deadline and reviewed by a different moderator.
 _Avoid_: dispute, complaint
 
 **Revert**:
