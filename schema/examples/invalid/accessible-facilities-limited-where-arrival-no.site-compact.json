@@ -1,0 +1,14 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/national-park-campsite-nsw.site-compact.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/facilities/accessible_facilities",
+      "value": {
+        "available": true,
+        "attributes": { "wheelchair": "limited", "features": ["toilets"] }
+      }
+    }
+  ]
+}

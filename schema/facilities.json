@@ -649,7 +649,7 @@
         {
           "name": "wheelchair",
           "type": "enum",
-          "description": "yes when every recorded wheelchair feature is yes, limited otherwise.",
+          "description": "yes when arrival is yes and every recorded wheelchair feature is yes, limited otherwise. Absent when available is false.",
           "values": ["yes", "limited"]
         },
         {
@@ -662,7 +662,7 @@
             "showers",
             "parking",
             "paths",
-            "campsites",
+            "pitches",
             "cabins",
             "camp_kitchen"
           ]
@@ -670,7 +670,7 @@
       ],
       "stored_as": {
         "field": "/facts/accessibility",
-        "rule": "available is true when any accessibility.wheelchair feature is yes or limited, false when every recorded feature is no. Absent when no feature is recorded."
+        "rule": "Absent with no wheelchair feature recorded. available false, no attributes: arrival is no or every recorded feature is no. Else wheelchair yes when arrival and every recorded feature are yes, limited otherwise (also when arrival is unknown). features: those that are yes."
       },
       "osm": [
         {
@@ -682,6 +682,11 @@
           "tags": ["wheelchair=limited"],
           "match": "exact",
           "note": "When the wheelchair attribute is limited."
+        },
+        {
+          "tags": ["wheelchair=no"],
+          "match": "exact",
+          "note": "When available is false: arrival is no or every recorded feature is no."
         },
         {
           "tags": ["toilets:wheelchair=yes"],

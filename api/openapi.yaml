@@ -163,15 +163,14 @@ paths:
             type: boolean
         - name: wheelchair
           in: query
-          description: Wheelchair access values to include, matched against each listed feature's access in the accessibility fact. With `wheelchair_feature`, only those features are compared. Without it, a site matches when every recorded feature has one of the values, as in the accessible_facilities wheelchair attribute.
+          description: Wheelchair access values to include. With `wheelchair_feature`, each listed feature's access in the accessibility fact must be one of them. Without it, the site's overall value is compared, as accessible_facilities derives it - no when arrival is no or every recorded feature is no, yes when arrival is yes and every recorded feature is yes, and limited otherwise, including when arrival is not recorded.
           style: form
           explode: false
           schema:
             type: array
             maxItems: 3
             items:
-              type: string
-              enum: [yes, limited, no]
+              $ref: "../schema/values.schema.json#/$defs/WheelchairAccess"
           example: [yes, limited]
         - name: wheelchair_feature
           in: query
@@ -182,8 +181,7 @@ paths:
             type: array
             maxItems: 8
             items:
-              type: string
-              enum: [arrival, toilets, showers, parking, paths, campsites, cabins, camp_kitchen]
+              $ref: "../schema/values.schema.json#/$defs/SiteAccessFeature"
         - name: key_scheme
           in: query
           description: Key scheme codes. Returns sites whose accessible toilets open with one of them.
@@ -197,7 +195,7 @@ paths:
           example: [mlak]
         - name: accessibility_known
           in: query
-          description: When true, excludes sites with no recorded accessibility, or with no recorded access for a listed `wheelchair_feature`.
+          description: When true, excludes records with no accessibility fact, and records with no recorded access for a feature the request filters on (`wheelchair_feature` here). The ferry service list applies the same rule with `wheelchair_boarding`.
           schema:
             type: boolean
             default: false
@@ -210,8 +208,7 @@ paths:
             type: array
             maxItems: 4
             items:
-              type: string
-              enum: [yes, on_leash, by_arrangement, no]
+              $ref: "../schema/values.schema.json#/$defs/PetAllowed"
         - name: pet_species
           in: query
           description: Pet species codes that must all be allowed. A species is allowed when its rule in pets.species is anything but no, or, with no rule for it, when pets.allowed is. Use with `pets` to require yes or on_leash.
@@ -231,7 +228,7 @@ paths:
             default: false
         - name: has_bait_notice
           in: query
-          description: When true, returns only sites with a recorded poison bait notice. When false, only sites without one. A missing notice is unknown, so false is not proof that no baits are laid.
+          description: When true, returns only sites with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the site's time zone. When false, only sites without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
           schema:
             type: boolean
         - $ref: "#/components/parameters/Status"
@@ -578,7 +575,7 @@ paths:
             default: false
         - name: has_bait_notice
           in: query
-          description: When true, returns only segments with a recorded poison bait notice. When false, only segments without one. A missing notice is unknown, so false is not proof that no baits are laid.
+          description: When true, returns only segments with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the segment's time zone. When false, only segments without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
           schema:
             type: boolean
         - $ref: "#/components/parameters/RigLengthM"
@@ -710,11 +707,10 @@ paths:
             type: array
             maxItems: 3
             items:
-              type: string
-              enum: [yes, limited, no]
+              $ref: "../schema/values.schema.json#/$defs/WheelchairAccess"
         - name: accessibility_known
           in: query
-          description: When true, excludes services with no recorded wheelchair access for boarding.
+          description: When true, excludes records with no accessibility fact, and records with no recorded access for a feature the request filters on (boarding, with `wheelchair_boarding`). The site list applies the same rule with `wheelchair_feature`.
           schema:
             type: boolean
             default: false

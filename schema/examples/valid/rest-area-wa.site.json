@@ -178,6 +178,7 @@
         },
         "toilets": {
           "accessible_count": 1,
+          "ambulant": true,
           "key_required": true,
           "key_scheme": "mlak",
           "notes": [

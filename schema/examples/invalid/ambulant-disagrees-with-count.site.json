@@ -1,0 +1,5 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/caravan-park-nt.site.json",
+  "$patch": [{ "op": "add", "path": "/facts/accessibility/value/toilets/ambulant", "value": false }]
+}

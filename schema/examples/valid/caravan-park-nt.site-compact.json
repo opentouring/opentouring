@@ -167,7 +167,7 @@
         "currency": "AUD",
         "period": "night"
       },
-      "areas": ["designated_sites"],
+      "areas": ["designated_pitches"],
       "not_allowed_periods": [
         {
           "from": "12-15",
@@ -216,7 +216,7 @@
           }
         ]
       },
-      "campsites": {
+      "pitches": {
         "access": "limited"
       },
       "cabins": {
@@ -241,7 +241,7 @@
     "accessible_parking_spaces": 2,
     "step_free_access": true,
     "paths": {
-      "surface": "mixed",
+      "path_surface": "mixed",
       "gradient_notes": [
         {
           "text": "Gentle slope down to the river sites.",

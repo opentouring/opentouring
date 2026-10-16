@@ -123,6 +123,7 @@
           }
         },
         "pet_transit": {
+          "description": "Whether travellers may take pets along the road segment, with the authority that sets the rule and its link. Not a safety fact: a wrong rule costs a traveller a detour or a fine.",
           "$ref": "common.schema.json#/$defs/Fact",
           "properties": {
             "value": {

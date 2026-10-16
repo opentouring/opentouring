@@ -52,7 +52,7 @@
   "key-scheme-not-used-in-country.site.json": "key scheme 'radar' is not used in AU",
   "key-scheme-without-key-required.site.json": "/facts/accessibility/value/toilets/key_required: True was expected",
   "accessible-toilets-where-wheelchair-toilets-no.site.json": "wheelchair toilets access is no but accessible_count is 2",
-  "campsite-access-on-ferry-service.ferry-service.json": "'campsites' was unexpected",
+  "pitch-access-on-ferry-service.ferry-service.json": "'pitches' was unexpected",
   "routing-rule-on-bait-notices.moderation-decision.json": "a routing rule cannot decide this: /facts/bait_notices is a safety fact of a road_segment",
   "bait-notice-change-not-marked-safety.change.json": "/safety_fact_changed: is false but /facts/bait_notices changed",
   "bait-notice-ends-before-start.road-segment.json": "/facts/bait_notices/value/0/to: is before from",
@@ -62,5 +62,9 @@
   "pet-fee-without-currency.site.json": "/facts/pets/value/conditions/fee: 'currency' is a required property",
   "unknown-pet-species.submission.json": "unknown pet species code 'possum'",
   "pets-not-carried-with-arrangements.ferry-service.json": "/facts/pet_policy/value: False schema does not allow [{'arrangement'",
-  "pet-transit-without-authority.road-segment.json": "/facts/pet_transit/value: 'authority' is a required property"
+  "pet-transit-without-authority.road-segment.json": "/facts/pet_transit/value: 'authority' is a required property",
+  "routing-rule-on-raised-accessibility.moderation-decision.json": "/routing/fixed_check_flags: ['accessibility_raised'] should not be valid under {'contains': {'const': 'accessibility_raised'}}",
+  "accessible-facilities-limited-where-arrival-no.site-compact.json": "is wheelchair limited with features toilets but the accessibility fact gives not available (arrival is no)",
+  "accessible-facilities-not-available-with-attributes.site-compact.json": "/facilities/accessible_facilities: False schema does not allow {'features': ['toilets']}",
+  "ambulant-disagrees-with-count.site.json": "/facts/accessibility/value/toilets/ambulant: is false but ambulant_count is 2"
 }
