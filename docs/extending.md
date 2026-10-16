@@ -32,11 +32,12 @@ A code that carries `safety_fact: true` changes routing: every submission that t
 
 ## New translation
 
-A governed list translated into another language. Translations are introduced by ADR 0031. Once that ADR is on `main`, translations live in `schema/i18n/<language>/<list file>` and follow `schema/i18n/README.md`, which carries the full steps.
+A governed list translated into another language ([ADR 0031](adr/0031-governed-lists-and-the-api-are-translatable.md)). Translations live in `schema/i18n/<language>/<list file>`, follow `schema/translation.schema.json`, and are added by the steps in [schema/i18n/README.md](../schema/i18n/README.md), summarised here.
 
 1. Open an issue with the "Translation" form, or go straight to a pull request titled "Governed list: `<language>` translation of `<list>`".
 2. Write the labels and descriptions yourself, or check every line of a draft. Unreviewed machine translation is not accepted.
-3. Run `npm run check:schema`.
+3. Save it as `schema/i18n/<language>/<list file>` with `reference_version` set to the version of the list you translated from.
+4. Run `npm run check:schema`. The pull request gets the `governed-list` label.
 
 **Review:** a speaker of the language reviews the text, and the maintainer reviews the file. **Approves:** the maintainer. **ADR:** no. A translation holds text only, so it can never change what a code means or whether it is a safety fact.
 
