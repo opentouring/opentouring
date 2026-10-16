@@ -40,7 +40,7 @@ Site types and facilities are a governed list. A new or changed value starts as 
 
 ### Issue tracker
 
-GitHub Issues on opentouring/opentouring, drafted under `.scratch/` until the GitHub organisation exists. See `docs/agents/issue-tracker.md`.
+GitHub Issues on opentouring/opentouring. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

@@ -4,17 +4,6 @@
 
 Issues and specs for this repo live as GitHub issues on `github.com/opentouring/opentouring`, a monorepo. Use the `gh` CLI for all operations.
 
-## Until the GitHub organisation exists
-
-Shane is creating the `opentouring` GitHub organisation. Until it exists and `git remote -v` shows it, draft tickets locally:
-
-- One feature per directory: `.scratch/<feature-slug>/`, with the spec at `.scratch/<feature-slug>/spec.md`.
-- One file per ticket at `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`.
-- Record triage state as a `Status:` line near the top, using the strings in `triage-labels.md`.
-- Append comments under a `## Comments` heading.
-
-Once the organisation exists, move each open draft into a GitHub issue with the same title, body and label, add the issue link to the draft, then delete the draft.
-
 ## Conventions
 
 - **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
@@ -40,11 +29,11 @@ GitHub shares one number space across issues and PRs, so a bare `#42` may be eit
 
 ## When a skill says "publish to the issue tracker"
 
-Create a GitHub issue (or a `.scratch/` draft until the organisation exists).
+Create a GitHub issue.
 
 ## When a skill says "fetch the relevant ticket"
 
-Run `gh issue view <number> --comments` (or read the `.scratch/` draft at the given path).
+Run `gh issue view <number> --comments`.
 
 ## Wayfinding operations
 
