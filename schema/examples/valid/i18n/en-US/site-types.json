@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/translation.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "site_types",
+  "language": "en-US",
+  "reference_version": "1.0.0",
+  "entries": {
+    "caravan_park": {
+      "label": "RV park"
+    },
+    "dump_point": {
+      "label": "Dump station",
+      "description": "A place to empty cassette toilets and holding tanks. Dump stations inside other sites are also recorded with the dump_point_access facility."
+    },
+    "free_camp": {
+      "label": "Free campsite"
+    }
+  }
+}

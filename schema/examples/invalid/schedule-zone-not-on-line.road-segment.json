@@ -1,0 +1,170 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:road_segment:01M3HB7Q2R5T8V1X4Z6C9E2G5J",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "contributor",
+      "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+      "observed_on": "2026-08-22",
+      "recorded_at": "2026-10-03T01:20:00Z",
+      "confidence": 0.7,
+      "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+      "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+      "change_seq": 30915
+    }
+  },
+  "created_at": "2026-10-03T01:20:00Z",
+  "updated_at": "2026-10-03T01:20:00Z",
+  "change_seq": 30915,
+  "derived": {
+    "country_codes": ["AU"],
+    "subdivision_codes": ["AU-SA", "AU-VIC"],
+    "localities": ["Pinnaroo", "Murrayville"],
+    "time_zone": "Australia/Adelaide",
+    "time_zones": ["Australia/Adelaide", "Australia/Melbourne"],
+    "length_km": 13.9
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Saltbush Border Track",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-08-22",
+        "recorded_at": "2026-10-03T01:20:00Z",
+        "confidence": 0.7,
+        "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+        "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+        "change_seq": 30915
+      }
+    },
+    "geometry": {
+      "value": {
+        "type": "LineString",
+        "coordinates": [
+          [140.88412, -35.52107],
+          [140.9153, -35.52388],
+          [140.94872, -35.52611],
+          [140.9652, -35.52702],
+          [140.99814, -35.5294],
+          [141.03106, -35.53215]
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-08-22",
+        "recorded_at": "2026-10-03T01:20:00Z",
+        "confidence": 0.7,
+        "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+        "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+        "change_seq": 30915
+      }
+    },
+    "road": {
+      "value": {
+        "name": "Saltbush Border Track"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-08-22",
+        "recorded_at": "2026-10-03T01:20:00Z",
+        "confidence": 0.7,
+        "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+        "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+        "change_seq": 30915
+      }
+    },
+    "surface": {
+      "value": {
+        "code": "sand",
+        "condition": "fair",
+        "notes": [
+          {
+            "text": "Soft sand on the dunes east of the border fence. Lower tyre pressures before the crossing.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-08-22",
+        "recorded_at": "2026-10-03T01:20:00Z",
+        "confidence": 0.7,
+        "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+        "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+        "change_seq": 30915
+      }
+    },
+    "vehicle_access_class": {
+      "value": {
+        "code": "four_wd_only"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-08-22",
+        "recorded_at": "2026-10-03T01:20:00Z",
+        "confidence": 0.7,
+        "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+        "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+        "change_seq": 30915
+      }
+    },
+    "towing_permitted": {
+      "value": {
+        "permitted": "not_recommended"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-08-22",
+        "recorded_at": "2026-10-03T01:20:00Z",
+        "confidence": 0.7,
+        "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+        "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+        "change_seq": 30915
+      }
+    },
+    "seasonal_closure": {
+      "value": {
+        "time_zone": "Australia/Perth",
+        "periods": [
+          {
+            "from": "12-01",
+            "to": "02-28",
+            "notes": [
+              {
+                "text": "The Victorian section closes over summer for fire danger. The gate is at the border fence.",
+                "lang": "en-AU"
+              }
+            ]
+          }
+        ],
+        "dates_year": 2026,
+        "authority": "Parks Victoria",
+        "info_url": "https://www.parks.vic.gov.au/get-into-nature/safety-in-nature/seasonal-road-closures"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-08-22",
+        "recorded_at": "2026-10-03T01:20:00Z",
+        "confidence": 0.7,
+        "submission_id": "otwd:submission:01M3HC4V9K2N6Q8S1T3W5Y7A0D",
+        "decision_id": "otwd:decision:01M3HD8X1M4P7R0T2V5X8Z1B3E",
+        "change_seq": 30915
+      }
+    }
+  }
+}

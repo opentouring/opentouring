@@ -29,10 +29,11 @@
             "$ref": "road-segment.schema.json#/$defs/RequiredFacts"
           }
         ],
-        "required": ["country_codes", "time_zone", "length_km"],
+        "required": ["country_codes", "time_zone", "time_zones", "length_km"],
         "properties": {
           "country_codes": true,
           "time_zone": true,
+          "time_zones": true,
           "length_km": true
         }
       }

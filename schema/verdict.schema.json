@@ -160,8 +160,7 @@
       "maxLength": 64
     },
     "created_at": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "common.schema.json#/$defs/Timestamp"
     }
   },
   "additionalProperties": false

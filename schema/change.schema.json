@@ -36,8 +36,7 @@
       ]
     },
     "applied_at": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "common.schema.json#/$defs/Timestamp"
     },
     "previous_seq": {
       "description": "The record's change_seq before this change. Absent for record_created. A consumer that does not hold this sequence for the record has missed a change and should fetch the record again.",

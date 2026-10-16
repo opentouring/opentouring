@@ -15,3 +15,11 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
 
 Edit the right-hand column to match whatever vocabulary you actually use.
+
+## Other labels
+
+These labels sit alongside the triage roles and are not part of them.
+
+| Label           | Meaning                                                                                       |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| `governed-list` | A proposal or change to a governed list, including a translation of one (see CONTRIBUTING.md) |

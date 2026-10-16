@@ -66,6 +66,14 @@ _Avoid_: property, option, sub-field
 A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes and vehicle classes, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
+**Reference language**:
+The language the project writes governed list labels and descriptions and its documentation in: en-AU. Every other language is a translation of it, and missing text falls back to it.
+_Avoid_: default language, master language
+
+**Translation**:
+The labels and descriptions of one governed list in one language other than the reference language, keyed by code and reviewed like any governed list change. It never changes what a code means. A machine translation an app shows is marked as one and is never a fact.
+_Avoid_: locale file, localisation (for the file)
+
 **Fact**:
 One field value about a record, such as a facility, a price, opening hours, a rig limit or a vertical clearance, carrying its own provenance.
 _Avoid_: property, field (when the value is meant)
@@ -227,8 +235,16 @@ A published correspondence between OTWD terms and another vocabulary, such as Op
 _Avoid_: crosswalk, conversion
 
 **Derived value**:
-A value OTWD computes from a record's location or geometry rather than receives from a contributor: country, subdivision, locality, time zone and, for a line, its length. The fire district is computed from the location too, but it is a fact with provenance, because its boundaries come from a seed source.
+A value OTWD computes from a record's location or geometry rather than receives from a contributor: country, subdivision, locality, time zone and, for a line, every time zone it passes through and its length. The fire district is computed from the location too, but it is a fact with provenance, because its boundaries come from a seed source.
 _Avoid_: inferred field, calculated location
+
+**Timestamp**:
+An instant OTWD records, such as when a fact was recorded or a change applied, always in UTC with the Z suffix.
+_Avoid_: local timestamp, datetime (for an instant)
+
+**Local schedule**:
+Opening hours, ferry operating hours, check-in times, seasonal closures and other periods given as local clock times and dates, read in the record's IANA time zone or a schedule's own time zone, and never converted to UTC.
+_Avoid_: UTC schedule, timetable (for the stored hours)
 
 **Confirmation**:
 A later report that an existing fact is still true, recorded as provenance without changing the value.

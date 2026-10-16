@@ -48,6 +48,10 @@ Site types, facilities, structures, surfaces, vehicle access classes and vehicle
 
 Values stay global: no country-specific values, metric units only, ISO 3166 codes for regions and IANA names for time zones.
 
+## Translating the governed lists
+
+The governed lists are written in en-AU, the reference language, and can be translated into any language. A translation is a file at `schema/i18n/<language>/<list file>` holding labels and descriptions keyed by code. It never changes codes, safety facts or mappings. Translations are contributed as pull requests and reviewed like any governed list change, by a speaker of the language. Issues and pull requests for the governed lists, translations included, carry the `governed-list` label. [schema/i18n/README.md](schema/i18n/README.md) explains the format and the steps. Write the text yourself or check every line of a draft: unreviewed machine translation is not accepted.
+
 ## Data contributions
 
 Outside data contributions are not open yet. When they open, every contributor will accept the data contributor terms first, and partner apps will need each contributor's consent to those terms before submitting on their behalf. The plain-English draft of those terms is in [docs/contributor-terms-draft.md](docs/contributor-terms-draft.md) and is not in force.

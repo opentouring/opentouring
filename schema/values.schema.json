@@ -89,7 +89,7 @@
       "additionalProperties": false
     },
     "Description": {
-      "description": "A short original description of the site, at most one per language. It must be the contributor's own words, never copied from a website, guidebook or other database.",
+      "description": "A short original description of the site, at most one per language, each in the language its contributor wrote it in. It must be the contributor's own words, never copied from a website, guidebook or other database, and never a machine translation of another description.",
       "type": "array",
       "minItems": 1,
       "maxItems": 10,
@@ -114,9 +114,12 @@
       "enum": ["mo", "tu", "we", "th", "fr", "sa", "su"]
     },
     "OpeningHours": {
-      "description": "When the site can be used. Times are local to the site's time zone. Give always_open, a weekly pattern, an OSM opening_hours string, or a combination. When both weekly and osm_opening_hours are present they describe the same hours and weekly is authoritative.",
+      "description": "When a site can be used or a ferry service runs. Times and dates are local clock times and local calendar dates, read in the record's time zone or in time_zone when it is given, and never converted to UTC. Give always_open, a weekly pattern, an OSM opening_hours string, or a combination. When both weekly and osm_opening_hours are present they describe the same hours and weekly is authoritative.",
       "type": "object",
       "properties": {
+        "time_zone": {
+          "$ref": "#/$defs/ScheduleTimeZone"
+        },
         "always_open": {
           "description": "True for a site open 24 hours a day every day, such as most rest areas.",
           "type": "boolean"
@@ -164,12 +167,10 @@
             "required": ["from", "to", "closed"],
             "properties": {
               "from": {
-                "type": "string",
-                "format": "date"
+                "$ref": "common.schema.json#/$defs/LocalDate"
               },
               "to": {
-                "type": "string",
-                "format": "date"
+                "$ref": "common.schema.json#/$defs/LocalDate"
               },
               "closed": {
                 "type": "boolean"
@@ -221,8 +222,12 @@
         }
       ]
     },
+    "ScheduleTimeZone": {
+      "description": "The IANA time zone this schedule's local times and dates are read in, when it differs from the record's time_zone, for example when a track starts in one state but the authority in another closes it, or a ferry keeps the clock of the terminal at the far end for its hours or its fare seasons. It must be one of the zones the record lies in (time_zones for a line). Leave it out when the record's time_zone applies.",
+      "$ref": "common.schema.json#/$defs/TimeZone"
+    },
     "AnnualPeriod": {
-      "description": "A period that repeats every year, from one day to another inclusive. A period may wrap past the end of the year, for example 11-01 to 03-31.",
+      "description": "A period that repeats every year, from one local calendar day to another inclusive, read in the record's time zone or the schedule's own time_zone. A period may wrap past the end of the year, for example 11-01 to 03-31.",
       "type": "object",
       "required": ["from", "to"],
       "properties": {
@@ -367,12 +372,10 @@
           }
         },
         "valid_from": {
-          "type": "string",
-          "format": "date"
+          "$ref": "common.schema.json#/$defs/LocalDate"
         },
         "valid_to": {
-          "type": "string",
-          "format": "date"
+          "$ref": "common.schema.json#/$defs/LocalDate"
         },
         "concession": {
           "description": "True when the price applies only to holders of a concession, seniors or pensioner card.",
@@ -716,8 +719,7 @@
         },
         "observed_on": {
           "description": "When the figure was signed, surveyed or measured, if the source says.",
-          "type": "string",
-          "format": "date"
+          "$ref": "common.schema.json#/$defs/LocalDate"
         },
         "certificate_url": {
           "description": "A survey certificate for a surveyed figure.",
@@ -804,8 +806,7 @@
         },
         "assessed_on": {
           "description": "When the road authority last assessed the limit, if the source says.",
-          "type": "string",
-          "format": "date"
+          "$ref": "common.schema.json#/$defs/LocalDate"
         },
         "notes": {
           "$ref": "common.schema.json#/$defs/Notes"
@@ -889,9 +890,12 @@
       "additionalProperties": false
     },
     "SeasonalClosure": {
-      "description": "Safety fact. When a road segment or ferry service closes every year or after weather, and the authority that closes it. Declared closures change daily and are never stored: apps send travellers to info_url for current conditions.",
+      "description": "Safety fact. When a road segment or ferry service closes every year or after weather, and the authority that closes it. Declared closures change daily and are never stored: apps send travellers to info_url for current conditions. The periods are local calendar days, read in the record's time zone or in time_zone when it is given.",
       "type": "object",
       "properties": {
+        "time_zone": {
+          "$ref": "#/$defs/ScheduleTimeZone"
+        },
         "periods": {
           "description": "Periods it closes every year, such as a winter closure of a high country track.",
           "type": "array",
@@ -1042,6 +1046,10 @@
       "type": "object",
       "required": ["charging"],
       "properties": {
+        "time_zone": {
+          "description": "The zone the season, valid_from and valid_to in the fares' conditions are read in, when it is not the record's time_zone.",
+          "$ref": "#/$defs/ScheduleTimeZone"
+        },
         "charging": {
           "description": "free: no charge, as on many council river ferries. paid: a fare applies and items lists it.",
           "type": "string",
@@ -1645,8 +1653,7 @@
                     "type": "boolean"
                   },
                   "observed_on": {
-                    "type": "string",
-                    "format": "date"
+                    "$ref": "common.schema.json#/$defs/LocalDate"
                   }
                 },
                 "additionalProperties": false
