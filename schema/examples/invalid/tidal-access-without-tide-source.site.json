@@ -1,0 +1,10 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/beach-campground-qld.site.json",
+  "$patch": [
+    {
+      "op": "remove",
+      "path": "/facts/tidal_access/value/info_url"
+    }
+  ]
+}

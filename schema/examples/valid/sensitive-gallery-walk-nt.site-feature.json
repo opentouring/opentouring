@@ -1,0 +1,57 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "type": "Feature",
+  "id": "otwd:site:01M9NFFFS6ZK9HEGYJXVEWZC8X",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [132.4, -13.4]
+  },
+  "properties": {
+    "schema_version": "1.0",
+    "id": "otwd:site:01M9NFFFS6ZK9HEGYJXVEWZC8X",
+    "status": "active",
+    "created_at": "2026-07-14T03:00:00Z",
+    "updated_at": "2026-09-29T01:00:00Z",
+    "change_seq": 40501,
+    "name": "Sandstone Gallery Walk",
+    "names": [
+      {
+        "text": "Sandstone Gallery Walk",
+        "lang": "en",
+        "kind": "primary"
+      }
+    ],
+    "location": {
+      "lat": -13.4,
+      "lng": 132.4,
+      "generalised": {
+        "cell_deg": 0.1
+      }
+    },
+    "site_types": {
+      "primary": "attraction"
+    },
+    "location_sensitivity": {
+      "reason": "cultural_heritage"
+    },
+    "permits": [
+      {
+        "kind": "land_entry",
+        "authority": "Example Land Council",
+        "info_url": "https://www.example.org/land-council/permits",
+        "in_advance": true,
+        "free": true
+      }
+    ],
+    "camping_rules": {
+      "camping": "prohibited",
+      "authority": "Example Land Council",
+      "info_url": "https://www.example.org/land-council/visiting"
+    },
+    "country_code": "AU",
+    "subdivision_code": "AU-NT",
+    "time_zone": "Australia/Darwin",
+    "min_confidence": 0.9,
+    "attribution": ["Open Touring contributors, opentouring.org, CC BY 4.0"]
+  }
+}

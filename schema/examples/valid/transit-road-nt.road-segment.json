@@ -1,0 +1,169 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:road_segment:01M90RRYJ4AMWRVKZ7ZJ4Z797K",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-08-11",
+      "recorded_at": "2026-08-14T05:20:00Z",
+      "confidence": 0.84,
+      "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+      "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+      "change_seq": 40620
+    }
+  },
+  "created_at": "2026-08-14T05:20:00Z",
+  "updated_at": "2026-08-14T05:20:00Z",
+  "change_seq": 40620,
+  "derived": {
+    "country_codes": ["AU"],
+    "subdivision_codes": ["AU-NT"],
+    "localities": ["Example Springs"],
+    "time_zone": "Australia/Darwin",
+    "time_zones": ["Australia/Darwin"],
+    "length_km": 27.9
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Spinifex Loop Road",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-11",
+        "recorded_at": "2026-08-14T05:20:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+        "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+        "change_seq": 40620
+      }
+    },
+    "geometry": {
+      "value": {
+        "type": "LineString",
+        "coordinates": [
+          [132.91204, -23.98125],
+          [132.98877, -24.01204],
+          [133.07215, -24.0577],
+          [133.15529, -24.0912]
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-11",
+        "recorded_at": "2026-08-14T05:20:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+        "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+        "change_seq": 40620
+      }
+    },
+    "road": {
+      "value": {
+        "name": "Spinifex Loop Road"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-11",
+        "recorded_at": "2026-08-14T05:20:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+        "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+        "change_seq": 40620
+      }
+    },
+    "surface": {
+      "value": {
+        "code": "gravel",
+        "condition": "fair"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-11",
+        "recorded_at": "2026-08-14T05:20:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+        "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+        "change_seq": 40620
+      }
+    },
+    "vehicle_access_class": {
+      "value": {
+        "code": "two_wd"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-11",
+        "recorded_at": "2026-08-14T05:20:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+        "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+        "change_seq": 40620
+      }
+    },
+    "permits": {
+      "value": [
+        {
+          "kind": "transit",
+          "authority": "Central Land Council",
+          "info_url": "https://www.clc.org.au/permits/",
+          "in_advance": true,
+          "free": true,
+          "notes": [
+            {
+              "text": "Keep to the road. Stopping only where the permit allows.",
+              "lang": "en-AU"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-11",
+        "recorded_at": "2026-08-14T05:20:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+        "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+        "change_seq": 40620
+      }
+    },
+    "camping_rules": {
+      "value": {
+        "camping": "prohibited",
+        "authority": "Central Land Council",
+        "info_url": "https://www.clc.org.au/permits/"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJB2FF6QJ1HB0TMVHC70SWMJ",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-11",
+        "recorded_at": "2026-08-14T05:20:00Z",
+        "confidence": 0.84,
+        "submission_id": "otwd:submission:01M4XQKQC4YTWP82WGR99YV6FS",
+        "decision_id": "otwd:decision:01MZ2SHRYZATRD0HJDPEWA0FCY",
+        "change_seq": 40620
+      }
+    }
+  }
+}

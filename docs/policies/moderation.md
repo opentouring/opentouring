@@ -2,7 +2,7 @@
 
 # Moderation policy
 
-**Version:** `routing-1.0`. **In effect for:** the Preview, where the maintainer moderates the maintainer's own submissions and seed source imports.
+**Version:** `routing-2.0`. **In effect for:** the Preview, where the maintainer moderates the maintainer's own submissions and seed source imports.
 
 This policy says how OTWD moderates submissions: what goes to a person, when automatic approval may switch on, how contributors ask for more time, answer questions and appeal, and how vandalism, seed source re-imports and stale facts are handled. It applies one standard to every submission, whichever partner app or tier sent it ([ADR 0002](../adr/0002-cc-by-4-0-data-with-revenue-from-the-api-service.md)). The pipeline that carries it out is described in [docs/architecture.md](../architecture.md#moderation-pipeline). Terms are defined in [CONTEXT.md](../../CONTEXT.md).
 
@@ -19,11 +19,12 @@ Routing code reads the version it implements from its configuration, and a relea
 
 At launch every submission goes to a person. The AI verdict is a pre-check that helps the moderator, never a decision ([ADR 0010](../adr/0010-ai-recommends-fixed-code-routes-humans-decide.md)).
 
-Some submissions go to a person for good, even after automatic approval switches on for others. The always-human list holds new records of every record type, closures, merges and any change to a safety fact. Membership is derived by the fixed checks from the submission's kind and from the safety fact markers in the record type's schema, never from a flag routing sets ([schema/README.md](../../schema/README.md#unknown-absent-and-safety-facts)).
+Some submissions go to a person for good, even after automatic approval switches on for others. The always-human list holds new records of every record type, closures, merges, any change to a safety fact and any change to a site's location sensitivity ([ADR 0045](../adr/0045-sensitive-locations-are-published-generalised.md)). Membership is derived by the fixed checks from the submission's kind and from the safety fact and always-human markers in the record type's schema, never from a flag routing sets ([schema/README.md](../../schema/README.md#unknown-absent-and-safety-facts)).
 
 This policy also sends these to a person, as a routing rule that cannot be switched off without a major version:
 
 - A change to an accessibility value that makes it more permissive, such as limited or no becoming yes. A wrong yes can strand a traveller who drove hours on the strength of it, while a wrong no costs far less (ADR 0033).
+- A change to the location, names or description of a site whose location is sensitive, or a photo of one, flagged `sensitive_location` by the fixed checks, because each can identify a place its custodians asked to protect (ADR 0045). A request from a site's Traditional Owners, custodians or land council to mark it `cultural_heritage` is accepted without asking them to explain the cultural reason, once the moderator has checked that it comes from people who speak for that place.
 - Every photo, until photo checks for faces and number plates are measured like any other verdict.
 - Every description and other free text, because free text carries defamation and copying risk ([ADR 0014](../adr/0014-reviews-and-ratings-deferred.md)).
 - Every appeal, every takedown request ([the takedown process](takedown.md)) and every revert of vandalism.
@@ -100,6 +101,7 @@ Moderators are approved by the steering group ([GOVERNANCE.md](../../GOVERNANCE.
 
 ## History
 
-| Version       | Date            | Change                                                                    |
-| ------------- | --------------- | ------------------------------------------------------------------------- |
-| `routing-1.0` | 16 October 2026 | First published version, matching the `routing-1.0` used in the examples. |
+| Version       | Date            | Change                                                                                                                                                                                                                                   |
+| ------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `routing-1.0` | 16 October 2026 | First published version, matching the `routing-1.0` used in the examples.                                                                                                                                                                |
+| `routing-2.0` | 16 October 2026 | Water notices, tidal access and flood depth markers are safety facts (ADR 0043, ADR 0044). Location sensitivity joins the always-human list, and the `sensitive_location` flag sends changes to a sensitive site to a person (ADR 0045). |

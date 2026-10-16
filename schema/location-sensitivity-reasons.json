@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/vocabulary.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "list": "location_sensitivity_reasons",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "cultural_heritage",
+      "label": "Culturally sensitive place",
+      "description": "A place whose Traditional Owners, custodians or land council asked that its exact position not be published, such as a sacred site or a place of restricted cultural knowledge. OTWD does not ask them to explain why.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "min_cell_deg": 0.1,
+      "osm": [],
+      "schema_org": null
+    },
+    {
+      "code": "threatened_species",
+      "label": "Threatened species",
+      "description": "A place where publishing the exact position could expose a threatened plant or animal to disturbance, collection or other harm, as a land manager or wildlife agency advises.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "min_cell_deg": 0.1,
+      "osm": [],
+      "schema_org": null
+    },
+    {
+      "code": "breeding_wildlife",
+      "label": "Breeding wildlife",
+      "description": "A place next to a nesting, roosting or breeding area that visitors would disturb if they could find it, such as a seabird or turtle nesting beach, as a land manager or wildlife agency advises.",
+      "status": "active",
+      "introduced_in": "1.0.0",
+      "min_cell_deg": 0.01,
+      "osm": [],
+      "schema_org": null
+    }
+  ]
+}

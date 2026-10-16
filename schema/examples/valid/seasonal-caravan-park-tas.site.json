@@ -1,0 +1,246 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01MY7K9GTV0QD3ST6FCQCBQFCK",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-10-03",
+      "recorded_at": "2026-10-06T00:30:00Z",
+      "confidence": 0.86,
+      "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+      "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+      "change_seq": 40412
+    }
+  },
+  "created_at": "2026-10-06T00:30:00Z",
+  "updated_at": "2026-10-06T00:30:00Z",
+  "change_seq": 40412,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-TAS",
+    "locality": "Example Bay",
+    "time_zone": "Australia/Hobart"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Lagoon Edge Holiday Park",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -42.1294,
+        "lng": 148.0361,
+        "accuracy_m": 10
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "caravan_park"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "opening_hours": {
+      "value": {
+        "weekly": [
+          {
+            "days": ["mo", "tu", "we", "th", "fr", "sa", "su"],
+            "opens": "08:00",
+            "closes": "20:00"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "seasonal_operation": {
+      "value": {
+        "open": [
+          {
+            "from": "10-01",
+            "to": "04-30"
+          }
+        ],
+        "dates_year": 2026
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "quiet_hours": {
+      "value": {
+        "from": "22:00",
+        "to": "07:00"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "age_rules": {
+      "value": {
+        "children_allowed": false,
+        "min_guest_age": 18,
+        "min_booking_age": 21,
+        "notes": [
+          {
+            "text": "Adults only. The person who books must be 21 or older.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "firewood": {
+      "value": {
+        "for_sale": true,
+        "collection": "prohibited"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "water_notices": {
+      "value": [
+        {
+          "kind": "boil_water",
+          "area": "The Example Bay town supply, which the park is connected to",
+          "authority": "Example Water Corporation",
+          "info_url": "https://www.example.org/water/boil-water-alerts",
+          "from": "2026-10-04"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    }
+  },
+  "facilities": {
+    "drinking_water": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "source": "town_supply",
+          "treated": true
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    },
+    "power": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "contributor_id": "otwd:contributor:01KJ8N29DE96F06ZP17AG0GHZA",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-03",
+        "recorded_at": "2026-10-06T00:30:00Z",
+        "confidence": 0.86,
+        "submission_id": "otwd:submission:01M31XXNBBRK4Y4WHRKDR2Z39W",
+        "decision_id": "otwd:decision:01M4JMG44TTBJ2A8Z3ZTBHA08N",
+        "change_seq": 40412
+      }
+    }
+  }
+}

@@ -71,7 +71,7 @@ A typed detail of a facility, defined with the facility in the governed list, su
 _Avoid_: property, option, sub-field
 
 **Governed list**:
-A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species, which the community extends by proposal and the steering group approves.
+A versioned set of allowed codes, such as site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons, which the community extends by proposal and the steering group approves.
 _Avoid_: enum, taxonomy, tag list
 
 **Reference language**:
@@ -87,7 +87,7 @@ One field value about a record, such as a facility, a price, opening hours, a ri
 _Avoid_: property, field (when the value is meant)
 
 **Safety fact**:
-A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, a road restriction's location and every limit on it, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures and live baiting programmes are never facts: OTWD links to the authority instead.
+A fact a traveller relies on for safety: drinking water, road access, rig limits, the site's fire policy and its fire district, bait notices on a site or road segment, water notices on a site, tidal access to a site or road segment, a road restriction's location, every limit on it and its flood depth marker, a road segment's geometry, vehicle access class, towing permitted, seasonal closure and limits, and a ferry service's geometry, terminals, accepted vehicle classes, ferry vehicle limits and seasonal closure. A site's location is not one. Always human-moderated. Declared fire bans, day-to-day road closures, live baiting programmes, live water quality, tide times and live flood depths are never facts: OTWD links to the authority instead.
 _Avoid_: critical field
 
 **Fire district**:
@@ -126,6 +126,46 @@ _Avoid_: dog access, pet access (for a road)
 A notice that poison baits for pest animals, such as 1080, are laid in or next to a site or road segment, with the area, local dates and the authority's link. A safety fact, because a bait can kill a dog. OTWD records the notice and never the authority's live baiting programme.
 _Avoid_: baiting alert, 1080 warning
 
+**Water notice**:
+A boil water, do not drink or do not use notice for a site's water supply, with the area, local dates and the issuing authority's link. A safety fact. OTWD records the notice as published and never a live water quality feed.
+_Avoid_: boil water alert (as the field name), water warning
+
+**Camping rules**:
+Whether overnight camping at a site or along a road segment is allowed, restricted or prohibited under the rules of the council or land manager that sets them, with the authority and its link, and whether only self-contained vehicles may camp.
+_Avoid_: camping legality, free camping status
+
+**Self-contained scheme**:
+A governed certification that a vehicle holds its own water, toilet and waste, with the countries it is used in and whether it is issued under a law, such as New Zealand's certificate of self-containment.
+_Avoid_: SCV status, self-contained badge
+
+**Permit**:
+A permit a traveller needs to enter a park, camp, enter land held by its traditional owners or a community, or travel along a road through it, with the issuing authority, its link and whether it must be obtained in advance. OTWD records that a permit is needed, never a traveller's permit.
+_Avoid_: pass (on its own), licence (for a permit)
+
+**Tidal access**:
+Reaching a site or driving a road segment depends on the tide, with the advised window around low tide and the tide authority's prediction page. A safety fact. OTWD never stores tide times.
+_Avoid_: tide times, beach access
+
+**Quiet hours**:
+The local clock times a site's rules ask travellers to keep noise down, read in the site's time zone.
+_Avoid_: curfew, noise hours
+
+**Age rules**:
+Whether a site takes children, the age from which an adults-only site takes guests, and the age the person who books must be.
+_Avoid_: adults only (as the field), family friendly
+
+**Seasonal operation**:
+The periods each year a site operates, as local month and day: the operator's own season, distinct from a seasonal closure and a temporary closure.
+_Avoid_: open season, seasonal opening (for a closure)
+
+**Location sensitivity**:
+A moderator's marking that a site's exact position must not be published, with a reason from a governed list, such as a culturally sensitive place. The site is then published with a generalised location, and the exact position is held privately for moderation.
+_Avoid_: hidden site, secret location
+
+**Generalised location**:
+The published location of a site whose location is sensitive: its coordinates rounded to a grid cell of 0.01, 0.1 or 1 degree, with no accuracy and no locality.
+_Avoid_: fuzzed location, approximate location, obfuscated location
+
 **Description**:
 A short original text about a record, written by a contributor and published under the data licence.
 _Avoid_: review, blurb
@@ -159,6 +199,10 @@ _Avoid_: hazard, obstacle, low bridge (as a record type)
 **Structure**:
 The built thing at a road restriction, from a governed list: bridge, tunnel, overhead structure, causeway or floodway, ford, gate, cattle grid, or no structure when the limit is only signed.
 _Avoid_: asset, object, obstruction
+
+**Flood depth marker**:
+Whether a depth marker post stands at a ford or causeway so travellers can read the depth of water over the road, with the road authority and its link. A safety fact. OTWD never records a live depth.
+_Avoid_: flood gauge, depth reading
 
 **Passage**:
 How the road passes a structure: over it (weight and width matter), under it (vertical clearance matters), through it, or along an open road.
@@ -355,7 +399,7 @@ The fixed code that sends each submission to a human queue or, where allowed, to
 _Avoid_: triage (by the AI), dispatch
 
 **Always-human list**:
-The kinds of submission that routing always sends to a person: new records of every record type, closures, merges and any change to a safety fact. Membership follows from the submission's kind and the safety facts it touches, never from a flag routing sets for itself.
+The kinds of submission that routing always sends to a person: new records of every record type, closures, merges, any change to a safety fact and any change to a site's location sensitivity. Membership follows from the submission's kind and the fields it touches, as the schema marks them, never from a flag routing sets for itself.
 _Avoid_: exceptions, manual list
 
 **Moderation decision**:

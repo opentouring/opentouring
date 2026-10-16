@@ -339,6 +339,27 @@
         "change_seq": 30410
       }
     },
+    "firewood": {
+      "value": {
+        "collection": "prohibited",
+        "notes": [
+          {
+            "text": "Bring your own firewood. Collecting wood in the park is not allowed.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
+        "observed_on": "2026-09-06",
+        "recorded_at": "2026-09-08T23:10:00Z",
+        "confidence": 0.8,
+        "submission_id": "otwd:submission:01KSEY055P9K7NVDVYTYQ12B0M",
+        "decision_id": "otwd:decision:01KSVP53ET0XV8C1K5Y3HC83EP",
+        "change_seq": 20211
+      }
+    },
     "rig_limits": {
       "value": {
         "max_length_m": 7,
@@ -507,8 +528,7 @@
       "value": {
         "available": true,
         "attributes": {
-          "fire_rings_only": true,
-          "bring_own_firewood": true
+          "fire_rings_only": true
         }
       },
       "provenance": {

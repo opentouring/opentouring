@@ -1,0 +1,17 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/new-site.submission.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/proposed/facts/location",
+      "value": {
+        "lat": -20.1,
+        "lng": 146.3,
+        "generalised": {
+          "cell_deg": 0.1
+        }
+      }
+    }
+  ]
+}

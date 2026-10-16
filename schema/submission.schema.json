@@ -210,10 +210,15 @@
       "additionalProperties": false
     },
     "SiteFacts": {
-      "description": "Proposed site facts, as plain values without provenance. OTWD records provenance when the change is applied. fire_district is computed from the location, so it is never submitted.",
+      "description": "Proposed site facts, as plain values without provenance. OTWD records provenance when the change is applied. fire_district is computed from the location, so it is never submitted. A submission carries the exact location, never a generalised one: OTWD generalises a sensitive site's published location itself (ADR 0045).",
       "$ref": "site.schema.json#/$defs/FactValues",
       "properties": {
-        "fire_district": false
+        "fire_district": false,
+        "location": {
+          "properties": {
+            "generalised": false
+          }
+        }
       },
       "unevaluatedProperties": false
     },

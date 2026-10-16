@@ -8,6 +8,32 @@
   "allOf": [
     {
       "$ref": "common.schema.json#/$defs/FullRecord"
+    },
+    {
+      "description": "A site whose location is sensitive has no locality, because a locality can name a small place (ADR 0045).",
+      "if": {
+        "required": ["facts"],
+        "properties": {
+          "facts": {
+            "required": ["location_sensitivity"],
+            "properties": {
+              "location_sensitivity": true
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "derived": {
+            "not": {
+              "required": ["locality"],
+              "properties": {
+                "locality": true
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "properties": {
@@ -45,7 +71,7 @@
           "$ref": "common.schema.json#/$defs/Fact",
           "properties": {
             "value": {
-              "$ref": "values.schema.json#/$defs/Location"
+              "$ref": "values.schema.json#/$defs/SiteLocation"
             }
           }
         },
@@ -177,12 +203,94 @@
               "$ref": "values.schema.json#/$defs/FireDistrict"
             }
           }
+        },
+        "camping_rules": {
+          "description": "Whether overnight camping is allowed, restricted or prohibited, under the council's or land manager's rules, with the authority and its link.",
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/CampingRules"
+            }
+          }
+        },
+        "permits": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Permits"
+            }
+          }
+        },
+        "quiet_hours": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/QuietHours"
+            }
+          }
+        },
+        "age_rules": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/AgeRules"
+            }
+          }
+        },
+        "firewood": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/Firewood"
+            }
+          }
+        },
+        "seasonal_operation": {
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/SeasonalOperation"
+            }
+          }
+        },
+        "tidal_access": {
+          "description": "Safety fact. Reaching the site depends on the tide, with the tide authority's prediction page. A traveller caught by the tide can lose the vehicle, so every change needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/TidalAccess"
+            }
+          }
+        },
+        "water_notices": {
+          "description": "Safety fact. Boil water and other water quality notices for the site's supply, as the water authority published them, with its link. Every change needs a moderator.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/WaterNotices"
+            }
+          }
+        },
+        "location_sensitivity": {
+          "description": "The site's exact position is withheld and its published location generalised (ADR 0045). Not a safety fact, but every change to it is on the always-human list (x-otwd-always-human), because a wrong removal would publish a place its custodians asked to protect.",
+          "x-otwd-always-human": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/LocationSensitivity"
+            }
+          }
         }
       },
       "additionalProperties": false,
       "allOf": [
         {
           "$ref": "#/$defs/RequiredFacts"
+        },
+        {
+          "$ref": "#/$defs/SensitiveLocationRule"
         }
       ]
     },
@@ -194,7 +302,7 @@
           "$ref": "values.schema.json#/$defs/Names"
         },
         "location": {
-          "$ref": "values.schema.json#/$defs/Location"
+          "$ref": "values.schema.json#/$defs/SiteLocation"
         },
         "site_types": {
           "$ref": "values.schema.json#/$defs/SiteTypes"
@@ -240,6 +348,33 @@
         },
         "fire_district": {
           "$ref": "values.schema.json#/$defs/FireDistrict"
+        },
+        "camping_rules": {
+          "$ref": "values.schema.json#/$defs/CampingRules"
+        },
+        "permits": {
+          "$ref": "values.schema.json#/$defs/Permits"
+        },
+        "quiet_hours": {
+          "$ref": "values.schema.json#/$defs/QuietHours"
+        },
+        "age_rules": {
+          "$ref": "values.schema.json#/$defs/AgeRules"
+        },
+        "firewood": {
+          "$ref": "values.schema.json#/$defs/Firewood"
+        },
+        "seasonal_operation": {
+          "$ref": "values.schema.json#/$defs/SeasonalOperation"
+        },
+        "tidal_access": {
+          "$ref": "values.schema.json#/$defs/TidalAccess"
+        },
+        "water_notices": {
+          "$ref": "values.schema.json#/$defs/WaterNotices"
+        },
+        "location_sensitivity": {
+          "$ref": "values.schema.json#/$defs/LocationSensitivity"
         }
       }
     },
@@ -437,6 +572,82 @@
       "properties": {
         "value": {
           "$ref": "values.schema.json#/$defs/FacilityValue"
+        }
+      }
+    },
+    "SensitiveLocationRule": {
+      "description": "A site with a location_sensitivity fact publishes a generalised location, and only such a site does (ADR 0045). The compact form applies the same rule to plain values in CompactSensitiveLocationRule, and tools/validate.py checks that the coordinates sit on the grid the reason allows.",
+      "if": {
+        "required": ["location_sensitivity"],
+        "properties": {
+          "location_sensitivity": true
+        }
+      },
+      "then": {
+        "properties": {
+          "location": {
+            "properties": {
+              "value": {
+                "required": ["generalised"],
+                "properties": {
+                  "generalised": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "location": {
+            "properties": {
+              "value": {
+                "not": {
+                  "required": ["generalised"],
+                  "properties": {
+                    "generalised": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "CompactSensitiveLocationRule": {
+      "description": "SensitiveLocationRule for plain values: the compact form and the facts of a GeoJSON feature's compact properties.",
+      "if": {
+        "required": ["location_sensitivity"],
+        "properties": {
+          "location_sensitivity": true
+        }
+      },
+      "then": {
+        "properties": {
+          "location": {
+            "required": ["generalised"],
+            "properties": {
+              "generalised": true
+            }
+          }
+        },
+        "not": {
+          "required": ["locality"],
+          "properties": {
+            "locality": true
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "location": {
+            "not": {
+              "required": ["generalised"],
+              "properties": {
+                "generalised": true
+              }
+            }
+          }
         }
       }
     }

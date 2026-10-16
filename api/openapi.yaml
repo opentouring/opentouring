@@ -100,7 +100,7 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species records are described with.
+    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons records are described with.
   - name: Bulk downloads
     description: The whole dataset, or the changes between two sequence numbers, as files.
   - name: Change feed
@@ -127,6 +127,10 @@ paths:
 
         With `near`, results are ordered by distance and `distances_km` gives each site's
         distance. Otherwise they are ordered by public ID.
+
+        A site whose location is sensitive (a location_sensitivity fact) is served with its
+        generalised location only, in every view and format, and `bbox`, `near` and
+        `distances_km` use that generalised position. The exact position is never served.
       parameters:
         - $ref: "#/components/parameters/Bbox"
         - $ref: "#/components/parameters/Near"
@@ -240,6 +244,66 @@ paths:
         - name: has_bait_notice
           in: query
           description: When true, returns only sites with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the site's time zone. When false, only sites without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
+          schema:
+            type: boolean
+        - name: camping
+          in: query
+          description: Values of camping_rules.camping to include, for example allowed,restricted to leave out places where the council or land manager prohibits camping. A record with no camping rules stays in unless `camping_rules_known=true`, because a missing rule is unknown, never proof that camping is allowed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [allowed, restricted, prohibited]
+        - name: self_contained_required
+          in: query
+          description: When false, leaves out records where only certified self-contained vehicles may camp, for a traveller whose vehicle is not certified. When true, returns only those records. Records with no camping rules stay in unless `camping_rules_known=true`.
+          schema:
+            type: boolean
+        - name: camping_rules_known
+          in: query
+          description: When true, excludes records with no camping_rules fact.
+          schema:
+            type: boolean
+            default: false
+        - name: permit_kind
+          in: query
+          description: Permit kinds. Returns records that need a permit of one of these kinds, for example transit,land_entry to find roads and places that need a permit before travel. A record with no permits fact may still need one, so its absence is never proof that no permit is needed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 5
+            items:
+              type: string
+              enum: [park_entry, camping, land_entry, transit, other]
+        - name: tide_dependent
+          in: query
+          description: When true, returns only records whose access depends on the tide (a tidal_access fact). When false, only records without one. A missing fact is unknown, so false is not proof that the tide never matters.
+          schema:
+            type: boolean
+        - name: children_allowed
+          in: query
+          description: When true, leaves out adults-only sites. When false, returns only adults-only sites. Sites with no age rules stay in unless `age_rules_known=true`.
+          schema:
+            type: boolean
+        - name: age_rules_known
+          in: query
+          description: When true, excludes sites with no age_rules fact.
+          schema:
+            type: boolean
+            default: false
+        - name: open_on
+          in: query
+          description: A local date. Leaves out sites whose seasonal_operation, or whose opening_hours.seasonal_closures, says they do not operate on that date, compared in the site's time zone. Sites with neither stay in, because their season is unknown.
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/LocalDate"
+          example: "2026-12-27"
+        - name: has_water_notice
+          in: query
+          description: When true, returns only sites with a water notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the site's time zone. When false, only sites without a current notice. A missing notice is unknown, so false is not proof that the water is safe to drink.
           schema:
             type: boolean
         - $ref: "#/components/parameters/Status"
@@ -425,6 +489,11 @@ paths:
             maxItems: 20
             items:
               $ref: "../schema/common.schema.json#/$defs/StructureCode"
+        - name: flood_depth_marker
+          in: query
+          description: When true, returns only fords and causeways with a depth marker. When false, only those recorded as having none, which is where a traveller cannot read the depth on site. Restrictions with no flood_depth_marker fact are left out either way.
+          schema:
+            type: boolean
         - $ref: "#/components/parameters/RigLengthM"
         - $ref: "#/components/parameters/RigHeightM"
         - $ref: "#/components/parameters/RigWidthM"
@@ -597,6 +666,44 @@ paths:
         - name: has_bait_notice
           in: query
           description: When true, returns only segments with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the segment's time zone, or in the notice's own time_zone when it has one. When false, only segments without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
+          schema:
+            type: boolean
+        - name: camping
+          in: query
+          description: Values of camping_rules.camping to include, for example allowed,restricted to leave out places where the council or land manager prohibits camping. A record with no camping rules stays in unless `camping_rules_known=true`, because a missing rule is unknown, never proof that camping is allowed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [allowed, restricted, prohibited]
+        - name: self_contained_required
+          in: query
+          description: When false, leaves out records where only certified self-contained vehicles may camp, for a traveller whose vehicle is not certified. When true, returns only those records. Records with no camping rules stay in unless `camping_rules_known=true`.
+          schema:
+            type: boolean
+        - name: camping_rules_known
+          in: query
+          description: When true, excludes records with no camping_rules fact.
+          schema:
+            type: boolean
+            default: false
+        - name: permit_kind
+          in: query
+          description: Permit kinds. Returns records that need a permit of one of these kinds, for example transit,land_entry to find roads and places that need a permit before travel. A record with no permits fact may still need one, so its absence is never proof that no permit is needed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 5
+            items:
+              type: string
+              enum: [park_entry, camping, land_entry, transit, other]
+        - name: tide_dependent
+          in: query
+          description: When true, returns only records whose access depends on the tide (a tidal_access fact). When false, only records without one. A missing fact is unknown, so false is not proof that the tide never matters.
           schema:
             type: boolean
         - $ref: "#/components/parameters/RigLengthM"
@@ -950,6 +1057,44 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
+  /v1/self-contained-schemes:
+    get:
+      tags: [Governed lists]
+      operationId: listSelfContainedSchemes
+      summary: List self-contained schemes
+      description: Returns the governed list of self-contained vehicle certification schemes that camping rules name, with the countries each is used in and whether it is issued under a law.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/location-sensitivity-reasons:
+    get:
+      tags: [Governed lists]
+      operationId: listLocationSensitivityReasons
+      summary: List location sensitivity reasons
+      description: Returns the governed list of reasons a site's exact position is withheld, with the finest grid each allows its published location to be generalised to.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
   /v1/downloads:
     get:
       tags: [Bulk downloads]
@@ -960,7 +1105,9 @@ paths:
         type. Full downloads hold every record of that type that is not merged, in the compact form
         for GeoParquet and in the full form for GeoJSON, with point geometry for sites and road
         restrictions and line geometry for road segments and ferry services. Delta files hold the
-        changes between two sequence numbers and need a paid tier.
+        changes between two sequence numbers and need a paid tier. A site whose location is
+        sensitive appears with its generalised location only, in its properties and its geometry
+        alike (site-feature.schema.json).
 
         Download URLs are signed for the API key and expire. Verify each file against its sha256.
       parameters:
@@ -1727,7 +1874,7 @@ components:
           type: string
           example: "Data: Open Touring contributors, opentouring.org, CC BY 4.0"
     SiteFeatureCollection:
-      description: The same page as GeoJSON (RFC 7946). Each feature is a Point whose properties are the compact site form. next_cursor and attribution are foreign members.
+      description: The same page as GeoJSON (RFC 7946). Each feature is a Point built from the site's published location, whose properties are the compact site form (site-feature.schema.json). next_cursor and attribution are foreign members.
       type: object
       required: [type, features, next_cursor]
       properties:
@@ -1736,17 +1883,7 @@ components:
         features:
           type: array
           items:
-            type: object
-            required: [type, id, geometry, properties]
-            properties:
-              type:
-                const: Feature
-              id:
-                $ref: "../schema/common.schema.json#/$defs/SiteId"
-              geometry:
-                $ref: "../schema/common.schema.json#/$defs/GeoJsonPoint"
-              properties:
-                $ref: "../schema/site-compact.schema.json"
+            $ref: "../schema/site-feature.schema.json"
         next_cursor:
           type: [string, "null"]
         attribution:
