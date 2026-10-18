@@ -163,14 +163,14 @@
         "charging": "paid",
         "items": [
           {
-            "applies_to": "site_unpowered",
+            "applies_to": "pitch_unpowered",
             "amount": 6.5,
             "currency": "AUD",
             "per": "adult",
             "period": "night"
           },
           {
-            "applies_to": "site_unpowered",
+            "applies_to": "pitch_unpowered",
             "amount": 3.5,
             "currency": "AUD",
             "per": "child",
@@ -228,7 +228,7 @@
     },
     "capacity": {
       "value": {
-        "sites": 14
+        "pitches": 14
       },
       "provenance": {
         "source_kind": "seed_source",
@@ -557,7 +557,7 @@
         "change_seq": 4120
       }
     },
-    "tent_sites": {
+    "tent_pitches": {
       "value": {
         "available": true,
         "attributes": {

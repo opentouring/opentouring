@@ -43,7 +43,7 @@ Most facilities map to the `amenityFeature` property with a `LocationFeatureSpec
 | `showers`               | `amenityFeature` = "Showers"               | exact |                                                                                                                                                                                                                        |
 | `drinking_water`        | `amenityFeature` = "Drinking water"        | exact |                                                                                                                                                                                                                        |
 | `non_potable_water`     | none                                       |       |                                                                                                                                                                                                                        |
-| `power`                 | `amenityFeature` = "Powered sites"         | exact |                                                                                                                                                                                                                        |
+| `power`                 | `amenityFeature` = "Powered pitches"       | exact |                                                                                                                                                                                                                        |
 | `dump_point_access`     | `amenityFeature` = "Dump point"            | exact |                                                                                                                                                                                                                        |
 | `bins`                  | `amenityFeature` = "Rubbish bins"          | exact |                                                                                                                                                                                                                        |
 | `recycling`             | `amenityFeature` = "Recycling"             | exact |                                                                                                                                                                                                                        |
@@ -62,10 +62,10 @@ Most facilities map to the `amenityFeature` property with a `LocationFeatureSpec
 | `accessible_facilities` | `amenityFeature` = "Wheelchair accessible" | exact |                                                                                                                                                                                                                        |
 | `generators_allowed`    | `amenityFeature` = "Generators allowed"    | exact |                                                                                                                                                                                                                        |
 | `big_rig_access`        | none                                       |       |                                                                                                                                                                                                                        |
-| `drive_through_sites`   | `amenityFeature` = "Drive-through sites"   | exact |                                                                                                                                                                                                                        |
-| `ensuite_sites`         | `amenityFeature` = "Ensuite sites"         | exact |                                                                                                                                                                                                                        |
+| `drive_through_pitches` | `amenityFeature` = "Drive-through pitches" | exact |                                                                                                                                                                                                                        |
+| `ensuite_pitches`       | `amenityFeature` = "Ensuite pitches"       | exact |                                                                                                                                                                                                                        |
 | `cabins`                | `amenityFeature` = "Cabins"                | exact |                                                                                                                                                                                                                        |
-| `tent_sites`            | `amenityFeature` = "Tent sites"            | exact |                                                                                                                                                                                                                        |
+| `tent_pitches`          | `amenityFeature` = "Tent pitches"          | exact |                                                                                                                                                                                                                        |
 | `camp_kitchen`          | `amenityFeature` = "Camp kitchen"          | exact |                                                                                                                                                                                                                        |
 
 ## Other facts
@@ -106,9 +106,9 @@ A caravan park page carries markup like this:
   "checkoutTime": "10:00",
   "petsAllowed": true,
   "amenityFeature": [
-    { "@type": "LocationFeatureSpecification", "name": "Powered sites", "value": true },
+    { "@type": "LocationFeatureSpecification", "name": "Powered pitches", "value": true },
     { "@type": "LocationFeatureSpecification", "name": "Dump point", "value": true },
-    { "@type": "LocationFeatureSpecification", "name": "Ensuite sites", "value": false }
+    { "@type": "LocationFeatureSpecification", "name": "Ensuite pitches", "value": false }
   ]
 }
 ```

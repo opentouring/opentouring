@@ -93,14 +93,14 @@
         "charging": "paid",
         "items": [
           {
-            "applies_to": "site_powered",
+            "applies_to": "pitch_powered",
             "amount": 30,
             "currency": "AUD",
             "per": "site",
             "period": "night"
           },
           {
-            "applies_to": "site_unpowered",
+            "applies_to": "pitch_unpowered",
             "amount": 20,
             "currency": "AUD",
             "per": "site",
