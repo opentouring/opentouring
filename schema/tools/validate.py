@@ -21,8 +21,11 @@ The script runs three stages:
 1. Every *.schema.json file is checked against the JSON Schema 2020-12
    metaschema, the governed lists against vocabulary.schema.json and
    facilities.json against the per-facility schemas in values.schema.json.
-   The governed lists are in en-AU, the reference language.
-   For each record type in RECORD_TYPES it checks that the full form,
+   The governed lists are in en-AU, the reference language. The record type
+   registry (record-types.json) and the seed source registry (seed-sources.json)
+   are checked against their schemas, and every known value of an open
+   enumeration against the schema it annotates.
+   For each record type in RECORD_TYPES (read from record-types.json) it checks that the full form,
    FactValues, the compact form and the submissions name the same facts with
    the same value shapes and share one set of required facts.
 2. Each document is validated against its schema with format checking on
@@ -34,13 +37,23 @@ The script runs three stages:
    lowest figures, the always-human list derived from the schema's safety
    fact markers, ferry terminals, translations that name only codes and
    attributes of the reference list from a folder named for their language
-   and carry the SPDX header, and a few cross-field rules.
+   and carry the SPDX header, record types across merges, unmerges, splits and
+   replacements, retracted stubs that keep nothing, photo licences against their
+   provenance, and a few cross-field rules. Every published document (records in
+   both forms and changes) is walked for contributor, submission, upload and API
+   key identifiers, which it must never carry (ADR 0038).
 
 A top-level "$comment" in a document (the SPDX header of the example files)
 is removed before validation against the schema. A document that holds "$base"
 and "$patch" is built from the document "$base" names, relative to its own
 file, with the JSON Patch operations add, replace and remove in "$patch"
 applied in order. Invalid examples use it to state only what makes them invalid.
+
+Open enumerations (x-otwd-known-values) and record types (x-otwd-registry, checked
+against record-types.json) are checked strictly, as for a producer: OTWD never
+sends a value its schema version does not know. Files under examples/consumer
+come from a later minor version: each must pass the plain validator a consumer
+would use and fail the strict one on an unknown value (ADR 0035).
 
 Files under examples/valid and i18n must pass. Files under examples/invalid must
 fail, and examples/invalid/expected.json names a fragment of the error each one
@@ -52,6 +65,7 @@ The exit status is 0 when every expectation holds and 1 otherwise.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import zoneinfo
 from dataclasses import dataclass
@@ -59,7 +73,7 @@ from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, validators
 from jsonschema.exceptions import ValidationError
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
@@ -72,6 +86,17 @@ BASE_KEY = "$base"
 PATCH_KEY = "$patch"
 SPDX_COMMENT = "SPDX-License-Identifier: Apache-2.0"
 SAFETY_MARKER = "x-otwd-safety-fact"
+# Facts that are not safety facts but whose every change goes to a person (ADR 0045).
+ALWAYS_HUMAN_MARKER = "x-otwd-always-human"
+# Open enumerations list the values known at this schema version, and record IDs and record
+# types name the registry that holds theirs. Producers (OTWD and the examples) are held to
+# them. Consumers are not, so a document from a later minor version still validates.
+KNOWN_VALUES = "x-otwd-known-values"
+REGISTRY = "x-otwd-registry"
+RECORD_TYPE_REGISTRY = "record-types.json"
+SEED_SOURCE_REGISTRY = "seed-sources.json"
+# Every producer-only error says this, so consumer examples can tell it from other errors.
+PRODUCER_ONLY = "producers may not send it"
 I18N = "i18n"
 REFERENCE_LANGUAGE = "en-AU"
 # Fields the API adds to governed list entries when text falls back to another language.
@@ -90,6 +115,8 @@ ACCESS_CLASSES = "vehicle-access-classes.json"
 VEHICLE_CLASSES = "vehicle-classes.json"
 KEY_SCHEMES = "key-schemes.json"
 PET_SPECIES = "pet-species.json"
+SELF_CONTAINED_SCHEMES = "self-contained-schemes.json"
+SENSITIVITY_REASONS = "location-sensitivity-reasons.json"
 
 # Every governed list file, with the name its codes go by in error messages.
 GOVERNED_LISTS = {
@@ -101,11 +128,35 @@ GOVERNED_LISTS = {
     VEHICLE_CLASSES: "vehicle class",
     KEY_SCHEMES: "key scheme",
     PET_SPECIES: "pet species",
+    SELF_CONTAINED_SCHEMES: "self-contained scheme",
+    SENSITIVITY_REASONS: "location sensitivity reason",
 }
+
+# Structures where water crosses the road, the only ones a flood depth marker stands at.
+FLOOD_CROSSINGS = {"ford", "causeway"}
+# Tolerance when checking that a generalised coordinate sits on its grid.
+GRID_TOLERANCE = 1e-9
 
 # Submission kinds on the always-human list for every record type, besides the
 # kinds that create a record (new_<record type>).
-ALWAYS_HUMAN_KINDS = {"report_closure", "request_merge"}
+ALWAYS_HUMAN_KINDS = {
+    "report_closure",
+    "request_merge",
+    "request_unmerge",
+    "request_split",
+    "request_replacement",
+}
+# Published data (records in both forms, bulk download rows, which are records, and changes)
+# never identifies a contributor or anything that links back to one (ADR 0038). These are
+# checked anywhere in a published document, so a future free-text or extension field cannot
+# carry them either.
+PRIVATE_ID = re.compile(r"otwd:(contributor|submission|upload|api_key):")
+PRIVATE_KEYS = {"contributor_id", "pseudonymous_id", "submission_id", "moderator_id", "api_key_id"}
+# The licences a contributor may choose for their own photo (ADR 0037).
+CONTRIBUTOR_PHOTO_LICENCES = {"CC-BY-4.0", "CC0-1.0"}
+# The top-level fields of a retracted stub: everything else was removed with the record.
+STUB_FIELDS = {"schema_version", "id", "status", "created_at", "updated_at", "change_seq"}
+STUB_FIELDS_COMPACT = STUB_FIELDS | {"status_reason", "attribution"}
 
 
 def schema_file(stem: str) -> str:
@@ -153,15 +204,6 @@ class RecordType:
         return f"new_{self.code}"
 
 
-RECORD_TYPES = (
-    RecordType("site", frozenset({"fire_district"})),
-    RecordType("road_restriction"),
-    RecordType("road_segment"),
-    RecordType("ferry_service"),
-)
-RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_TYPES}
-
-
 def load_json(path: Path) -> Any:
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
@@ -193,6 +235,18 @@ def record_zones(derived: dict) -> list[str]:
     """The time zones a record lies in: a line's time_zones, or a point's one time_zone."""
     time_zone = derived.get("time_zone")
     return derived.get("time_zones", [time_zone] if time_zone else [])
+
+
+def load_record_types() -> tuple[RecordType, ...]:
+    """The record types in the registry, record-types.json, in its order."""
+    entries = load_json(SCHEMA_DIR / RECORD_TYPE_REGISTRY)["entries"]
+    return tuple(
+        RecordType(entry["code"], frozenset(entry.get("computed_facts", []))) for entry in entries
+    )
+
+
+RECORD_TYPES = load_record_types()
+RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_TYPES}
 
 
 def without_comment(document: Any) -> Any:
@@ -278,6 +332,39 @@ def ref_name(schema: dict) -> str | None:
     return ref.replace("#/$defs/", "#") if ref else None
 
 
+def registry_code(value: str) -> str:
+    """The record type a registry-checked value names: a record type code or a record ID."""
+    return value.split(":")[1] if value.startswith("otwd:") else value
+
+
+def producer_keywords() -> dict[str, Callable]:
+    """Keywords that hold a producer to the values known at this schema version."""
+
+    def known_values(validator: Any, known: list[str], instance: Any, schema: dict) -> Iterable:
+        if isinstance(instance, str) and instance not in known:
+            yield ValidationError(
+                f"{instance!r} is not a known value of this open enumeration "
+                f"({', '.join(known)}): consumers accept it, producers may not send it"
+            )
+
+    registered = {record_type.code for record_type in RECORD_TYPES}
+
+    def registry(validator: Any, file_name: str, instance: Any, schema: dict) -> Iterable:
+        if isinstance(instance, str) and registry_code(instance) not in registered:
+            yield ValidationError(
+                f"{registry_code(instance)!r} is not a record type in {file_name}: "
+                "consumers skip it, producers may not send it"
+            )
+
+    return {KNOWN_VALUES: known_values, REGISTRY: registry}
+
+
+# The producer validator applies the open enumeration keywords. The consumer validator is the
+# plain 2020-12 validator, which ignores them, as any consumer's validator would.
+ProducerValidator = validators.extend(Draft202012Validator, producer_keywords())
+ConsumerValidator = Draft202012Validator
+
+
 class Vocab:
     """The governed lists: for each list file, its entries keyed by code."""
 
@@ -300,6 +387,8 @@ class Context:
 
     safety_fields: for each record type, the pointers of its safety facts and facilities,
     read from the x-otwd-safety-fact markers in its full form.
+    human_fields: for each record type, the pointers of facts that are not safety facts but
+    are on the always-human list, read from the x-otwd-always-human markers.
     sites: site types of the sites known to this run, by public ID, for cross-document checks.
     sites_complete: True when every site a document names must be known (the examples).
     """
@@ -308,6 +397,7 @@ class Context:
     schemas: dict[str, dict]
     vocab: Vocab
     safety_fields: dict[str, frozenset[str]]
+    human_fields: dict[str, frozenset[str]]
     sites: dict[str, set[str]]
     sites_complete: bool
 
@@ -323,25 +413,39 @@ class Context:
             schemas[path.name] = schema
             resource = Resource.from_contents(schema, default_specification=DRAFT202012)
             registry = registry.with_resource(expected_id, resource)
-        safety = {
-            record_type.code: frozenset(safety_pointers(schemas[record_type.full]))
-            for record_type in RECORD_TYPES
-        }
-        return cls(registry.crawl(), schemas, Vocab(), safety, {}, False)
+        safety, human = (
+            {
+                record_type.code: frozenset(marked_pointers(schemas[record_type.full], marker))
+                for record_type in RECORD_TYPES
+            }
+            for marker in (SAFETY_MARKER, ALWAYS_HUMAN_MARKER)
+        )
+        return cls(registry.crawl(), schemas, Vocab(), safety, human, {}, False)
 
     def with_sites(self, paths: Iterable[Path], complete: bool) -> Context:
         sites: dict[str, set[str]] = {}
         for path in paths:
             kind = DocumentKind.for_path(path)
-            if kind and kind.stem in ("site", "site-compact"):
+            if kind and kind.stem in ("site", "site-compact", "site-feature"):
                 document = load_document(path)
+                if kind.stem == "site-feature":
+                    document = document["properties"]
                 types = site_types_of(document)
                 if types is not None:
                     sites[document["id"]] = types
-        return Context(self.registry, self.schemas, self.vocab, self.safety_fields, sites, complete)
+        return Context(
+            self.registry,
+            self.schemas,
+            self.vocab,
+            self.safety_fields,
+            self.human_fields,
+            sites,
+            complete,
+        )
 
-    def validator(self, schema_name: str) -> Draft202012Validator:
-        return Draft202012Validator(
+    def validator(self, schema_name: str, consumer: bool = False) -> Draft202012Validator:
+        cls = ConsumerValidator if consumer else ProducerValidator
+        return cls(
             self.schemas[schema_name],
             registry=self.registry,
             format_checker=Draft202012Validator.FORMAT_CHECKER,
@@ -352,13 +456,13 @@ class Context:
         return self.schemas[schema_name]["$defs"][def_name]
 
 
-def safety_pointers(full_schema: dict) -> Iterable[str]:
-    """The fields a record type's full form marks as safety facts, as JSON Pointers."""
+def marked_pointers(full_schema: dict, marker: str) -> Iterable[str]:
+    """The fields a record type's full form marks with a marker, as JSON Pointers."""
     sections = {"facts": "Facts", "facilities": "FacilityFacts"}
     for section, def_name in sections.items():
         definition = full_schema["$defs"].get(def_name, {})
         for name, fact in definition.get("properties", {}).items():
-            if fact.get(SAFETY_MARKER):
+            if fact.get(marker):
                 yield f"/{section}/{name}"
 
 
@@ -447,6 +551,9 @@ class SemanticChecker:
             "pet_policy": self.pet_policy,
             "pet_transit": self.pet_transit,
             "bait_notices": self.bait_notices,
+            "camping_rules": self.camping_rules,
+            "water_notices": self.water_notices,
+            "location_sensitivity": self.location_sensitivity,
         }
 
     def fail(self, where: str, message: str) -> None:
@@ -537,7 +644,7 @@ class SemanticChecker:
         toilets = toilets_of(value)
         if "key_scheme" in toilets:
             self.code(KEY_SCHEMES, toilets["key_scheme"], f"{where}/toilets/key_scheme")
-            self.key_scheme_country(toilets["key_scheme"], where)
+            self.scheme_country(KEY_SCHEMES, toilets["key_scheme"], f"{where}/toilets/key_scheme")
         if wheelchair_of(value).get("toilets") == "no" and toilets.get("accessible_count", 0) > 0:
             self.fail(
                 f"{where}/toilets/accessible_count",
@@ -551,15 +658,6 @@ class SemanticChecker:
                     f"is {str(toilets['ambulant']).lower()} but ambulant_count is "
                     f"{toilets['ambulant_count']}",
                 )
-
-    def key_scheme_country(self, scheme: str, where: str) -> None:
-        """A key scheme is one used in the record's country."""
-        entry = self.vocab.lists[KEY_SCHEMES].get(scheme)
-        if entry and self.countries and not set(self.countries) & set(entry["countries"]):
-            self.fail(
-                f"{where}/toilets/key_scheme",
-                f"key scheme {scheme!r} is not used in {' or '.join(self.countries)}",
-            )
 
     def accessible_facilities(self, values: dict, facilities: dict, where: str) -> None:
         """The compact form's accessible_facilities matches what the accessibility fact gives."""
@@ -622,6 +720,74 @@ class SemanticChecker:
                     f"{where}/{index}/time_zone",
                     f"{zone} is not one of the record's time zones ({', '.join(self.zones)})",
                 )
+
+    def camping_rules(self, value: dict, where: str) -> None:
+        """Known self-contained schemes used in the record's country, required only when restricted."""
+        rule = value.get("self_contained", {})
+        for index, scheme in enumerate(rule.get("schemes", [])):
+            path = f"{where}/self_contained/schemes/{index}"
+            self.code(SELF_CONTAINED_SCHEMES, scheme, path)
+            self.scheme_country(SELF_CONTAINED_SCHEMES, scheme, path)
+        if rule.get("required") and value["camping"] != "restricted":
+            self.fail(
+                f"{where}/camping",
+                f"is {value['camping']} but self-contained vehicles are required, "
+                "which makes camping restricted",
+            )
+
+    def scheme_country(self, list_name: str, scheme: str, where: str) -> None:
+        """A key scheme or self-contained scheme is one used in the record's country."""
+        entry = self.vocab.lists[list_name].get(scheme)
+        if entry and self.countries and not set(self.countries) & set(entry["countries"]):
+            label = GOVERNED_LISTS[list_name]
+            self.fail(where, f"{label} {scheme!r} is not used in {' or '.join(self.countries)}")
+
+    def water_notices(self, value: list, where: str) -> None:
+        """Notices end after they start."""
+        for index, notice in enumerate(value):
+            if "to" in notice and notice["to"] < notice["from"]:
+                self.fail(f"{where}/{index}/to", "is before from")
+
+    def location_sensitivity(self, value: dict, where: str) -> None:
+        self.code(SENSITIVITY_REASONS, value["reason"], f"{where}/reason")
+
+    def generalised_location(self, values: dict, where: str, suffix: str) -> None:
+        """A sensitive site's published coordinates sit on a grid at least as coarse as its reason allows."""
+        sensitivity, location = values.get("location_sensitivity"), values.get("location")
+        if not sensitivity or not location or "generalised" not in location:
+            return
+        cell = location["generalised"]["cell_deg"]
+        reason = self.vocab.lists[SENSITIVITY_REASONS].get(sensitivity["reason"])
+        if reason and cell < reason["min_cell_deg"]:
+            self.fail(
+                f"{where}/location{suffix}/generalised/cell_deg",
+                f"is {cell} but {sensitivity['reason']} needs a cell of at least "
+                f"{reason['min_cell_deg']} degrees",
+            )
+        for axis in ("lat", "lng"):
+            cells = location[axis] / cell
+            if abs(cells - round(cells)) > GRID_TOLERANCE:
+                self.fail(
+                    f"{where}/location{suffix}/{axis}",
+                    f"{location[axis]} is not on the {cell} degree grid: "
+                    "a sensitive site never publishes its exact position",
+                )
+
+    def record_rules(self, values: dict, where: str, suffix: str) -> None:
+        """Rules across a record's facts that do not apply to a submission's partial facts."""
+        self.generalised_location(values, where, suffix)
+        closures = values.get("opening_hours", {}).get("seasonal_closures")
+        if "seasonal_operation" in values and closures:
+            self.fail(
+                f"{where}/seasonal_operation",
+                "give the site's season here or in opening_hours.seasonal_closures, not both",
+            )
+        structure = values.get("structure", {}).get("code")
+        if "flood_depth_marker" in values and structure not in FLOOD_CROSSINGS:
+            self.fail(
+                f"{where}/flood_depth_marker",
+                f"a flood depth marker stands only at a ford or causeway, not a {structure}",
+            )
 
     def facts(self, values: dict, where: str, suffix: str) -> None:
         """Check plain fact values. suffix is /value when the facts came from the full form."""
@@ -696,6 +862,55 @@ class SemanticChecker:
             elif record_type_of(other) != record_type_of(record_id):
                 self.fail(f"{where}/{index}", f"{other} is not a {record_type_of(record_id).code}")
 
+    def photo_licences(self, photos: list[dict]) -> None:
+        """A seed source photo keeps its source's licence, and a contributor chose CC BY or CC0."""
+        for index, photo in enumerate(photos):
+            where, provenance = f"/photos/{index}", photo["provenance"]
+            seed = provenance.get("seed_source")
+            if seed and photo["licence"] != seed["licence"]:
+                self.fail(
+                    f"{where}/licence",
+                    f"is {photo['licence']}, but a photo from a seed source keeps its licence, "
+                    f"{seed['licence']}",
+                )
+            elif seed and "changes" not in photo:
+                self.fail(where, "a photo from a seed source states the changes OTWD made")
+            elif not seed and photo["licence"] not in CONTRIBUTOR_PHOTO_LICENCES:
+                self.fail(f"{where}/licence", "a contributor's photo is CC-BY-4.0 or CC0-1.0")
+
+    def credits(self, attribution: list[dict]) -> None:
+        """Each seed source is credited once."""
+        sources = [entry["seed_source"] for entry in attribution if "seed_source" in entry]
+        for source in sorted({source for source in sources if sources.count(source) > 1}):
+            self.fail("/attribution", f"{source} is credited more than once")
+
+    def published(self, node: Any, where: str = "") -> None:
+        """No contributor, submission, upload or API key identifier anywhere in published data."""
+        if isinstance(node, dict):
+            if "display_name" in node and node.get("source_kind") != "contributor":
+                self.fail(f"{where}/display_name", "only a direct contributor's fact can name them")
+            for key, value in node.items():
+                if key in PRIVATE_KEYS:
+                    self.fail(f"{where}/{key}", f"published data never carries {key}")
+                self.published(value, f"{where}/{key}")
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                self.published(value, f"{where}/{index}")
+        elif isinstance(node, str) and PRIVATE_ID.search(node):
+            self.fail(
+                where,
+                "published data never carries a contributor, submission, upload or API key "
+                "identifier",
+            )
+
+    def other_type(self, record_id: str, other: str, where: str) -> None:
+        """A replacement is a record of another record type."""
+        if record_type_of(other) == record_type_of(record_id):
+            self.fail(
+                where,
+                f"{other} is a {record_type_of(record_id).code} too: a replacement is another record type",
+            )
+
     def always_human_reasons(self, kind: str, record_type: str, fields: list[str]) -> list[str]:
         """Why a submission is on the always-human list, from its kind and the schema's markers."""
         reasons = []
@@ -705,11 +920,18 @@ class SemanticChecker:
         reasons += [
             f"{field} is a safety fact of a {record_type}" for field in fields if field in safety
         ]
+        human = self.context.human_fields[record_type]
+        reasons += [
+            f"every change to {field} of a {record_type} goes to a person"
+            for field in fields
+            if field in human
+        ]
         return reasons
 
 
 def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
     """Any record in either form. The full form wraps facts and nests derived values."""
+    checker.published(document)
     if full:
         derived, where, suffix = document.get("derived", {}), "/derived", "/value"
         values = {name: fact["value"] for name, fact in document.get("facts", {}).items()}
@@ -723,11 +945,26 @@ def check_record(document: dict, checker: SemanticChecker, full: bool) -> None:
         filter(None, [derived.get("country_code")])
     )
     checker.facts(values, facts_where, suffix)
+    checker.record_rules(values, facts_where, suffix)
     checker.facilities(document.get("facilities", {}), "/facilities")
     if not full and record_type_of(document["id"]).code == "site":
         checker.accessible_facilities(values, document.get("facilities", {}), "/facilities")
-    if document.get("redirect_to") == document["id"]:
+    status = document["status"]["value"] if full else document["status"]
+    target = document.get("redirect_to")
+    if target == document["id"]:
         checker.fail("/redirect_to", "a record cannot redirect to itself")
+    elif target and status == "merged":
+        checker.same_type(document["id"], [target], "/redirect_to")
+    elif target and status == "replaced":
+        checker.other_type(document["id"], target, "/redirect_to")
+    if full:
+        checker.photo_licences(document.get("photos", []))
+    else:
+        checker.credits(document.get("attribution", []))
+    if status == "retracted":
+        allowed = STUB_FIELDS if full else STUB_FIELDS_COMPACT
+        for name in sorted(document.keys() - allowed):
+            checker.fail(f"/{name}", "a retracted record keeps only its stub")
 
 
 def check_submission(document: dict, checker: SemanticChecker) -> None:
@@ -737,9 +974,20 @@ def check_submission(document: dict, checker: SemanticChecker) -> None:
     if document["kind"] == "request_merge":
         duplicates = proposed["duplicate_record_ids"]
         checker.same_type(document["record_id"], duplicates, "/proposed/duplicate_record_ids")
+    for index, part in enumerate(proposed.get("parts", [])):
+        where = f"/proposed/parts/{index}"
+        checker.facts(part["facts"], f"{where}/facts", "")
+        checker.facilities(part.get("facilities", {}), f"{where}/facilities")
+    if document["kind"] == "request_replacement":
+        new_type = proposed["record_type"]
+        if new_type == record_type_of(document["record_id"]).code:
+            checker.fail("/proposed/record_type", f"is {new_type}, the record's own type")
 
 
 def check_moderation_decision(document: dict, checker: SemanticChecker) -> None:
+    check_decision_results(document, checker)
+    if "routing" not in document:
+        return
     routing = document["routing"]
     kind, record_type = routing["submission_kind"], routing["record_type"]
     if kind.startswith("new_") and kind != RECORD_TYPE_BY_CODE[record_type].new_kind:
@@ -749,20 +997,67 @@ def check_moderation_decision(document: dict, checker: SemanticChecker) -> None:
         checker.fail("/routing/always_human", f"must be true: {'; '.join(reasons)}")
     if reasons and document["decided_by"]["kind"] == "routing_rule":
         checker.fail("/decided_by", f"a routing rule cannot decide this: {'; '.join(reasons)}")
+
+
+def check_decision_results(document: dict, checker: SemanticChecker) -> None:
+    """Merges, unmerges and splits stay within one record type, and a replacement leaves it."""
     merge = document.get("merge")
     if merge:
         survivor = merge["surviving_record_id"]
         checker.same_type(survivor, merge["merged_record_ids"], "/merge/merged_record_ids")
+    unmerge = document.get("unmerge")
+    if unmerge:
+        checker.same_type(
+            unmerge["record_id"], [unmerge["unmerged_from"]], "/unmerge/unmerged_from"
+        )
+    split = document.get("split")
+    if split:
+        checker.same_type(split["record_id"], split["new_record_ids"], "/split/new_record_ids")
+    replacement = document.get("replacement")
+    if replacement:
+        checker.other_type(
+            replacement["record_id"], replacement["replaced_by"], "/replacement/replaced_by"
+        )
 
 
 def check_change(document: dict, checker: SemanticChecker) -> None:
+    checker.published(document)
     record_id = document["record_id"]
-    if "merged_into" in document:
-        checker.same_type(record_id, [document["merged_into"]], "/merged_into")
+    for field in ("merged_into", "unmerged_from", "split_from"):
+        if field in document:
+            checker.same_type(record_id, [document[field]], f"/{field}")
+    if "split_into" in document:
+        checker.same_type(record_id, document["split_into"], "/split_into")
+    if "replaced_by" in document:
+        checker.other_type(record_id, document["replaced_by"], "/replaced_by")
     safety = checker.context.safety_fields[record_type_of(record_id).code]
     changed = [field for field in document["changed_fields"] if field in safety]
     if changed and document.get("safety_fact_changed") is False:
         checker.fail("/safety_fact_changed", f"is false but {', '.join(changed)} changed")
+
+
+def check_site_feature(document: dict, checker: SemanticChecker) -> None:
+    """A GeoJSON feature's properties are a site, and its geometry is the site's own location."""
+    properties = document["properties"]
+    full = isinstance(properties.get("status"), dict)
+    check_record(properties, checker, full)
+    checker.errors = [f"/properties{error}" for error in checker.errors]
+    if document["id"] != properties["id"]:
+        checker.fail("/id", f"is {document['id']} but the site is {properties['id']}")
+    facts = properties.get("facts", {}) if full else properties
+    location = facts.get("location", {}).get("value") if full else facts.get("location")
+    geometry = document.get("geometry")
+    if location is None or geometry is None:
+        if location != geometry:
+            checker.fail("/geometry", "must be null exactly when the site has no location")
+        return
+    expected = [location["lng"], location["lat"]]
+    if geometry["coordinates"] != expected:
+        checker.fail(
+            "/geometry/coordinates",
+            f"are {geometry['coordinates']} but the site's location is {expected}: "
+            "the geometry is always built from the published location",
+        )
 
 
 def check_nothing(document: dict, checker: SemanticChecker) -> None:
@@ -869,6 +1164,7 @@ DOCUMENT_KINDS = tuple(
         DocumentKind(f"{record_type.stem}-compact", compact_record),
     )
 ) + (
+    DocumentKind("site-feature", check_site_feature),
     DocumentKind("submission", check_submission, rejects_deprecated=True),
     DocumentKind("verdict", check_nothing),
     DocumentKind("moderation-decision", check_moderation_decision),
@@ -956,7 +1252,7 @@ def check_record_type(context: Context, record_type: RecordType) -> list[str]:
 
 
 def submission_kinds(context: Context) -> list[str]:
-    return context.schemas["submission.schema.json"]["properties"]["kind"]["enum"]
+    return context.definition("common.schema.json", "SubmissionKind")[KNOWN_VALUES]
 
 
 def check_schemas(context: Context) -> list[str]:
@@ -995,6 +1291,82 @@ def check_schemas(context: Context) -> list[str]:
     if creation != {record_type.new_kind for record_type in RECORD_TYPES}:
         problems.append(f"creation kinds {sorted(creation)} do not match the record types")
     problems += check_facilities(context)
+    problems += check_record_type_registry(context)
+    problems += check_seed_source_registry(context)
+    problems += check_open_enumerations(context)
+    return problems
+
+
+def check_record_type_registry(context: Context) -> list[str]:
+    """record-types.json is valid, and each entry names its schemas, ID kind and creation kind."""
+    problems: list[str] = []
+    document = load_json(SCHEMA_DIR / RECORD_TYPE_REGISTRY)
+    validator = context.validator("record-types.schema.json")
+    problems += [
+        f"{RECORD_TYPE_REGISTRY}{describe(error)}" for error in validator.iter_errors(document)
+    ]
+    reserved = re.compile(context.definition("common.schema.json", "NonRecordId")["pattern"])
+    codes = [entry["code"] for entry in document["entries"]]
+    if len(codes) != len(set(codes)):
+        problems.append(f"{RECORD_TYPE_REGISTRY}: duplicate codes")
+    for entry in document["entries"]:
+        code, where = entry["code"], f"{RECORD_TYPE_REGISTRY} {entry['code']}"
+        if reserved.match(f"otwd:{code}:"):
+            problems.append(f"{where}: the ID kind is reserved for another identifier")
+        stem = code.replace("_", "-")
+        if (entry["full_schema"], entry["compact_schema"]) != (
+            schema_file(stem),
+            schema_file(f"{stem}-compact"),
+        ):
+            problems.append(f"{where}: schemas must be named after the code, as {stem}.schema.json")
+        for name in (entry["full_schema"], entry["compact_schema"]):
+            if name not in context.schemas:
+                problems.append(f"{where}: {name} does not exist")
+        if entry["creation_kind"] != f"new_{code}":
+            problems.append(f"{where}: creation_kind must be new_{code}")
+        if entry["creation_kind"] not in submission_kinds(context):
+            problems.append(f"{where}: {entry['creation_kind']} is not a known submission kind")
+    return problems
+
+
+def check_seed_source_registry(context: Context) -> list[str]:
+    """seed-sources.json is valid, and each seed source is listed once."""
+    document = load_json(SCHEMA_DIR / SEED_SOURCE_REGISTRY)
+    validator = context.validator("seed-sources.schema.json")
+    problems = [
+        f"{SEED_SOURCE_REGISTRY}{describe(error)}" for error in validator.iter_errors(document)
+    ]
+    ids = [entry["id"] for entry in document["entries"]]
+    for duplicate in sorted({seed for seed in ids if ids.count(seed) > 1}):
+        problems.append(f"{SEED_SOURCE_REGISTRY}: {duplicate} is listed more than once")
+    return problems
+
+
+def open_enumerations(node: Any, where: str = "") -> Iterable[tuple[str, list]]:
+    """Every x-otwd-known-values list in a schema, with where it is."""
+    if isinstance(node, dict):
+        if KNOWN_VALUES in node:
+            yield where, node[KNOWN_VALUES]
+        for key, value in node.items():
+            yield from open_enumerations(value, f"{where}/{key}")
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from open_enumerations(value, f"{where}/{index}")
+
+
+def check_open_enumerations(context: Context) -> list[str]:
+    """Known values are unique and valid under the schema they annotate, such as EnumCode."""
+    problems: list[str] = []
+    for name, schema in context.schemas.items():
+        for where, known in open_enumerations(schema):
+            if len(known) != len(set(known)):
+                problems.append(f"{name}{where}: {KNOWN_VALUES} repeats a value")
+            annotated = Draft202012Validator(
+                {"$ref": f"{BASE}{name}#{where}"}, registry=context.registry
+            )
+            for value in known:
+                if not annotated.is_valid(value):
+                    problems.append(f"{name}{where}: known value {value!r} fails its own schema")
     return problems
 
 
@@ -1097,6 +1469,38 @@ def check_translations(context: Context) -> tuple[bool, int]:
     return check_passing(title, SCHEMA_DIR, paths, context), len(paths)
 
 
+def check_consumer_examples(context: Context) -> tuple[bool, int]:
+    """Documents from a later minor version: a consumer accepts them, a producer may not send them.
+
+    Each must pass the plain 2020-12 validator, which ignores the open enumeration keywords as
+    any consumer's validator does, and must fail the producer validator on one of them, so it
+    proves an unknown value is accepted rather than passing for some other reason.
+    """
+    print("\nConsumer examples (a consumer accepts them, a producer may not send them)")
+    ok = True
+    folder = EXAMPLES / "consumer"
+    paths = documents_in(folder)
+    for path in paths:
+        kind = DocumentKind.for_path(path)
+        if kind is None:
+            print(f"  FAIL  {path.name}: cannot tell the schema from the file name")
+            ok = False
+            continue
+        document = without_comment(load_json(path))
+        consumer = all_errors(context.validator(kind.schema, consumer=True).iter_errors(document))
+        producer = all_errors(context.validator(kind.schema).iter_errors(document))
+        unknown = [message for message in producer if PRODUCER_ONLY in message]
+        if consumer:
+            report("FAIL", f"{path.name}: a consumer must accept it", consumer[:8], "  ")
+            ok = False
+        elif not unknown:
+            print(f"  FAIL  {path.name}: it must carry a value only a later version knows")
+            ok = False
+        else:
+            print(f"  pass  {path.name}  ({len(unknown)} unknown to this version)")
+    return ok, len(paths)
+
+
 def check_invalid_examples(context: Context) -> tuple[bool, int]:
     print("\nInvalid examples (must fail with the expected error)")
     ok = True
@@ -1149,10 +1553,14 @@ def main(arguments: list[str]) -> int:
     context = context.with_sites((EXAMPLES / "valid").glob("*.json"), complete=True)
     valid_ok, valid_count = check_valid_examples(context)
     invalid_ok, invalid_count = check_invalid_examples(context)
+    consumer_ok, consumer_count = check_consumer_examples(context)
     translations_ok, translation_count = check_translations(context)
-    ok = not problems and valid_ok and invalid_ok and translations_ok
+    ok = not problems and valid_ok and invalid_ok and consumer_ok and translations_ok
     verdict = "all expectations met" if ok else "EXPECTATIONS NOT MET"
-    counts = f"{valid_count} valid, {invalid_count} invalid, {translation_count} translations"
+    counts = (
+        f"{valid_count} valid, {invalid_count} invalid, {consumer_count} consumer, "
+        f"{translation_count} translations"
+    )
     print(f"\n{counts}: {verdict}")
     return 0 if ok else 1
 

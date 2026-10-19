@@ -3,20 +3,25 @@
   "$id": "https://schema.opentouring.org/otwd/v1/moderation-decision.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD moderation decision",
-  "description": "The recorded outcome for a submission, with who or what decided and why. Decisions are appended to the submission log and never edited. An appeal produces a new decision that refers to the earlier one.",
+  "description": "The recorded outcome of a moderation decision, with who or what decided and why. Most decisions decide a submission. A moderator can also decide, without a submission, to revert earlier changes or to take content down (ADR 0036). Decisions are appended to the submission log and never edited. An appeal produces a new decision that refers to the earlier one. Decisions are not published: partner apps see the summary in a submission's status, and moderators read them through the moderation endpoints.",
   "type": "object",
-  "required": ["id", "submission_id", "outcome", "decided_by", "decided_at", "routing", "reasons"],
+  "required": ["id", "subject", "outcome", "decided_by", "decided_at", "reasons"],
   "properties": {
     "id": {
       "$ref": "common.schema.json#/$defs/DecisionId"
     },
+    "subject": {
+      "description": "What the decision is about. submission: a submission, named in submission_id, with how routing sent it. revert: undoing earlier changes, listed in revert. takedown: removing content, described in takedown. Open: a reader treats a subject it does not know as an action it cannot show in detail.",
+      "$ref": "common.schema.json#/$defs/EnumCode",
+      "x-otwd-known-values": ["submission", "revert", "takedown"]
+    },
     "submission_id": {
-      "$ref": "common.schema.json#/$defs/SubmissionId"
+      "$ref": "common.schema.json#/$defs/SubmissionId",
+      "description": "For subject submission: the submission decided."
     },
     "outcome": {
-      "description": "approved: applied as submitted. edited_and_approved: applied after a moderator corrected it (amendments lists the corrections). rejected: not applied. needs_info: waiting for the contributor to answer the public note.",
-      "type": "string",
-      "enum": ["approved", "edited_and_approved", "rejected", "needs_info"]
+      "description": "The outcome. For edited_and_approved, amendments lists the corrections.",
+      "$ref": "common.schema.json#/$defs/ModerationOutcome"
     },
     "decided_by": {
       "$ref": "#/$defs/Decider"
@@ -41,25 +46,14 @@
         },
         "submission_kind": {
           "description": "The kind of the submission decided.",
-          "type": "string",
-          "enum": [
-            "new_site",
-            "new_road_restriction",
-            "new_road_segment",
-            "new_ferry_service",
-            "update_facts",
-            "add_photo",
-            "report_closure",
-            "request_merge",
-            "report_problem"
-          ]
+          "$ref": "common.schema.json#/$defs/SubmissionKind"
         },
         "record_type": {
           "description": "The record type the submission creates or changes.",
           "$ref": "common.schema.json#/$defs/RecordType"
         },
         "fields": {
-          "description": "For update_facts: every fact and facility the submission sets or removes.",
+          "description": "For update_facts and confirm_facts: every fact and facility the submission sets, removes or confirms.",
           "type": "array",
           "minItems": 1,
           "maxItems": 100,
@@ -73,13 +67,13 @@
           "type": "boolean"
         },
         "fixed_check_flags": {
-          "description": "Fixed-check results that send a submission outside the always-human list to a person all the same. Like always_human, the fixed checks set them and routing only reads them. accessibility_raised: the submission raises wheelchair access for any feature of a site or ferry service to yes, sets step_free_access or changing_places to true, or sets toilets.key_required to false. A wrong yes there can strand a traveller, while a wrong no costs far less, so only the raise goes to a person.",
+          "description": "Fixed-check results that send a submission outside the always-human list to a person all the same. Like always_human, the fixed checks set them and routing only reads them. accessibility_raised: the submission raises wheelchair access for any feature of a site or ferry service to yes, sets step_free_access or changing_places to true, or sets toilets.key_required to false. A wrong yes there can strand a traveller, while a wrong no costs far less, so only the raise goes to a person. sensitive_location: the submission changes the location, names or description of a site whose location is sensitive, or adds a photo of one (ADR 0045). The exact position and what can identify the place go to a person, never to a routing rule.",
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["accessibility_raised"]
+            "enum": ["accessibility_raised", "sensitive_location"]
           }
         }
       },
@@ -87,7 +81,7 @@
       "if": {
         "properties": {
           "submission_kind": {
-            "const": "update_facts"
+            "enum": ["update_facts", "confirm_facts"]
           }
         }
       },
@@ -192,10 +186,269 @@
     "appeal_of": {
       "description": "When this decision answers an appeal: the decision appealed against.",
       "$ref": "common.schema.json#/$defs/DecisionId"
+    },
+    "revert": {
+      "description": "For subject revert: the changes undone, and why. Each produces a change with origin revert.",
+      "type": "object",
+      "required": ["reverts", "cause"],
+      "properties": {
+        "reverts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/ChangeSeq"
+          }
+        },
+        "cause": {
+          "description": "appeal_upheld: an appeal showed the change was wrong. abused_api_key: the changes came through an API key that was compromised or abused (ADR 0039). vandalism: deliberate false or harmful edits. moderator_error: a moderator approved something by mistake. Open: a reader treats a cause it does not know as moderator_error.",
+          "$ref": "common.schema.json#/$defs/EnumCode",
+          "x-otwd-known-values": ["appeal_upheld", "abused_api_key", "vandalism", "moderator_error"]
+        },
+        "api_key_id": {
+          "description": "For abused_api_key: the key whose changes are reverted.",
+          "$ref": "common.schema.json#/$defs/ApiKeyId"
+        }
+      },
+      "additionalProperties": false
+    },
+    "takedown": {
+      "description": "For subject takedown: what was removed and why. Who asked for it is never recorded here or published. A takedown request is handled as a restricted case under the moderation policy, outside the submission log.",
+      "type": "object",
+      "required": ["record_id", "reason"],
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/RecordId"
+        },
+        "reason": {
+          "description": "The same reasons as a change's takedown_reason.",
+          "$ref": "common.schema.json#/$defs/EnumCode",
+          "x-otwd-known-values": [
+            "personal_information",
+            "copyright",
+            "legal_requirement",
+            "offensive_content",
+            "private_property"
+          ]
+        },
+        "fields": {
+          "description": "The facts or facilities removed.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/FieldPointer"
+          }
+        },
+        "photo_ids": {
+          "description": "The photos removed.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 200,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/PhotoId"
+          }
+        },
+        "retract_record": {
+          "description": "True when the whole record is retracted, leaving only its stub.",
+          "const": true
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": ["fields"],
+          "properties": {
+            "fields": true
+          }
+        },
+        {
+          "required": ["photo_ids"],
+          "properties": {
+            "photo_ids": true
+          }
+        },
+        {
+          "required": ["retract_record"],
+          "properties": {
+            "retract_record": true
+          }
+        }
+      ]
+    },
+    "unmerge": {
+      "description": "For an approved request_unmerge: the restored record and the record it had been merged into.",
+      "type": "object",
+      "required": ["record_id", "unmerged_from"],
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/RecordId"
+        },
+        "unmerged_from": {
+          "$ref": "common.schema.json#/$defs/RecordId"
+        }
+      },
+      "additionalProperties": false
+    },
+    "split": {
+      "description": "For an approved request_split: the record split and the new records made from it, all of one record type.",
+      "type": "object",
+      "required": ["record_id", "new_record_ids"],
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/RecordId"
+        },
+        "new_record_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/RecordId"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "replacement": {
+      "description": "For an approved request_replacement: the replaced record and the new record of another type that replaces it.",
+      "type": "object",
+      "required": ["record_id", "replaced_by"],
+      "properties": {
+        "record_id": {
+          "$ref": "common.schema.json#/$defs/RecordId"
+        },
+        "replaced_by": {
+          "$ref": "common.schema.json#/$defs/RecordId"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,
   "allOf": [
+    {
+      "description": "A decision on a submission names it and says how routing sent it. A revert or takedown is a moderator's own action, with no submission and no routing, and it applies at once.",
+      "if": {
+        "properties": {
+          "subject": {
+            "const": "submission"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "required": ["submission_id", "routing"],
+            "properties": {
+              "submission_id": true,
+              "routing": true
+            }
+          },
+          {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["revert"],
+                  "properties": {
+                    "revert": true
+                  }
+                },
+                {
+                  "required": ["takedown"],
+                  "properties": {
+                    "takedown": true
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "else": {
+        "allOf": [
+          {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["submission_id"],
+                  "properties": {
+                    "submission_id": true
+                  }
+                },
+                {
+                  "required": ["routing"],
+                  "properties": {
+                    "routing": true
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "decided_by": {
+            "properties": {
+              "kind": {
+                "const": "moderator"
+              }
+            }
+          },
+          "outcome": {
+            "const": "approved"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject": {
+            "const": "revert"
+          }
+        }
+      },
+      "then": {
+        "required": ["revert"],
+        "properties": {
+          "revert": true
+        }
+      },
+      "else": {
+        "not": {
+          "required": ["revert"],
+          "properties": {
+            "revert": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "subject": {
+            "const": "takedown"
+          }
+        }
+      },
+      "then": {
+        "required": ["takedown"],
+        "properties": {
+          "takedown": true
+        }
+      },
+      "else": {
+        "not": {
+          "required": ["takedown"],
+          "properties": {
+            "takedown": true
+          }
+        }
+      }
+    },
     {
       "if": {
         "properties": {
@@ -278,7 +531,7 @@
               "fixed_check_flags": {
                 "not": {
                   "contains": {
-                    "const": "accessibility_raised"
+                    "enum": ["accessibility_raised", "sensitive_location"]
                   }
                 }
               }

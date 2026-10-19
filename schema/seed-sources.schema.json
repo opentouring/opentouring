@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/seed-sources.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD seed source registry",
+  "description": "The format of seed-sources.json, the registry of external open datasets OTWD imports or plans to import, and of each entry served by GET /v1/seed-sources, which adds the latest sync. Every seed source reference in provenance and every seed source credit in an attribution list copies its licence, attribution and changes from here. A seed source is never imported until its licence review is confirmed.",
+  "type": "object",
+  "required": ["$schema", "version", "entries"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "$comment": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+\\.[0-9]+$"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SeedSource"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "SeedSource": {
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_name",
+        "publisher",
+        "licence",
+        "attribution",
+        "dataset_url",
+        "record_types",
+        "status",
+        "licence_review"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/SeedSourceId"
+        },
+        "dataset_name": {
+          "description": "The dataset's name as its publisher gives it.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "licence": {
+          "$ref": "common.schema.json#/$defs/SpdxLicence"
+        },
+        "licence_url": {
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        },
+        "attribution": {
+          "description": "The credit text shown for facts from this source, as an AttributionEntry's text.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "attribution_notes": {
+          "description": "Anything else the licensor asks for in a credit, quoted from the publisher's record, such as a notice that the publisher created and owns the data.",
+          "type": "string",
+          "maxLength": 1000
+        },
+        "changes": {
+          "description": "The changes OTWD makes to the data on import, as the licence asks a reuser to indicate.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "dataset_url": {
+          "description": "The publisher's own record for the dataset, where its licence is stated.",
+          "$ref": "common.schema.json#/$defs/HttpsUrl"
+        },
+        "record_types": {
+          "description": "The record types the source seeds.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/RecordType"
+          }
+        },
+        "subdivisions": {
+          "description": "The subdivisions the source covers, when it covers less than a country.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/SubdivisionCode"
+          }
+        },
+        "status": {
+          "description": "candidate: the licence reads as compatible and the source is planned, nothing imported. active: imported and re-synced on its schedule. blocked: not imported until the question in its licence review is answered. retired: no longer imported, and facts it supplied keep their provenance. The same statuses as docs/seed-sources.md. Open: a reader treats a status it does not know as retired.",
+          "$ref": "common.schema.json#/$defs/EnumCode",
+          "x-otwd-known-values": ["candidate", "active", "blocked", "retired"]
+        },
+        "licence_review": {
+          "description": "Whether a maintainer has confirmed, from the publisher's own record, the licence, the attribution it requires and that it is compatible with publishing under CC BY 4.0. An active source has a confirmed review.",
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": {
+              "enum": ["pending", "confirmed"]
+            },
+            "confirmed_on": {
+              "$ref": "common.schema.json#/$defs/LocalDate"
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          },
+          "additionalProperties": false,
+          "if": {
+            "properties": {
+              "status": {
+                "const": "confirmed"
+              }
+            }
+          },
+          "then": {
+            "required": ["confirmed_on"],
+            "properties": {
+              "confirmed_on": true
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "status": {
+            "const": "active"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "licence_review": {
+            "properties": {
+              "status": {
+                "const": "confirmed"
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "description": "A source under a CC BY licence links the licence and states the changes OTWD makes, as AttributionEntry requires.",
+          "if": {
+            "properties": {
+              "licence": {
+                "pattern": "^CC-BY-"
+              }
+            }
+          },
+          "then": {
+            "required": ["licence_url", "changes"],
+            "properties": {
+              "licence_url": true,
+              "changes": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "update_facts",
+  "record_id": "otwd:site:01M9NFFFS6ZK9HEGYJXVEWZC8X",
+  "base_change_seq": 40420,
+  "contributor": {
+    "kind": "direct",
+    "contributor_id": "otwd:contributor:01KKS1RPGCFYJK8VCTP4V7BMX8"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-09-28T23:30:00Z",
+  "note_to_moderators": "Submitted by a moderator for the land council, which asked in writing that the gallery's position not be published.",
+  "proposed": {
+    "facts": {
+      "location_sensitivity": {
+        "reason": "cultural_heritage"
+      }
+    }
+  }
+}

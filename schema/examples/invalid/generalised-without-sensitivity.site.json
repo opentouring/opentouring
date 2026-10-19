@@ -1,0 +1,10 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/sensitive-gallery-walk-nt.site.json",
+  "$patch": [
+    {
+      "op": "remove",
+      "path": "/facts/location_sensitivity"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "kind": "request_unmerge",
+  "record_id": "otwd:site:01M2AJGZD7MVYA4ZNJPYN3T04J",
+  "base_change_seq": 21003,
+  "contributor": {
+    "kind": "pseudonymous",
+    "pseudonymous_id": "u_7f3d2a9b41c8"
+  },
+  "consent": {
+    "terms_version": "1.0",
+    "accepted_at": "2026-02-11T08:00:00Z"
+  },
+  "contributor_submitted_at": "2026-10-14T23:10:00Z",
+  "proposed": {
+    "reason": [
+      {
+        "text": "These are two different rest areas, one on each side of the highway, about 400 m apart.",
+        "lang": "en-AU"
+      }
+    ]
+  }
+}

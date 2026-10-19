@@ -1,0 +1,13 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "seq": 33140,
+  "record_id": "otwd:site:01KZWYZTN0MXX9EQGP27KYAH36",
+  "kind": "photo_removed",
+  "origin": "takedown",
+  "applied_at": "2026-10-14T05:20:00Z",
+  "previous_seq": 30115,
+  "changed_fields": ["/photos"],
+  "safety_fact_changed": false,
+  "takedown_reason": "personal_information",
+  "decision_id": "otwd:decision:01M2KSAAE0CESPPXH0R8DV3YQC"
+}

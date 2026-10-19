@@ -1,0 +1,120 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01M9NFFFS6ZK9HEGYJXVEWZC8X",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-09-12",
+      "recorded_at": "2026-09-29T01:00:00Z",
+      "confidence": 0.9,
+      "change_seq": 40501
+    }
+  },
+  "created_at": "2026-07-14T03:00:00Z",
+  "updated_at": "2026-09-29T01:00:00Z",
+  "change_seq": 40501,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-NT",
+    "time_zone": "Australia/Darwin"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Sandstone Gallery Walk",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-29T01:00:00Z",
+        "confidence": 0.9,
+        "change_seq": 40501
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -13.4,
+        "lng": 132.4,
+        "generalised": {
+          "cell_deg": 0.1
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-29T01:00:00Z",
+        "confidence": 0.9,
+        "change_seq": 40501
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "attraction"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-29T01:00:00Z",
+        "confidence": 0.9,
+        "change_seq": 40501
+      }
+    },
+    "location_sensitivity": {
+      "value": {
+        "reason": "cultural_heritage"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-29T01:00:00Z",
+        "confidence": 0.9,
+        "change_seq": 40501
+      }
+    },
+    "permits": {
+      "value": [
+        {
+          "kind": "land_entry",
+          "authority": "Example Land Council",
+          "info_url": "https://www.example.org/land-council/permits",
+          "in_advance": true,
+          "free": true
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-29T01:00:00Z",
+        "confidence": 0.9,
+        "change_seq": 40501
+      }
+    },
+    "camping_rules": {
+      "value": {
+        "camping": "prohibited",
+        "authority": "Example Land Council",
+        "info_url": "https://www.example.org/land-council/visiting"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-12",
+        "recorded_at": "2026-09-29T01:00:00Z",
+        "confidence": 0.9,
+        "change_seq": 40501
+      }
+    }
+  }
+}

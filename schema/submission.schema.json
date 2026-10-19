@@ -3,7 +3,7 @@
   "$id": "https://schema.opentouring.org/otwd/v1/submission.schema.json",
   "$comment": "SPDX-License-Identifier: Apache-2.0",
   "title": "OTWD submission",
-  "description": "A proposed change to a record (a site, road restriction, road segment or ferry service) sent by a contributor, as a partner app or the Open Touring website posts it to POST /v1/submissions. Each record type has its own kind for creating a record. The kinds that change an existing record work for every record type and name it in record_id, whose kind segment gives the record type. A submission never changes live data directly. It enters the submission log, passes fixed checks, AI review and routing, and becomes a change only after an approving moderation decision. Contributors are identified by an OTWD contributor ID or a partner app's pseudonymous ID, never by name or email.",
+  "description": "A proposed change to a record (a site, road restriction, road segment or ferry service) sent by a contributor, as a partner app or the Open Touring website posts it to POST /v1/submissions. Each record type has its own kind for creating a record. The kinds about an existing record (updating, confirming, photos, closures, merges, unmerges, splits, replacements and problem reports) work for every record type and name it in record_id, whose kind segment gives the record type. A submission never changes live data directly. It enters the submission log, passes fixed checks, AI review and routing, and becomes a change only after an approving moderation decision. Contributors are identified by an OTWD contributor ID or a partner app's pseudonymous ID, never by name or email.",
   "type": "object",
   "required": ["schema_version", "kind", "contributor_submitted_at", "consent", "proposed"],
   "properties": {
@@ -11,25 +11,14 @@
       "$ref": "common.schema.json#/$defs/SchemaVersion"
     },
     "kind": {
-      "type": "string",
-      "enum": [
-        "new_site",
-        "new_road_restriction",
-        "new_road_segment",
-        "new_ferry_service",
-        "update_facts",
-        "add_photo",
-        "report_closure",
-        "request_merge",
-        "report_problem"
-      ]
+      "$ref": "common.schema.json#/$defs/SubmissionKind"
     },
     "record_id": {
       "description": "The record the submission is about, of any record type. Every kind that changes an existing record names it here. Absent for the kinds that create a record.",
       "$ref": "common.schema.json#/$defs/RecordId"
     },
     "base_change_seq": {
-      "description": "The record's change_seq as the contributor last saw it. OTWD compares it with the change_seq of every fact the submission touches and rejects the submission with 409 when one of them changed since. Required for update_facts, report_closure and request_merge.",
+      "description": "The record's change_seq as the contributor last saw it. OTWD compares it with the change_seq of every fact the submission touches and rejects the submission with 409 when one of them changed since. Required for update_facts, confirm_facts, report_closure, request_merge, request_unmerge, request_split and request_replacement.",
       "$ref": "common.schema.json#/$defs/ChangeSeq"
     },
     "contributor": {
@@ -136,6 +125,18 @@
         },
         {
           "$ref": "#/$defs/ReportProblemSubmission"
+        },
+        {
+          "$ref": "#/$defs/ConfirmFactsSubmission"
+        },
+        {
+          "$ref": "#/$defs/RequestUnmergeSubmission"
+        },
+        {
+          "$ref": "#/$defs/RequestSplitSubmission"
+        },
+        {
+          "$ref": "#/$defs/RequestReplacementSubmission"
         }
       ]
     }
@@ -210,10 +211,15 @@
       "additionalProperties": false
     },
     "SiteFacts": {
-      "description": "Proposed site facts, as plain values without provenance. OTWD records provenance when the change is applied. fire_district is computed from the location, so it is never submitted.",
+      "description": "Proposed site facts, as plain values without provenance. OTWD records provenance when the change is applied. fire_district is computed from the location, so it is never submitted. A submission carries the exact location, never a generalised one: OTWD generalises a sensitive site's published location itself (ADR 0045).",
       "$ref": "site.schema.json#/$defs/FactValues",
       "properties": {
-        "fire_district": false
+        "fire_district": false,
+        "location": {
+          "properties": {
+            "generalised": false
+          }
+        }
       },
       "unevaluatedProperties": false
     },
@@ -564,9 +570,9 @@
           "const": "add_photo"
         },
         "proposed": {
-          "description": "A photo already uploaded through POST /v1/photo-uploads, of any record type, such as a site, the clearance sign at a road restriction or the towing sign on a road segment. The photographer licenses it under CC BY 4.0.",
+          "description": "A photo already uploaded through POST /v1/photo-uploads, of any record type, such as a site, the clearance sign at a road restriction or the towing sign on a road segment. The photographer licenses it under CC BY 4.0, or under CC0 1.0 if they choose, and may give the credit to show. Without one the photo is credited to Open Touring contributor.",
           "type": "object",
-          "required": ["upload_id", "licence", "attribution"],
+          "required": ["upload_id", "licence"],
           "properties": {
             "upload_id": {
               "$ref": "common.schema.json#/$defs/UploadId"
@@ -581,10 +587,11 @@
               "$ref": "common.schema.json#/$defs/LocalDate"
             },
             "licence": {
-              "const": "CC-BY-4.0"
+              "description": "CC-BY-4.0 unless the photographer chose CC0-1.0.",
+              "enum": ["CC-BY-4.0", "CC0-1.0"]
             },
             "attribution": {
-              "description": "The credit the photographer wants shown, such as a display name or handle. Never an email address.",
+              "description": "The credit the photographer chose to show with the photo, such as a display name or handle. Optional: a name repeated across photos links them, so apps should leave it empty unless the photographer asks to be named. Never an email address.",
               "type": "string",
               "minLength": 1,
               "maxLength": 100,
@@ -693,8 +700,9 @@
           "required": ["category", "details"],
           "properties": {
             "category": {
-              "type": "string",
-              "enum": [
+              "description": "What kind of problem it is. Open: a reader treats a category it does not know as other.",
+              "$ref": "common.schema.json#/$defs/EnumCode",
+              "x-otwd-known-values": [
                 "wrong_location",
                 "does_not_exist",
                 "safety_hazard",
@@ -732,6 +740,347 @@
         }
       ],
       "required": ["kind", "proposed"]
+    },
+    "ConfirmFactsSubmission": {
+      "properties": {
+        "kind": {
+          "const": "confirm_facts"
+        },
+        "proposed": {
+          "description": "Facts and facilities the contributor saw on the ground and confirms are still true, as the record showed them at base_change_seq. A confirmation changes no value: it adds to the fact's confirmations and its confidence. To report a fact that is no longer true, use update_facts. A confirmation of a safety fact goes to a moderator like any other submission that touches one.",
+          "type": "object",
+          "required": ["fields"],
+          "properties": {
+            "fields": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 50,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "common.schema.json#/$defs/FieldPointer"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "record_id": true,
+        "base_change_seq": true
+      },
+      "required": ["kind", "proposed", "base_change_seq"],
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ]
+    },
+    "RequestUnmergeSubmission": {
+      "properties": {
+        "kind": {
+          "const": "request_unmerge"
+        },
+        "proposed": {
+          "description": "A request to undo a merge: record_id names the merged stub, which the contributor believes is a different thing from the record it redirects to. A moderator restores it as a record of its own, with the facts it had before the merge, and its public ID stays the same.",
+          "type": "object",
+          "required": ["reason"],
+          "properties": {
+            "reason": {
+              "$ref": "common.schema.json#/$defs/Notes"
+            }
+          },
+          "additionalProperties": false
+        },
+        "record_id": true,
+        "base_change_seq": true
+      },
+      "required": ["kind", "proposed", "base_change_seq"],
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ]
+    },
+    "RequestSplitSubmission": {
+      "properties": {
+        "kind": {
+          "const": "request_split"
+        },
+        "proposed": {
+          "description": "A request to split a record that describes more than one thing, such as two campgrounds recorded as one site or a road segment that should be two. Each part becomes a new record of the same record type. The record keeps its public ID and the rest of its facts, and remove lists the facts that belong only to the parts. Use request_replacement when the record is the wrong record type.",
+          "type": "object",
+          "required": ["reason", "parts"],
+          "properties": {
+            "reason": {
+              "$ref": "common.schema.json#/$defs/Notes"
+            },
+            "parts": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 10,
+              "items": {
+                "type": "object",
+                "required": ["facts"],
+                "properties": {
+                  "facts": {
+                    "type": "object"
+                  },
+                  "facilities": {
+                    "$ref": "values.schema.json#/$defs/StoredFacilities"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "remove": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 50,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "common.schema.json#/$defs/FieldPointer"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "record_id": true,
+        "base_change_seq": true
+      },
+      "required": ["kind", "proposed", "base_change_seq"],
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ],
+      "anyOf": [
+        {
+          "description": "request_split on a site: each part is a new site with the facts every one has.",
+          "properties": {
+            "record_id": {
+              "$ref": "common.schema.json#/$defs/SiteId"
+            },
+            "proposed": {
+              "properties": {
+                "parts": {
+                  "items": {
+                    "properties": {
+                      "facts": {
+                        "$ref": "#/$defs/SiteFacts",
+                        "allOf": [
+                          {
+                            "$ref": "site.schema.json#/$defs/RequiredFacts"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "request_split on a road restriction: each part is a new road restriction with the facts every one has.",
+          "properties": {
+            "record_id": {
+              "$ref": "common.schema.json#/$defs/RoadRestrictionId"
+            },
+            "proposed": {
+              "properties": {
+                "parts": {
+                  "items": {
+                    "not": {
+                      "required": ["facilities"],
+                      "properties": {
+                        "facilities": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "request_split on a road segment: each part is a new road segment with the facts every one has.",
+          "properties": {
+            "record_id": {
+              "$ref": "common.schema.json#/$defs/RoadSegmentId"
+            },
+            "proposed": {
+              "properties": {
+                "parts": {
+                  "items": {
+                    "not": {
+                      "required": ["facilities"],
+                      "properties": {
+                        "facilities": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "request_split on a ferry service: each part is a new ferry service with the facts every one has.",
+          "properties": {
+            "record_id": {
+              "$ref": "common.schema.json#/$defs/FerryServiceId"
+            },
+            "proposed": {
+              "properties": {
+                "parts": {
+                  "items": {
+                    "not": {
+                      "required": ["facilities"],
+                      "properties": {
+                        "facilities": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "request_split: the parts take the facts of the record's own type, which its record_id gives, so exactly one branch of anyOf can match."
+    },
+    "RequestReplacementSubmission": {
+      "properties": {
+        "kind": {
+          "const": "request_replacement"
+        },
+        "proposed": {
+          "description": "A request to replace a record that is the wrong record type, such as a low rail bridge recorded as a site. record_type names the right type, which must differ from the record's own, and facts are the new record's, with the facts every record of that type has. A moderator creates the new record, and the old one becomes a replaced stub that redirects to it.",
+          "type": "object",
+          "required": ["record_type", "facts", "reason"],
+          "properties": {
+            "record_type": {
+              "$ref": "common.schema.json#/$defs/RecordType"
+            },
+            "facts": {
+              "type": "object"
+            },
+            "facilities": {
+              "$ref": "values.schema.json#/$defs/StoredFacilities"
+            },
+            "reason": {
+              "$ref": "common.schema.json#/$defs/Notes"
+            }
+          },
+          "additionalProperties": false
+        },
+        "record_id": true,
+        "base_change_seq": true
+      },
+      "required": ["kind", "proposed", "base_change_seq"],
+      "allOf": [
+        {
+          "$ref": "#/$defs/ExistingRecordTarget"
+        }
+      ],
+      "oneOf": [
+        {
+          "description": "request_replacement by a site.",
+          "properties": {
+            "proposed": {
+              "properties": {
+                "record_type": {
+                  "const": "site"
+                },
+                "facts": {
+                  "$ref": "#/$defs/SiteFacts",
+                  "allOf": [
+                    {
+                      "$ref": "site.schema.json#/$defs/RequiredFacts"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "request_replacement by a road restriction.",
+          "properties": {
+            "proposed": {
+              "properties": {
+                "record_type": {
+                  "const": "road_restriction"
+                },
+                "facts": {
+                  "$ref": "#/$defs/RoadRestrictionFacts",
+                  "allOf": [
+                    {
+                      "$ref": "road-restriction.schema.json#/$defs/RequiredFacts"
+                    }
+                  ]
+                }
+              },
+              "not": {
+                "required": ["facilities"],
+                "properties": {
+                  "facilities": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "request_replacement by a road segment.",
+          "properties": {
+            "proposed": {
+              "properties": {
+                "record_type": {
+                  "const": "road_segment"
+                },
+                "facts": {
+                  "$ref": "#/$defs/RoadSegmentFacts",
+                  "allOf": [
+                    {
+                      "$ref": "road-segment.schema.json#/$defs/RequiredFacts"
+                    }
+                  ]
+                }
+              },
+              "not": {
+                "required": ["facilities"],
+                "properties": {
+                  "facilities": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "description": "request_replacement by a ferry service.",
+          "properties": {
+            "proposed": {
+              "properties": {
+                "record_type": {
+                  "const": "ferry_service"
+                },
+                "facts": {
+                  "$ref": "#/$defs/FerryServiceFacts",
+                  "allOf": [
+                    {
+                      "$ref": "ferry-service.schema.json#/$defs/RequiredFacts"
+                    }
+                  ]
+                }
+              },
+              "not": {
+                "required": ["facilities"],
+                "properties": {
+                  "facilities": true
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

@@ -19,7 +19,7 @@
       "if": {
         "properties": {
           "status": {
-            "const": "merged"
+            "$ref": "common.schema.json#/$defs/StubStatus"
           }
         }
       },
@@ -36,13 +36,13 @@
           "time_zone": true
         }
       }
+    },
+    {
+      "$ref": "site.schema.json#/$defs/CompactSensitiveLocationRule"
     }
   ],
   "properties": {
     "id": {
-      "$ref": "common.schema.json#/$defs/SiteId"
-    },
-    "redirect_to": {
       "$ref": "common.schema.json#/$defs/SiteId"
     },
     "facilities": {

@@ -1,0 +1,566 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KT8M1DS4VDJ9B9M784VF1C1B",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "seed_source",
+      "seed_source": {
+        "id": "otwd:seed_source:au-example-parks-campgrounds",
+        "dataset_name": "Campgrounds and camping areas",
+        "publisher": "Example Parks Agency",
+        "licence": "CC-BY-4.0",
+        "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "Contains data from Example Parks Agency",
+        "changes": "Mapped to OTWD codes and combined with contributor reports.",
+        "record_id": "CG-0412",
+        "dataset_version": "2026-07",
+        "retrieved_at": "2026-08-02T03:10:00Z"
+      },
+      "observed_on": "2026-07-01",
+      "recorded_at": "2026-08-02T05:00:00Z",
+      "confidence": 0.75,
+      "change_seq": 4120
+    }
+  },
+  "created_at": "2026-08-02T05:00:00Z",
+  "updated_at": "2026-09-08T23:10:00Z",
+  "change_seq": 20211,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-NSW",
+    "locality": "Kyogle",
+    "time_zone": "Australia/Sydney"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Banksia Hollow Campground",
+          "lang": "en",
+          "kind": "primary"
+        },
+        {
+          "text": "Banksia Hollow Camping Area",
+          "lang": "en",
+          "kind": "former"
+        }
+      ],
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -28.5392,
+        "lng": 152.8807,
+        "accuracy_m": 25
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "national_park_campsite"
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "opening_hours": {
+      "value": {
+        "always_open": true,
+        "seasonal_closures": [
+          {
+            "from": "12-01",
+            "to": "02-28",
+            "notes": [
+              {
+                "text": "Closed in the fire danger period when the park agency declares it.",
+                "lang": "en-AU"
+              }
+            ]
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "prices": {
+      "value": {
+        "charging": "paid",
+        "items": [
+          {
+            "applies_to": "pitch_unpowered",
+            "amount": 6.5,
+            "currency": "AUD",
+            "per": "adult",
+            "period": "night"
+          },
+          {
+            "applies_to": "pitch_unpowered",
+            "amount": 3.5,
+            "currency": "AUD",
+            "per": "child",
+            "period": "night"
+          }
+        ],
+        "payment_methods": ["online"]
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "bookings": {
+      "value": {
+        "booking": "required",
+        "url": "https://www.example.org/parks/banksia-hollow"
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "capacity": {
+      "value": {
+        "pitches": 14
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "pets": {
+      "value": {
+        "allowed": "no"
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "max_length_m": 7,
+        "big_rig_suitable": "no",
+        "notes": [
+          {
+            "text": "Tight turning circle at the creek crossing.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-09-06",
+        "recorded_at": "2026-09-08T23:10:00Z",
+        "confidence": 0.8,
+        "change_seq": 20211
+      }
+    },
+    "access": {
+      "value": {
+        "road_surface": "gravel",
+        "unsealed_km": 8,
+        "four_wd_required": false,
+        "high_clearance_recommended": true,
+        "seasonal": {
+          "affected": true,
+          "wet_weather_closure": true,
+          "notes": [
+            {
+              "text": "Causeway floods after heavy rain.",
+              "lang": "en-AU"
+            }
+          ]
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-09-06",
+        "recorded_at": "2026-09-08T23:10:00Z",
+        "confidence": 0.8,
+        "change_seq": 20211
+      }
+    },
+    "fire_district": {
+      "value": {
+        "authority": "NSW Rural Fire Service",
+        "district": "Far North Coast",
+        "ban_info_url": "https://www.rfs.nsw.gov.au/fire-information/fdr-and-tobans"
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-fire-districts",
+          "dataset_name": "Fire district boundaries",
+          "publisher": "Example Fire Boundaries Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Fire Boundaries Agency",
+          "changes": "Fire district boundaries intersected with the site's location.",
+          "record_id": "NSW-FAR-NORTH-COAST",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-01T02:00:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.95,
+        "change_seq": 4120
+      }
+    }
+  },
+  "facilities": {
+    "toilets": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "kind": "composting",
+          "count": 2
+        }
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "drinking_water": {
+      "value": {
+        "available": false,
+        "notes": [
+          {
+            "text": "Bring your own water.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "fire_pit": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "fires_allowed": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "fire_rings_only": true
+        }
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "picnic_tables": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "tent_pitches": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "count": 14
+        }
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    },
+    "generators_allowed": {
+      "value": {
+        "available": false
+      },
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    }
+  },
+  "photos": [
+    {
+      "id": "otwd:photo:01KS3V8D2A6K9N4Q7T1W5Y8B3E",
+      "url": "https://cdn.opentouring.org/photos/01KS3V8D2A6K9N4Q7T1W5Y8B3E/full.webp",
+      "thumbnail_url": "https://cdn.opentouring.org/photos/01KS3V8D2A6K9N4Q7T1W5Y8B3E/thumb.webp",
+      "width": 1600,
+      "height": 1067,
+      "caption": [
+        {
+          "text": "Camping area beside the creek.",
+          "lang": "en-AU"
+        }
+      ],
+      "licence": "CC0-1.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Photo: Example Parks Agency",
+      "source_url": "https://parks.example.org/campgrounds/banksia-hollow",
+      "changes": "Resized and location data removed.",
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412/photo-1",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    }
+  ]
+}

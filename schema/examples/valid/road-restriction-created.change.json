@@ -3,6 +3,7 @@
   "seq": 30588,
   "record_id": "otwd:road_restriction:01M32BWJ80SX7VTP3E1YEM98G9",
   "kind": "record_created",
+  "origin": "submission",
   "applied_at": "2026-09-24T02:15:00Z",
   "changed_fields": [
     "/facts/names",
@@ -15,6 +16,5 @@
     "/status"
   ],
   "safety_fact_changed": true,
-  "submission_id": "otwd:submission:01M3D6MRC0R1VQ4TTAHY9K8H4B",
   "decision_id": "otwd:decision:01M3QXZ2W0RVGHBDN9FS14BRRA"
 }
