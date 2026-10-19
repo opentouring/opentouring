@@ -3,10 +3,10 @@
   "seq": 40501,
   "record_id": "otwd:site:01M9NFFFS6ZK9HEGYJXVEWZC8X",
   "kind": "facts_updated",
+  "origin": "submission",
   "applied_at": "2026-09-29T01:00:00Z",
   "previous_seq": 40420,
   "changed_fields": ["/facts/location_sensitivity", "/facts/location", "/derived"],
   "safety_fact_changed": false,
-  "submission_id": "otwd:submission:01MSTPKBC35PE1XBSA5ASXDRQQ",
   "decision_id": "otwd:decision:01M4ZPVKYC5HVE93X4X0T1VQV8"
 }

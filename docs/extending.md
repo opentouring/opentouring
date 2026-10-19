@@ -100,7 +100,7 @@ An open dataset imported as submissions with seed source provenance.
    - The data contains no OpenStreetMap-derived data ([ADR 0003](adr/0003-no-openstreetmap-data-import.md)) and no material the publisher says comes from third parties under other terms.
    - The attribution the publisher requires is known, word for word.
    - The data holds no personal information, or the fields that hold it are dropped before import.
-3. Add the source to [docs/seed-sources.md](seed-sources.md) with its ID (`otwd:seed_source:<slug>`), publisher, URL, licence, attribution text, the facts it supplies and its re-sync schedule.
+3. Add the source to [docs/seed-sources.md](seed-sources.md) and to `schema/seed-sources.json`, the registry `GET /v1/seed-sources` serves, with its ID (`otwd:seed_source:<slug>`), publisher, URL, licence, attribution text, the facts it supplies and its re-sync schedule.
 4. The pipeline in `pipelines/` submits through the submission log like any contributor and never writes live data. Re-syncs follow the seed source rules in [the moderation policy](policies/moderation.md#seed-sources).
 
 **Review:** a licence review by a second person on the issue, then code review of the pipeline. **Approves:** the maintainer, or the steering group for a source whose licence needed interpretation. **ADR:** no, unless the source is the first for a new country or record type.
@@ -127,7 +127,7 @@ Removing or renaming a field, code or endpoint, changing a field's meaning, or m
 
 1. Write an ADR that explains why an additive change cannot do the job.
 2. Publish the new contract as version 2: schemas under the `https://schema.opentouring.org/otwd/v2/` base and endpoints under `/v2`, as [schema/README.md](../schema/README.md#versioning) and [api/README.md](../api/README.md#versioning) set out. `/v1` keeps running beside it for at least 12 months after `/v2` is released.
-3. Mark the `/v1` operations that go away as deprecated in `api/openapi.yaml` and announce the shutdown date with the deprecation headers ADR 0039 defines.
+3. Mark the `/v1` operations that go away as deprecated in `api/openapi.yaml` and announce the shutdown date with the `Deprecation` and `Sunset` headers, as the Versioning section of [api/README.md](../api/README.md#versioning) sets out ([ADR 0035](adr/0035-open-enumerations-and-a-record-type-registry.md)).
 4. Add a CHANGELOG.md entry with the change, the reason, the migration steps and the `/v1` shutdown date.
 5. Tell every partner app by the contact on its API key, at least 12 months before `/v1` stops.
 

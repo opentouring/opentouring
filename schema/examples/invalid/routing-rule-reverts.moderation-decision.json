@@ -1,0 +1,24 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:decision:01MVCKJZS2YFSTBQQ5W6ASQZ1Y",
+  "subject": "revert",
+  "outcome": "approved",
+  "decided_by": {
+    "kind": "routing_rule",
+    "rule_id": "bulk_revert",
+    "rule_version": "1"
+  },
+  "decided_at": "2026-10-14T02:58:00Z",
+  "reasons": [
+    {
+      "code": "api_key_compromised",
+      "text": "The partner app reported the key leaked from an old build. Every change from it since the leak is reverted."
+    }
+  ],
+  "revert": {
+    "reverts": [33002],
+    "cause": "abused_api_key",
+    "api_key_id": "otwd:api_key:01MKSAAE0CESPPXH0R8DV3YQCT"
+  },
+  "change_seqs": [33120]
+}

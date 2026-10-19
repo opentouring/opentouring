@@ -13,9 +13,11 @@ info:
     downloads and the change feed, and send their contributors' submissions, which are moderated
     before they become changes.
 
-    Sites, road restrictions, road segments and ferry services are the four record types. They
-    share public IDs, facts with provenance, compact and full views, closures, merges, the change
-    feed and submissions, so everything below about sites applies to all four. Sites and road
+    Sites, road restrictions, road segments and ferry services are the record types today, and
+    GET /v1/record-types lists them. A minor version can add one, so skip records, changes and
+    downloads of a record type you do not know. Every record type shares public IDs, facts with
+    provenance, compact and full views, closures, merges, the change feed and submissions, so
+    everything below about sites applies to all of them. Sites and road
     restrictions are points. Road segments and ferry services are lines. OTWD serves no map tiles.
 
     ## Rig filters
@@ -63,9 +65,22 @@ info:
     > Data: Open Touring contributors, opentouring.org, CC BY 4.0
 
     Some facts come from seed sources whose licences need their own credit. Every record in the
-    compact form lists the credits it needs in `attribution`, and every fact in the full form
-    carries its seed source's `attribution` in its provenance. Show those credits too. Photos carry
-    their own `attribution`, which must be shown with the photo.
+    compact form lists the credits it needs in `attribution`, each with its text, licence, links
+    and the changes OTWD made, and every fact in the full form carries its seed source's details
+    in its provenance. Show those credits too, with the changes notice where an entry has one.
+    Photos carry their own `licence`, `attribution` and, for photos from a seed source,
+    `source_url` and `changes`, which must be shown with the photo. GET /v1/seed-sources lists
+    every seed source with its licence and credit.
+
+    ## Deprecation
+
+    Within v1 nothing is removed. An endpoint, parameter or field that has a better replacement
+    is deprecated: it keeps working for the life of v1, the schema marks a deprecated field with
+    `deprecated: true`, and responses from a deprecated endpoint carry the `Deprecation` header
+    (RFC 9745) with the date it was deprecated and a `Link` with `rel="deprecation"` to the
+    notice. `Sunset` (RFC 8594) appears only on `/v1` once `/v2` is released, with a date at least
+    12 months away and never earlier than the deprecation date, plus a `Link` with `rel="sunset"`.
+    Watch for both headers in your logs.
 
     ## Licences
 
@@ -100,13 +115,19 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons records are described with.
+    description: The record type registry, and the site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons records are described with.
+  - name: Seed sources
+    description: The external open datasets OTWD imports, with their licences, credits and latest sync.
   - name: Bulk downloads
     description: The whole dataset, or the changes between two sequence numbers, as files.
   - name: Change feed
     description: Every change applied to the live data, in order. Paid tiers.
   - name: Submissions
-    description: Send a contributor's new records, corrections, photos, closures, merge requests and problem reports for moderation.
+    description: Send a contributor's new records, corrections, confirmations, photos, closures, merge, unmerge, split and replacement requests and problem reports for moderation.
+  - name: Moderation
+    description: Not for partner apps. The moderation queue, cases, decisions, reverts and takedowns the website's moderate pages use, for moderators signed in through OIDC.
+  - name: Partner keys and tokens
+    description: Manage a partner app's API keys, and mint short-lived contributor tokens so mobile apps never hold an API key.
 
 paths:
   /v1/sites:
@@ -321,6 +342,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -350,9 +375,10 @@ paths:
         Returns one site by its public ID. The colons in the ID are allowed in a URL path
         segment and do not need percent-encoding.
 
-        A merged site answers with 301 and a Location header pointing at the surviving site.
-        Closed sites are returned normally with status closed: they keep their public ID and
-        history.
+        A merged site answers with 301 and a Location header pointing at the surviving site, and
+        a replaced site with 301 to the record of another type that replaced it. A retracted site
+        answers with 410. Closed sites are returned normally with status closed: they keep their
+        public ID and history.
 
         Responses carry an ETag. Send it back in If-None-Match to get 304 when nothing changed.
       parameters:
@@ -373,6 +399,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -387,10 +417,43 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/ServerError"
+
+  /v1/record-types:
+    get:
+      tags: [Governed lists]
+      operationId: listRecordTypes
+      summary: List record types
+      description: |
+        Returns the record type registry: every record type OTWD serves, with its geometry, its
+        schemas, the path that lists it and the submission kind that creates one. A minor version
+        can add a record type. Skip records, changes and bulk downloads of a record type you do
+        not know, and read this list to find out what a newer type is.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          description: The record type registry.
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/record-types.schema.json"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
 
   /v1/site-types:
     get:
@@ -514,6 +577,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -540,9 +607,9 @@ paths:
       operationId: getRoadRestriction
       summary: Get a road restriction
       description: |
-        Returns one road restriction by its public ID. A merged record answers with 301 and a
-        Location header pointing at the surviving one, and a closed record is returned with
-        status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
+        Returns one road restriction by its public ID. A merged or replaced record answers with 301
+        and a Location header pointing at the record that took its place, a retracted record
+        with 410, and a closed record is returned with status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
       parameters:
         - $ref: "#/components/parameters/RoadRestrictionId"
         - $ref: "#/components/parameters/View"
@@ -561,6 +628,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -575,6 +646,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -725,6 +798,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -751,9 +828,9 @@ paths:
       operationId: getRoadSegment
       summary: Get a road segment
       description: |
-        Returns one road segment by its public ID. A merged record answers with 301 and a
-        Location header pointing at the surviving one, and a closed record is returned with
-        status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
+        Returns one road segment by its public ID. A merged or replaced record answers with 301
+        and a Location header pointing at the record that took its place, a retracted record
+        with 410, and a closed record is returned with status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
       parameters:
         - $ref: "#/components/parameters/RoadSegmentId"
         - $ref: "#/components/parameters/View"
@@ -772,6 +849,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -786,6 +867,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -879,6 +962,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
             Link:
               $ref: "#/components/headers/Link"
             Cache-Control:
@@ -905,9 +992,9 @@ paths:
       operationId: getFerryService
       summary: Get a ferry service
       description: |
-        Returns one ferry service by its public ID. A merged record answers with 301 and a
-        Location header pointing at the surviving one, and a closed record is returned with
-        status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
+        Returns one ferry service by its public ID. A merged or replaced record answers with 301
+        and a Location header pointing at the record that took its place, a retracted record
+        with 410, and a closed record is returned with status closed, exactly as for sites. Responses carry an ETag for If-None-Match.
       parameters:
         - $ref: "#/components/parameters/FerryServiceId"
         - $ref: "#/components/parameters/View"
@@ -926,6 +1013,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -940,6 +1031,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "410":
+          $ref: "#/components/responses/RetractedRecord"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -1095,6 +1188,90 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
+  /v1/seed-sources:
+    get:
+      tags: [Seed sources]
+      operationId: listSeedSources
+      summary: List seed sources
+      description: |
+        Returns every seed source in the registry (schema/seed-sources.json): the dataset, its
+        publisher, licence, the credit to show and the changes OTWD makes to its data, the record
+        types it seeds, its status and its licence review, plus when OTWD last synced it. A
+        seed source is imported only after its licence review is confirmed. Provenance and
+        attribution entries name a seed source by its ID, so look it up here for anything they
+        do not carry.
+      parameters:
+        - name: record_type
+          in: query
+          description: Only seed sources that seed this record type.
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/RecordType"
+        - name: status
+          in: query
+          description: Only seed sources with this status.
+          schema:
+            type: string
+            enum: [candidate, active, blocked, retired]
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          description: The seed sources.
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SeedSource"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/seed-sources/{seed_source_id}:
+    get:
+      tags: [Seed sources]
+      operationId: getSeedSource
+      summary: Get a seed source
+      description: Returns one seed source by its ID, such as otwd:seed_source:au-vic-road-line.
+      parameters:
+        - name: seed_source_id
+          in: path
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/SeedSourceId"
+        - $ref: "#/components/parameters/IfNoneMatch"
+      responses:
+        "200":
+          description: The seed source.
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              $ref: "#/components/headers/CacheControl"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeedSource"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
   /v1/downloads:
     get:
       tags: [Bulk downloads]
@@ -1149,6 +1326,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -1170,6 +1351,12 @@ paths:
         send it as `after_seq` on the next call. Sequence numbers may have gaps, so never count
         on seq + 1. A change whose `previous_seq` differs from the change_seq you hold for that
         record means you missed one: fetch the record again. The feed covers every record type.
+        Skip changes to record types you do not know.
+
+        The feed keeps changes for 90 days. Full bulk downloads are built at least once a week, so
+        a consumer that falls behind always has a full download newer than the oldest retained
+        change. If `after_seq` is older than the retained feed the response is 410: load the
+        latest full bulk download of each record type you follow and resume from its `to_seq`.
 
         Needs a paid tier. The response for a free key is 403 with problem type tier-required.
       parameters:
@@ -1209,6 +1396,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -1218,7 +1409,7 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "410":
-          description: after_seq is older than the retained feed. Start again from the latest full bulk download.
+          description: after_seq is older than the 90 days the feed retains. Load the latest full bulk download of each record type you follow and resume from its to_seq. The problem type is change-feed-gap.
           content:
             application/problem+json:
               schema:
@@ -1230,6 +1421,9 @@ paths:
     post:
       tags: [Submissions]
       operationId: createSubmission
+      security:
+        - ApiKey: []
+        - ContributorToken: []
       summary: Send a submission
       description: |
         Sends a contributor's submission for moderation. A submission never changes live data
@@ -1278,6 +1472,10 @@ paths:
               $ref: "#/components/headers/RateLimit"
             RateLimit-Policy:
               $ref: "#/components/headers/RateLimitPolicy"
+            Deprecation:
+              $ref: "#/components/headers/Deprecation"
+            Sunset:
+              $ref: "#/components/headers/Sunset"
           content:
             application/json:
               schema:
@@ -1311,6 +1509,9 @@ paths:
     get:
       tags: [Submissions]
       operationId: getSubmission
+      security:
+        - ApiKey: []
+        - ContributorToken: []
       summary: Get a submission's status
       description: Returns the status of a submission and, once decided, a summary of the moderation decision. Only the partner app that sent the submission, or the direct contributor who made it, can read it.
       parameters:
@@ -1333,10 +1534,121 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
+  /v1/submissions/{submission_id}/appeals:
+    post:
+      tags: [Submissions]
+      operationId: createAppeal
+      summary: Appeal a moderation decision
+      description: |
+        Asks for a moderator to reconsider a decision on the contributor's submission, before the
+        decision's `appealable_until`. Any contributor can appeal this way, including a
+        partner app's pseudonymous contributors, who have no Open Touring account. A different
+        moderator from the one who decided reviews the appeal, and the outcome is a new
+        decision that names the earlier one in `appeal_of`. It arrives like any other decision:
+        in the submission's status and through the submissionDecided webhook.
+
+        Only the partner app that sent the submission, with its key or a contributor token for
+        the same contributor, or the direct contributor who made it, can appeal. One appeal is
+        open per decision at a time.
+      security:
+        - ApiKey: []
+        - ContributorToken: []
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppealRequest"
+      responses:
+        "201":
+          description: The appeal was received.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appeal"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: The decision cannot be appealed now, because appealable_until has passed or an appeal of it is already open (problem type appeal-closed or appeal-open).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/submissions/{submission_id}/replies:
+    post:
+      tags: [Submissions]
+      operationId: replyToNeedsInfo
+      summary: Answer a request for more information
+      description: |
+        Answers a needs_info decision: the contributor's message to the moderator and, if the
+        moderator asked for a correction, revised proposed values in the shape of the
+        submission's own kind. The submission goes back to the moderator's queue with status
+        in_review. A reply is accepted only while the submission's status is needs_info.
+        Partner apps relay the decision's public_note to the contributor and send their answer
+        here, because OTWD cannot contact a pseudonymous contributor itself (ADR 0011).
+      security:
+        - ApiKey: []
+        - ContributorToken: []
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplyRequest"
+      responses:
+        "202":
+          description: The reply was added and the submission is back in review.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmissionStatus"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: The submission is not waiting for information (problem type not-needs-info).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: The reply does not validate, or the revised values do not fit the submission's kind.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
   /v1/photo-uploads:
     post:
       tags: [Submissions]
       operationId: createPhotoUpload
+      security:
+        - ApiKey: []
+        - ContributorToken: []
       summary: Reserve a photo upload
       description: |
         Returns a short-lived upload URL on the API host and an upload_id. PUT the image there
@@ -1380,6 +1692,454 @@ paths:
                 $ref: "#/components/schemas/ValidationProblem"
         "429":
           $ref: "#/components/responses/TooManyRequests"
+
+  /v1/moderation/queue:
+    get:
+      tags: [Moderation]
+      operationId: listModerationQueue
+      summary: List the moderation queue
+      description: |
+        Not for partner apps. The submissions and appeals waiting for a moderator, oldest first,
+        for the website's moderate pages ([ADR 0023](https://github.com/opentouring/opentouring/blob/main/docs/adr/0023-the-website-is-just-another-api-client.md)).
+        Needs a moderator signed in through OIDC. Every read and decision is logged against the
+        moderator. Items name the contributor only by their trust summary.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - name: record_type
+          in: query
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/RecordType"
+        - name: submission_kind
+          in: query
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
+        - name: always_human
+          in: query
+          schema:
+            type: boolean
+        - name: item
+          in: query
+          description: submissions, appeals or both.
+          schema:
+            type: string
+            enum: [submissions, appeals, both]
+            default: both
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: A page of the queue.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, next_cursor]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ModerationQueueItem"
+                  next_cursor:
+                    type: [string, "null"]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+
+  /v1/moderation/submissions/{submission_id}:
+    get:
+      tags: [Moderation]
+      operationId: getModerationCase
+      summary: Get a submission for moderation
+      description: Not for partner apps. Everything a moderator needs to decide a submission, an appeal of it or a reply to needs_info, including the private contributor reference for trust and abuse handling.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+      responses:
+        "200":
+          description: The case.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModerationCase"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/moderation/submissions/{submission_id}/claim:
+    post:
+      tags: [Moderation]
+      operationId: claimSubmission
+      summary: Claim a submission
+      description: Not for partner apps. Marks the submission as being reviewed by the signed-in moderator for 30 minutes, so two moderators do not decide it at once. Claiming again extends the claim.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+      responses:
+        "200":
+          description: Claimed.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [claimed_until]
+                properties:
+                  claimed_until:
+                    $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Another moderator holds the claim (problem type claimed).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /v1/moderation/submissions/{submission_id}/decisions:
+    post:
+      tags: [Moderation]
+      operationId: decideSubmission
+      summary: Decide a submission or an appeal
+      description: |
+        Not for partner apps. Records the signed-in moderator's decision on a submission, or on
+        an appeal of an earlier decision when appeal_id is given. An appeal must be decided by a
+        different moderator from the one who made the appealed decision. The response is the
+        full moderation decision. Approving applies the change at once.
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/SubmissionIdPath"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModeratorDecisionRequest"
+      responses:
+        "201":
+          description: The decision.
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/moderation-decision.schema.json"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: The submission is claimed by another moderator, already decided, or the record changed since the submission's base_change_seq (problem type claimed, already-decided or conflict).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConflictProblem"
+        "422":
+          description: The decision does not validate against moderation-decision.schema.json once completed, for example a rejection without a public note.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+
+  /v1/moderation/api-keys/{api_key_id}/changes:
+    get:
+      tags: [Moderation]
+      operationId: listApiKeyChanges
+      summary: List changes produced through an API key
+      description: Not for partner apps. The changes produced by submissions sent with an API key, or with contributor tokens minted with it, from a moment on, so a moderator can review a compromised or abused key's work and revert it with POST /v1/moderation/reverts (ADR 0039).
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - name: api_key_id
+          in: path
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+        - name: since
+          in: query
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: A page of changes.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, next_cursor]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../schema/change.schema.json"
+                  next_cursor:
+                    type: [string, "null"]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/moderation/reverts:
+    post:
+      tags: [Moderation]
+      operationId: revertChanges
+      summary: Revert changes
+      description: Not for partner apps. Records a moderator's decision to undo earlier changes (subject revert) and applies it, producing one change with origin revert for each change undone (ADR 0036).
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevertRequest"
+      responses:
+        "201":
+          description: The decision, with the changes it produced.
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/moderation-decision.schema.json"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "409":
+          description: A later change touched the same facts, so the revert needs a moderator to resolve it by hand (problem type conflict).
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConflictProblem"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+
+  /v1/moderation/takedowns:
+    post:
+      tags: [Moderation]
+      operationId: takeDownContent
+      summary: Take content down
+      description: Not for partner apps. Records a moderator's decision to remove facts, photos or a whole record for a stated reason (subject takedown) and applies it as changes with origin takedown. Who asked for the takedown is kept in the restricted case under the moderation policy, never in the decision or the change feed (ADR 0036).
+      security:
+        - Moderator: [moderator]
+      x-otwd-audience: moderators
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TakedownRequest"
+      responses:
+        "201":
+          description: The decision, with the changes it produced.
+          content:
+            application/json:
+              schema:
+                $ref: "../schema/moderation-decision.schema.json"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/ModeratorOnly"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+
+  /v1/contributor-tokens:
+    post:
+      tags: [Partner keys and tokens]
+      operationId: createContributorToken
+      summary: Mint a contributor token
+      description: |
+        Called by a partner app's own server, with its API key, to give one of its contributors a
+        short-lived token. The partner app's mobile or web client then calls OTWD directly with
+        `Authorization: Bearer <token>` to send that contributor's submissions and photos and to
+        follow them, without ever holding the API key, which stays a server-side secret
+        (ADR 0039).
+
+        The token is bound to the partner app and the pseudonymous ID given here. A submission
+        sent with it must name the same pseudonymous ID in `contributor`, or the API answers 403
+        with problem type token-contributor-mismatch. Rate limits per contributor apply to the
+        pseudonymous ID whichever credential carries it.
+
+        Mint a token only for a contributor your server has signed in, and record in
+        `attestation` how your server checked the app instance asking for it, if it did, such as
+        Apple App Attest or the Play Integrity API. OTWD does not verify attestation itself: the
+        verdicts are for your server, which holds the app's credentials. OTWD records the method
+        with the token and weighs it in the API key's trust score.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContributorTokenRequest"
+      responses:
+        "201":
+          description: The token. It is shown once and cannot be fetched again.
+          headers:
+            Cache-Control:
+              description: Always no-store.
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContributorToken"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          description: The request does not validate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ValidationProblem"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/partner/keys:
+    get:
+      tags: [Partner keys and tokens]
+      operationId: listApiKeys
+      summary: List the partner app's API keys
+      description: Lists the API keys of the partner app the signed-in developer manages, active and revoked, without their secrets. Authenticated with the developer portal's OIDC sign-in, never with an API key, so a leaked key cannot be used to manage keys.
+      security:
+        - PartnerAdmin: [partner:keys]
+      responses:
+        "200":
+          description: The partner app's API keys.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiKeyRecord"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      tags: [Partner keys and tokens]
+      operationId: createApiKey
+      summary: Create an API key
+      description: |
+        Creates an API key and returns its secret once. A partner app has at most two active keys,
+        so a key can be rotated without downtime: create the new key, deploy it, confirm traffic
+        has moved (last_used_at on the old key stops changing), then revoke the old key with
+        reason rotated. A third active key is refused with 409.
+      security:
+        - PartnerAdmin: [partner:keys]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApiKeyCreateRequest"
+      responses:
+        "201":
+          description: The new key, with its secret. Store the secret in your server's secret store. It is never shown again.
+          headers:
+            Cache-Control:
+              description: Always no-store.
+              schema:
+                type: string
+                const: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyCreated"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: The partner app already has two active keys. Revoke one first.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /v1/partner/keys/{api_key_id}/revoke:
+    post:
+      tags: [Partner keys and tokens]
+      operationId: revokeApiKey
+      summary: Revoke an API key
+      description: |
+        Revokes a key at once. Requests with it get 401 within the gateway's key cache time,
+        at most 60 seconds, and contributor tokens minted with it stop working at the same time.
+
+        Give reason rotated after a planned rotation. Give compromised, with compromised_since,
+        when the key leaked or was used by someone else: submissions it sent from that moment
+        that are still undecided are rejected with reason code api_key_compromised, and the
+        changes it produced from that moment are listed for a moderator, who can revert them in
+        bulk (ADR 0036). OTWD revokes a key itself with reason abused when it finds abuse, and
+        tells the partner app's contacts.
+      security:
+        - PartnerAdmin: [partner:keys]
+      parameters:
+        - name: api_key_id
+          in: path
+          required: true
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApiKeyRevocation"
+      responses:
+        "200":
+          description: The revoked key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyRecord"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
 webhooks:
   changeApplied:
@@ -1437,7 +2197,19 @@ components:
       type: apiKey
       in: header
       name: OTWD-API-Key
-      description: Your API key, from the developer portal. Keys are free and required for every request. Never embed a key with submission rights in a public web page.
+      description: Your API key, from the developer portal. Keys are free and required for every request that does not carry a contributor token. A key is a server-side secret. Never ship it in a mobile app, a desktop app or a web page, where it can be extracted (ADR 0039). Clients call OTWD with a contributor token from your server, or through your server.
+    ContributorToken:
+      type: http
+      scheme: bearer
+      description: A short-lived token for one contributor of a partner app, minted by the partner app's server with POST /v1/contributor-tokens. Opaque, valid for at most one hour, and good only for that contributor's submissions, photo uploads, appeals, replies and their status.
+    Moderator:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.opentouring.org/.well-known/openid-configuration
+      description: A moderator signed in through Open Touring's OIDC provider, with the moderator scope. Partner apps cannot obtain it.
+    PartnerAdmin:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.opentouring.org/.well-known/openid-configuration
+      description: A partner app developer signed in to the developer portal through Open Touring's OIDC provider, with the partner:keys scope for the partner app. Used only to manage API keys.
 
   parameters:
     Bbox:
@@ -1490,7 +2262,7 @@ components:
     Status:
       name: status
       in: query
-      description: Record statuses to include. Merged records are never listed.
+      description: Record statuses to include. Merged, replaced and retracted records are stubs and are never listed.
       style: form
       explode: false
       schema:
@@ -1631,6 +2403,12 @@ components:
         type: string
         maxLength: 200
       example: de-AT, de;q=0.8, en;q=0.5
+    SubmissionIdPath:
+      name: submission_id
+      in: path
+      required: true
+      schema:
+        $ref: "../schema/common.schema.json#/$defs/SubmissionId"
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -1671,6 +2449,17 @@ components:
       description: The quota policy applied to the API key, for example "default";q=1000;w=60 (1000 requests per 60 seconds).
       schema:
         type: string
+    Deprecation:
+      description: Present when the endpoint is deprecated (RFC 9745). A Structured Field Date, the Unix time of the deprecation, for example @1798761600. A Link header with rel="deprecation" points to the notice, which names the replacement. The endpoint keeps working for the life of v1.
+      schema:
+        type: string
+        pattern: "^@-?[0-9]+$"
+      example: "@1798761600"
+    Sunset:
+      description: Present only on /v1 once /v2 is released (RFC 8594). An HTTP date when the endpoint stops working, at least 12 months away and never earlier than its Deprecation date. A Link header with rel="sunset" points to the retirement notice.
+      schema:
+        type: string
+      example: Fri, 01 Jun 2029 00:00:00 GMT
     RetryAfter:
       description: Seconds to wait before retrying.
       schema:
@@ -1717,7 +2506,7 @@ components:
           schema:
             $ref: "#/components/schemas/Problem"
     Forbidden:
-      description: The API key's tier does not include this operation, or submissions are closed for the key (problem type tier-required or contributions-closed).
+      description: The API key's tier does not include this operation, submissions are closed for the key, the key cannot mint tokens, or a contributor token names another contributor (problem type tier-required, contributions-closed, scope-required or token-contributor-mismatch).
       content:
         application/problem+json:
           schema:
@@ -1734,7 +2523,7 @@ components:
         ETag:
           $ref: "#/components/headers/ETag"
     TooManyRequests:
-      description: The API key's rate limit or quota is used up.
+      description: A rate limit or quota is used up, for the API key (problem type rate-limited) or for one contributor of the partner app (problem type contributor-rate-limited). RateLimit and RateLimit-Policy say which policy ran out.
       headers:
         Retry-After:
           $ref: "#/components/headers/RetryAfter"
@@ -1746,8 +2535,14 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
+    ModeratorOnly:
+      description: The caller is not a signed-in moderator (problem type moderator-role-required), or is the moderator who made the decision under appeal (problem type same-moderator).
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
     MergedRecord:
-      description: The record was merged. Follow Location to the surviving record.
+      description: The record was merged into another of the same type, or replaced by a record of another type. Follow Location to it, and store its ID in place of this one. If it is a record type you do not know, skip it.
       headers:
         Location:
           description: URL of the surviving record, with the same query string.
@@ -1760,6 +2555,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Redirect"
+    RetractedRecord:
+      description: The record was retracted. It should never have been published, for example because the thing does not exist or a takedown removed it, so nothing is served but its ID and status. Remove it from your copy. The change feed announces it as record_retracted.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
     GovernedList:
       description: The governed list.
       headers:
@@ -1841,7 +2642,7 @@ components:
               items:
                 type: string
     Redirect:
-      description: Body of a 301 for a merged record.
+      description: Body of a 301 for a merged or replaced record.
       type: object
       required: [redirect_to, location]
       properties:
@@ -2026,6 +2827,25 @@ components:
           type: [string, "null"]
         attribution:
           type: string
+    SeedSource:
+      description: A seed source registry entry with its latest sync. The sync fields are absent until the first import.
+      allOf:
+        - $ref: "../schema/seed-sources.schema.json#/$defs/SeedSource"
+      properties:
+        last_synced_at:
+          description: When OTWD last finished importing the dataset.
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        last_dataset_version:
+          description: The dataset version or release date imported last, as the publisher gives it.
+          type: string
+          maxLength: 64
+        record_counts:
+          description: How many live records have at least one fact from this seed source, by record type.
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+      unevaluatedProperties: false
     DistancesKm:
       description: With near only. Distance from the centre to each listed record, by public ID.
       type: object
@@ -2061,11 +2881,13 @@ components:
         record_type:
           $ref: "../schema/common.schema.json#/$defs/RecordType"
         kind:
-          type: string
-          enum: [full, delta]
+          description: full or delta. An open enumeration. Skip a file whose kind you do not know.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [full, delta]
         format:
-          type: string
-          enum: [geoparquet, geojson, geojsonseq]
+          description: geoparquet, geojson or geojsonseq. An open enumeration. Skip a file whose format you do not know.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [geoparquet, geojson, geojsonseq]
         url:
           description: Signed HTTPS URL on the CDN, valid until expires_at.
           type: string
@@ -2147,34 +2969,28 @@ components:
         submission_id:
           $ref: "../schema/common.schema.json#/$defs/SubmissionId"
         kind:
-          type: string
-          enum:
-            [
-              new_site,
-              new_road_restriction,
-              new_road_segment,
-              new_ferry_service,
-              update_facts,
-              add_photo,
-              report_closure,
-              request_merge,
-              report_problem,
-            ]
+          $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
         record_id:
           description: The record concerned, of any record type. For an approved submission that creates a record, the new record's public ID.
           $ref: "../schema/common.schema.json#/$defs/RecordId"
         partner_reference:
           type: string
         status:
-          description: received, checking (fixed checks and AI review), in_review (waiting for a moderator), needs_info (waiting for the contributor), approved, edited_and_approved or rejected.
-          type: string
-          enum: [received, checking, in_review, needs_info, approved, edited_and_approved, rejected]
+          description: received, checking (fixed checks and AI review), in_review (waiting for a moderator), needs_info (waiting for the contributor), approved, edited_and_approved or rejected. An open enumeration (ADR 0035). Treat a status you do not know as still in progress.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values:
+            [received, checking, in_review, needs_info, approved, edited_and_approved, rejected]
         received_at:
           $ref: "#/components/schemas/Timestamp"
         updated_at:
           $ref: "#/components/schemas/Timestamp"
         decision:
           $ref: "#/components/schemas/DecisionSummary"
+        appeals:
+          description: The contributor's appeals of decisions on this submission, newest first.
+          type: array
+          items:
+            $ref: "#/components/schemas/Appeal"
     DecisionSummary:
       description: What a partner app may show its contributor about a moderation decision. The full decision record, including verdicts and moderator identity, is not exposed.
       type: object
@@ -2183,13 +2999,13 @@ components:
         decision_id:
           $ref: "../schema/common.schema.json#/$defs/DecisionId"
         outcome:
-          type: string
-          enum: [approved, edited_and_approved, rejected, needs_info]
+          $ref: "../schema/common.schema.json#/$defs/ModerationOutcome"
         decided_at:
           $ref: "#/components/schemas/Timestamp"
         decided_by_kind:
-          type: string
-          enum: [moderator, routing_rule]
+          description: moderator or routing_rule. An open enumeration. Show a value you do not know without naming who decided.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [moderator, routing_rule]
         reason_codes:
           type: array
           items:
@@ -2201,8 +3017,60 @@ components:
           items:
             $ref: "../schema/common.schema.json#/$defs/ChangeSeq"
         appealable_until:
-          description: Last moment the contributor can appeal through the Open Touring website.
+          description: Last moment the contributor can appeal. Every contributor, including a partner app's pseudonymous contributors, can appeal with POST /v1/submissions/{submission_id}/appeals, and direct contributors can also appeal on the Open Touring website.
           $ref: "#/components/schemas/Timestamp"
+        appeal_of:
+          description: When this decision answers an appeal, the decision appealed against.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+    AppealRequest:
+      type: object
+      required: [decision_id, reason]
+      properties:
+        decision_id:
+          description: The decision appealed against. It must be the latest decision on the submission.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+        reason:
+          description: Why the contributor thinks the decision is wrong, in their words. Shown to the reviewing moderator, never published.
+          type: string
+          minLength: 10
+          maxLength: 2000
+      additionalProperties: false
+    Appeal:
+      type: object
+      required: [id, submission_id, decision_id, status, received_at]
+      properties:
+        id:
+          $ref: "../schema/common.schema.json#/$defs/AppealId"
+        submission_id:
+          $ref: "../schema/common.schema.json#/$defs/SubmissionId"
+        decision_id:
+          description: The decision appealed against.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+        status:
+          description: received, in_review or decided. An open enumeration. Treat a status you do not know as in_review.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [received, in_review, decided]
+        received_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        decided_by_decision:
+          description: Once decided, the decision that answered the appeal.
+          $ref: "../schema/common.schema.json#/$defs/DecisionId"
+    ReplyRequest:
+      type: object
+      required: [message]
+      properties:
+        message:
+          description: The contributor's answer to the moderator's public note. Never published.
+          type: string
+          minLength: 1
+          maxLength: 2000
+        proposed:
+          description: Revised proposed values, replacing the submission's proposed in full, in the shape its kind takes in submission.schema.json.
+          type: object
+        observed_on:
+          description: When the contributor observed the revised values, if they went back to check.
+          $ref: "../schema/common.schema.json#/$defs/LocalDate"
+      additionalProperties: false
     PhotoUploadRequest:
       type: object
       required: [content_type, size_bytes, sha256]
@@ -2237,6 +3105,287 @@ components:
             type: string
         expires_at:
           $ref: "#/components/schemas/Timestamp"
+    ModerationQueueItem:
+      type: object
+      required: [submission_id, kind, record_type, received_at, always_human, waiting_for]
+      properties:
+        submission_id:
+          $ref: "../schema/common.schema.json#/$defs/SubmissionId"
+        kind:
+          $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
+        record_type:
+          $ref: "../schema/common.schema.json#/$defs/RecordType"
+        record_id:
+          $ref: "../schema/common.schema.json#/$defs/RecordId"
+        received_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        always_human:
+          type: boolean
+        waiting_for:
+          description: decision (a new submission), reply_review (a reply to needs_info) or appeal. An open enumeration.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [decision, reply_review, appeal]
+        appeal_id:
+          $ref: "../schema/common.schema.json#/$defs/AppealId"
+        verdict_category:
+          description: The latest verdict's category, as advice.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+        claimed_until:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+    ModerationCase:
+      type: object
+      required: [submission, status, contributor, fixed_checks, verdicts, decisions]
+      properties:
+        submission:
+          $ref: "../schema/submission.schema.json"
+        status:
+          $ref: "#/components/schemas/SubmissionStatus"
+        contributor:
+          description: The identity link for this submission, private to moderators (ADR 0038). The contributor ID, never the pseudonymous ID, with the trust signals routing used.
+          type: object
+          required: [contributor_id, trust_score]
+          properties:
+            contributor_id:
+              $ref: "../schema/common.schema.json#/$defs/ContributorId"
+            partner_app_id:
+              $ref: "../schema/common.schema.json#/$defs/PartnerAppId"
+            api_key_id:
+              $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+            trust_score:
+              type: number
+              minimum: 0
+              maximum: 1
+            api_key_trust_score:
+              type: number
+              minimum: 0
+              maximum: 1
+            attestation_method:
+              description: The attestation method the partner app reported when it minted the contributor token used, if one was.
+              $ref: "../schema/common.schema.json#/$defs/EnumCode"
+            decided_submissions:
+              description: How many of this contributor's earlier submissions were decided, by outcome.
+              type: object
+              additionalProperties:
+                type: integer
+                minimum: 0
+        fixed_checks:
+          description: The result of each fixed check.
+          type: array
+          items:
+            type: object
+            required: [check, result]
+            properties:
+              check:
+                type: string
+              result:
+                description: pass, flag or fail. An open enumeration.
+                $ref: "../schema/common.schema.json#/$defs/EnumCode"
+                x-otwd-known-values: [pass, flag, fail]
+              details:
+                type: string
+        verdicts:
+          type: array
+          items:
+            $ref: "../schema/verdict.schema.json"
+        decisions:
+          description: Earlier decisions on this submission, oldest first.
+          type: array
+          items:
+            $ref: "../schema/moderation-decision.schema.json"
+        replies:
+          description: The contributor's replies to needs_info, oldest first.
+          type: array
+          items:
+            $ref: "#/components/schemas/ReplyRequest"
+        appeals:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/Appeal"
+              - type: object
+                properties:
+                  reason:
+                    type: string
+    ModeratorDecisionRequest:
+      description: The parts of a moderation decision the moderator chooses. OTWD fills in the ID, subject, decider, time, routing, verdicts and change sequence numbers, and validates the result against moderation-decision.schema.json.
+      type: object
+      required: [outcome, reasons]
+      properties:
+        outcome:
+          $ref: "../schema/common.schema.json#/$defs/ModerationOutcome"
+        appeal_id:
+          description: Set when this decision answers an appeal.
+          $ref: "../schema/common.schema.json#/$defs/AppealId"
+        reasons:
+          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
+        public_note:
+          $ref: "../schema/moderation-decision.schema.json#/properties/public_note"
+        amendments:
+          $ref: "../schema/moderation-decision.schema.json#/properties/amendments"
+        merge:
+          $ref: "../schema/moderation-decision.schema.json#/properties/merge"
+      additionalProperties: false
+    RevertRequest:
+      type: object
+      required: [revert, reasons]
+      properties:
+        revert:
+          $ref: "../schema/moderation-decision.schema.json#/properties/revert"
+        reasons:
+          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
+      additionalProperties: false
+    TakedownRequest:
+      type: object
+      required: [takedown, reasons]
+      properties:
+        takedown:
+          $ref: "../schema/moderation-decision.schema.json#/properties/takedown"
+        reasons:
+          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
+      additionalProperties: false
+    ContributorTokenRequest:
+      type: object
+      required: [pseudonymous_id, consent, scopes]
+      properties:
+        pseudonymous_id:
+          description: The contributor's pseudonymous ID, as in a submission's contributor.
+          type: string
+          pattern: "^[A-Za-z0-9._~-]{8,128}$"
+        consent:
+          $ref: "../schema/submission.schema.json#/$defs/Consent"
+        scopes:
+          description: What the token may do. submit covers submissions, photo uploads, appeals and replies. read_own covers the status of the contributor's own submissions.
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [submit, read_own]
+        ttl_seconds:
+          description: How long the token lives, 15 minutes by default and one hour at most.
+          type: integer
+          minimum: 60
+          maximum: 3600
+          default: 900
+        attestation:
+          description: How the partner app's server checked the app instance that asked for this token, if it did.
+          type: object
+          required: [method, verified_at]
+          properties:
+            method:
+              description: apple_app_attest, play_integrity or other. An open enumeration.
+              $ref: "../schema/common.schema.json#/$defs/EnumCode"
+              x-otwd-known-values: [apple_app_attest, play_integrity, other]
+            verified_at:
+              $ref: "../schema/common.schema.json#/$defs/Timestamp"
+          additionalProperties: false
+      additionalProperties: false
+    ContributorToken:
+      type: object
+      required: [access_token, token_type, expires_in, expires_at, scopes]
+      properties:
+        access_token:
+          description: The opaque token. Send it as Authorization Bearer. Never log it.
+          type: string
+          minLength: 32
+          maxLength: 512
+        token_type:
+          const: Bearer
+        expires_in:
+          description: Seconds until it expires.
+          type: integer
+          minimum: 1
+        expires_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        scopes:
+          type: array
+          items:
+            type: string
+    ApiKeyRecord:
+      description: An API key without its secret.
+      type: object
+      required: [id, label, prefix, scopes, status, created_at]
+      properties:
+        id:
+          $ref: "../schema/common.schema.json#/$defs/ApiKeyId"
+        label:
+          type: string
+          maxLength: 100
+        prefix:
+          description: The first characters of the secret, to tell keys apart in logs and configuration.
+          type: string
+          maxLength: 16
+        scopes:
+          description: read covers every read endpoint. submit covers submissions and photo uploads made by the partner app's server. mint_tokens covers POST /v1/contributor-tokens.
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            enum: [read, submit, mint_tokens]
+        status:
+          description: active or revoked. An open enumeration.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [active, revoked]
+        created_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        last_used_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        revoked_at:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+        revoke_reason:
+          description: rotated, compromised, abused or other. An open enumeration.
+          $ref: "../schema/common.schema.json#/$defs/EnumCode"
+          x-otwd-known-values: [rotated, compromised, abused, other]
+        compromised_since:
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+    ApiKeyCreateRequest:
+      type: object
+      required: [label, scopes]
+      properties:
+        label:
+          description: A name for the key, such as production server.
+          type: string
+          minLength: 1
+          maxLength: 100
+        scopes:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [read, submit, mint_tokens]
+      additionalProperties: false
+    ApiKeyCreated:
+      allOf:
+        - $ref: "#/components/schemas/ApiKeyRecord"
+        - type: object
+          required: [secret]
+          properties:
+            secret:
+              description: The key itself, shown only in this response.
+              type: string
+              minLength: 32
+              maxLength: 128
+    ApiKeyRevocation:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          description: rotated after a planned rotation, compromised when the key leaked or someone else used it, or other.
+          type: string
+          enum: [rotated, compromised, other]
+        compromised_since:
+          description: For compromised, the earliest moment the key may have been misused. Submissions and changes from it after this moment are handled as described above.
+          $ref: "../schema/common.schema.json#/$defs/Timestamp"
+      additionalProperties: false
+      if:
+        properties:
+          reason:
+            const: compromised
+      then:
+        required: [compromised_since]
+        properties:
+          compromised_since: true
     ChangeAppliedEvent:
       type: object
       required: [type, created_at, data]

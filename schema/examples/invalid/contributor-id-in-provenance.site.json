@@ -1,0 +1,176 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KZWYZTN0MXX9EQGP27KYAH36",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "contributor",
+      "observed_on": "2026-03-30",
+      "recorded_at": "2026-04-01T00:00:00Z",
+      "confidence": 0.91,
+      "change_seq": 17410
+    }
+  },
+  "created_at": "2026-04-01T00:00:00Z",
+  "updated_at": "2026-09-14T02:00:00Z",
+  "change_seq": 20540,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-TAS",
+    "locality": "Swansea",
+    "time_zone": "Australia/Hobart"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Dolerite Point Lookout",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -42.1308,
+        "lng": 148.0912,
+        "accuracy_m": 8
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "lookout"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    },
+    "description": {
+      "value": [
+        {
+          "text": "Short walk from a small car park to a fenced platform above the bay. Morning light is best. The car park cannot take caravans.",
+          "lang": "en-AU"
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    },
+    "opening_hours": {
+      "value": {
+        "always_open": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    },
+    "prices": {
+      "value": {
+        "charging": "free"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "max_length_m": 7.5,
+        "big_rig_suitable": "no",
+        "towing_allowed": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    },
+    "access": {
+      "value": {
+        "road_surface": "sealed"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    }
+  },
+  "facilities": {
+    "picnic_tables": {
+      "value": {
+        "available": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-03-30",
+        "recorded_at": "2026-04-01T00:00:00Z",
+        "confidence": 0.91,
+        "change_seq": 17410
+      }
+    }
+  },
+  "photos": [
+    {
+      "id": "otwd:photo:01M09RSWB1CBKSG55EE67H55XJ",
+      "url": "https://cdn.opentouring.org/photos/01M09RSWB1CBKSG55EE67H55XJ/full.webp",
+      "thumbnail_url": "https://cdn.opentouring.org/photos/01M09RSWB1CBKSG55EE67H55XJ/thumb.webp",
+      "width": 2400,
+      "height": 1600,
+      "sha256": "3b0f6d1c9a4e2f8b7d5c1a0e9f8d7c6b5a4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c",
+      "caption": [
+        {
+          "text": "View south over the bay from the platform.",
+          "lang": "en-AU"
+        }
+      ],
+      "taken_on": "2026-09-10",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Mel R.",
+      "provenance": {
+        "source_kind": "contributor",
+        "display_name": "Mel R.",
+        "observed_on": "2026-09-10",
+        "recorded_at": "2026-09-14T02:00:00Z",
+        "confidence": 0.95,
+        "change_seq": 20540
+      }
+    }
+  ]
+}

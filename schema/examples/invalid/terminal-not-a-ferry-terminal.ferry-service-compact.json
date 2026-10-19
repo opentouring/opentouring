@@ -207,5 +207,12 @@
   "length_km": 9.8,
   "min_confidence": 0.8,
   "safety_facts_observed_on": "2026-10-01",
-  "attribution": ["Open Touring contributors, opentouring.org, CC BY 4.0"]
+  "attribution": [
+    {
+      "text": "Open Touring contributors",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "source_url": "https://opentouring.org"
+    }
+  ]
 }

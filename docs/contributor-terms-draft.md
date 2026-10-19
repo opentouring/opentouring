@@ -32,7 +32,7 @@ The permission above covers your contributions as data, and it cannot be withdra
 
 ## Photos
 
-Photos you submit must be your own. You license each photo under CC BY 4.0 as its author, and you also give the operator the permission above. Location data embedded in photos is removed before publication. Avoid photographing people and readable number plates. A photo that shows them may be declined or taken down.
+Photos you submit must be your own. You license each photo under CC BY 4.0 as its author, or dedicate it under CC0 1.0 if you choose, and you also give the operator the permission above. You choose how the photo is credited, and without a choice it is credited to "Open Touring contributor". Location data embedded in photos is removed before publication. Avoid photographing people and readable number plates. A photo that shows them may be declined or taken down.
 
 ## Your promises
 
@@ -45,7 +45,7 @@ By submitting, you promise that:
 
 ## Attribution
 
-The operator credits contributors collectively as "Open Touring contributors". Published data records the partner app each fact came through and when it was recorded. It shows your display name only if you are a direct contributor and choose to show it, and it never shows your pseudonymous ID. You agree that collective credit satisfies any attribution you are owed.
+The operator credits contributors collectively as "Open Touring contributors". Published data names the partner app a fact came through and when it was observed, and never identifies you, unless you signed in to Open Touring and chose to show your display name on your contributions. The operator keeps a private record of who contributed what, for moderation, trust scores and handling abuse. You agree that collective credit satisfies any attribution you are owed.
 
 ## Moderation
 

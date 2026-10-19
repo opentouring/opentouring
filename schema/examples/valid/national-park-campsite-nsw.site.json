@@ -12,7 +12,8 @@
         "publisher": "Example Parks Agency",
         "licence": "CC-BY-4.0",
         "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-        "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+        "attribution": "Contains data from Example Parks Agency",
+        "changes": "Mapped to OTWD codes and combined with contributor reports.",
         "record_id": "CG-0412",
         "dataset_version": "2026-07",
         "retrieved_at": "2026-08-02T03:10:00Z"
@@ -20,8 +21,6 @@
       "observed_on": "2026-07-01",
       "recorded_at": "2026-08-02T05:00:00Z",
       "confidence": 0.75,
-      "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-      "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
       "change_seq": 4120
     }
   },
@@ -56,7 +55,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -64,8 +64,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -83,7 +81,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -91,8 +90,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -108,7 +105,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -116,8 +114,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -145,7 +141,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -153,8 +150,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -187,7 +182,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -195,8 +191,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -213,7 +207,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -221,8 +216,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -238,7 +231,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -246,8 +240,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -263,7 +255,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -271,8 +264,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -295,12 +286,9 @@
       ],
       "provenance": {
         "source_kind": "contributor",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T01:00:00Z",
         "confidence": 0.9,
-        "submission_id": "otwd:submission:01M3XB41TQ7Z9K2W8N5R6D3HEA",
-        "decision_id": "otwd:decision:01M3XC8P2V6N4K9T7R5W3Q1HZB",
         "change_seq": 30410
       }
     },
@@ -330,12 +318,9 @@
       },
       "provenance": {
         "source_kind": "contributor",
-        "contributor_id": "otwd:contributor:01KKDWVD3XYQJNHQST38MMK124",
         "observed_on": "2026-09-20",
         "recorded_at": "2026-09-24T01:00:00Z",
         "confidence": 0.9,
-        "submission_id": "otwd:submission:01M3XB41TQ7Z9K2W8N5R6D3HEA",
-        "decision_id": "otwd:decision:01M3XC8P2V6N4K9T7R5W3Q1HZB",
         "change_seq": 30410
       }
     },
@@ -351,12 +336,9 @@
       },
       "provenance": {
         "source_kind": "contributor",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "observed_on": "2026-09-06",
         "recorded_at": "2026-09-08T23:10:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01KSEY055P9K7NVDVYTYQ12B0M",
-        "decision_id": "otwd:decision:01KSVP53ET0XV8C1K5Y3HC83EP",
         "change_seq": 20211
       }
     },
@@ -373,12 +355,9 @@
       },
       "provenance": {
         "source_kind": "contributor",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "observed_on": "2026-09-06",
         "recorded_at": "2026-09-08T23:10:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01KSEY055P9K7NVDVYTYQ12B0M",
-        "decision_id": "otwd:decision:01KSVP53ET0XV8C1K5Y3HC83EP",
         "change_seq": 20211
       }
     },
@@ -401,12 +380,9 @@
       },
       "provenance": {
         "source_kind": "contributor",
-        "contributor_id": "otwd:contributor:01KJZDDQFKC9VHYPXC2VGW3JA4",
         "observed_on": "2026-09-06",
         "recorded_at": "2026-09-08T23:10:00Z",
         "confidence": 0.8,
-        "submission_id": "otwd:submission:01KSEY055P9K7NVDVYTYQ12B0M",
-        "decision_id": "otwd:decision:01KSVP53ET0XV8C1K5Y3HC83EP",
         "change_seq": 20211
       }
     },
@@ -424,7 +400,8 @@
           "publisher": "Example Fire Boundaries Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Fire Boundaries Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Fire Boundaries Agency",
+          "changes": "Fire district boundaries intersected with the site's location.",
           "record_id": "NSW-FAR-NORTH-COAST",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-01T02:00:00Z"
@@ -432,8 +409,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.95,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     }
@@ -455,7 +430,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -463,8 +439,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -486,7 +460,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -494,8 +469,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -511,7 +484,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -519,8 +493,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -539,7 +511,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -547,8 +520,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -564,7 +535,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -572,8 +544,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -592,7 +562,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -600,8 +571,6 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     },
@@ -617,7 +586,8 @@
           "publisher": "Example Parks Agency",
           "licence": "CC-BY-4.0",
           "licence_url": "https://creativecommons.org/licenses/by/4.0/",
-          "attribution": "Contains data from Example Parks Agency, licensed under CC BY 4.0",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
           "record_id": "CG-0412",
           "dataset_version": "2026-07",
           "retrieved_at": "2026-08-02T03:10:00Z"
@@ -625,10 +595,47 @@
         "observed_on": "2026-07-01",
         "recorded_at": "2026-08-02T05:00:00Z",
         "confidence": 0.75,
-        "submission_id": "otwd:submission:01KRN9B66M2G46YY9XT7122CBC",
-        "decision_id": "otwd:decision:01KS20MSE3V4NSSKEDWND8PX98",
         "change_seq": 4120
       }
     }
-  }
+  },
+  "photos": [
+    {
+      "id": "otwd:photo:01KS3V8D2A6K9N4Q7T1W5Y8B3E",
+      "url": "https://cdn.opentouring.org/photos/01KS3V8D2A6K9N4Q7T1W5Y8B3E/full.webp",
+      "thumbnail_url": "https://cdn.opentouring.org/photos/01KS3V8D2A6K9N4Q7T1W5Y8B3E/thumb.webp",
+      "width": 1600,
+      "height": 1067,
+      "caption": [
+        {
+          "text": "Camping area beside the creek.",
+          "lang": "en-AU"
+        }
+      ],
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Photo: Example Parks Agency",
+      "source_url": "https://parks.example.org/campgrounds/banksia-hollow",
+      "changes": "Resized and location data removed.",
+      "provenance": {
+        "source_kind": "seed_source",
+        "seed_source": {
+          "id": "otwd:seed_source:au-example-parks-campgrounds",
+          "dataset_name": "Campgrounds and camping areas",
+          "publisher": "Example Parks Agency",
+          "licence": "CC-BY-4.0",
+          "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+          "attribution": "Contains data from Example Parks Agency",
+          "changes": "Mapped to OTWD codes and combined with contributor reports.",
+          "record_id": "CG-0412/photo-1",
+          "dataset_version": "2026-07",
+          "retrieved_at": "2026-08-02T03:10:00Z"
+        },
+        "observed_on": "2026-07-01",
+        "recorded_at": "2026-08-02T05:00:00Z",
+        "confidence": 0.75,
+        "change_seq": 4120
+      }
+    }
+  ]
 }

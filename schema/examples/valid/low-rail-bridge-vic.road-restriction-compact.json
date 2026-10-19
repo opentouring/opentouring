@@ -75,7 +75,18 @@
   "min_confidence": 0.85,
   "safety_facts_observed_on": "2026-09-12",
   "attribution": [
-    "Open Touring contributors, opentouring.org, CC BY 4.0",
-    "Contains Vicmap Transport data, Department of Transport and Planning (Victoria), licensed under CC BY 4.0"
+    {
+      "text": "Open Touring contributors",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "source_url": "https://opentouring.org"
+    },
+    {
+      "text": "Contains Vicmap Transport data, Department of Transport and Planning (Victoria)",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "seed_source": "otwd:seed_source:au-vic-vicmap-transport",
+      "changes": "Mapped to OTWD codes and combined with contributor reports."
+    }
   ]
 }
