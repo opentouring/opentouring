@@ -23,7 +23,7 @@ With live data in a public git repository per country ([ADR 0046](0046-live-data
 ```
 Decision: otwd:decision:01JB...
 Outcome: approved
-Moderation-policy: routing-1.0
+Moderation-policy: routing-2.0
 Verdict-model: <model version>
 Routing: human
 ```
