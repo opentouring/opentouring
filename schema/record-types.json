@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.opentouring.org/otwd/v1/record-types.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "version": "1.0.0",
+  "language": "en-AU",
+  "entries": [
+    {
+      "code": "site",
+      "label": "Site",
+      "description": "A place a traveller stops at, such as a campsite, caravan park, rest area, dump point, ferry terminal or attraction.",
+      "status": "active",
+      "geometry": "point",
+      "full_schema": "site.schema.json",
+      "compact_schema": "site-compact.schema.json",
+      "collection": "/v1/sites",
+      "creation_kind": "new_site",
+      "computed_facts": ["fire_district"],
+      "introduced_in": "1.0",
+      "adr": "docs/adr/0013-stable-public-ids-and-per-fact-provenance.md"
+    },
+    {
+      "code": "road_restriction",
+      "label": "Road restriction",
+      "description": "A point where a physical or legal limit applies to vehicles, such as a low rail bridge, a bridge with a weight limit or a narrow gate.",
+      "status": "active",
+      "geometry": "point",
+      "full_schema": "road-restriction.schema.json",
+      "compact_schema": "road-restriction-compact.schema.json",
+      "collection": "/v1/road-restrictions",
+      "creation_kind": "new_road_restriction",
+      "introduced_in": "1.0",
+      "adr": "docs/adr/0027-road-restrictions-road-segments-and-ferry-services-as-record-types.md"
+    },
+    {
+      "code": "road_segment",
+      "label": "Road segment",
+      "description": "A stretch of road or track with line geometry, recorded for its surface, vehicle access class, towing and closures.",
+      "status": "active",
+      "geometry": "line",
+      "full_schema": "road-segment.schema.json",
+      "compact_schema": "road-segment-compact.schema.json",
+      "collection": "/v1/road-segments",
+      "creation_kind": "new_road_segment",
+      "introduced_in": "1.0",
+      "adr": "docs/adr/0027-road-restrictions-road-segments-and-ferry-services-as-record-types.md"
+    },
+    {
+      "code": "ferry_service",
+      "label": "Ferry service",
+      "description": "A crossing between two ferry terminals, with line geometry, the vehicle classes it carries, its ferry vehicle limits, fares and hours.",
+      "status": "active",
+      "geometry": "line",
+      "full_schema": "ferry-service.schema.json",
+      "compact_schema": "ferry-service-compact.schema.json",
+      "collection": "/v1/ferry-services",
+      "creation_kind": "new_ferry_service",
+      "introduced_in": "1.0",
+      "adr": "docs/adr/0027-road-restrictions-road-segments-and-ferry-services-as-record-types.md"
+    }
+  ]
+}

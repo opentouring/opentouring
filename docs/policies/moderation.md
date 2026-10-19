@@ -52,7 +52,7 @@ A moderator who needs more detail records a needs info decision with a public no
 
 ## Appeals
 
-A contributor can appeal any moderation decision on their own submission, including an automatic approval or a rejection, within 90 days of the decision. Appeals come in through the website or through the partner app by the API (ADR 0039), and say why the decision should change.
+A contributor can appeal any moderation decision on their own submission, including an automatic approval or a rejection, within 90 days of the decision. Appeals come in through the website or through the partner app by the API ([api/README.md](../../api/README.md#appeals-and-replies)), and say why the decision should change.
 
 A different moderator from the one who made the decision reviews the appeal, and records a new moderation decision that names the earlier one in `appeal_of`. The target is a decision within 14 days. Each decision can be appealed once. A contributor who thinks the policy itself is wrong, rather than its application, can propose a change with the "Moderation policy change" issue form, and the steering group hears appeals that turn on what the policy means.
 
@@ -76,7 +76,7 @@ Seed sources are imported as submissions with seed source provenance and pass th
 
 ## Prompts to confirm stale facts
 
-Facts age. OTWD never removes or hides a fact for being old, because an old fact is often still true and an unknown is worse for a traveller than a dated one. Instead, apps see `observed_on` on every fact and `safety_facts_observed_on` on every compact record, and OTWD prompts contributors to confirm facts older than the suggested age for their kind. A confirmation records new provenance without changing the value, through a submission or the `confirm_facts` change ADR 0036 defines.
+Facts age. OTWD never removes or hides a fact for being old, because an old fact is often still true and an unknown is worse for a traveller than a dated one. Instead, apps see `observed_on` on every fact and `safety_facts_observed_on` on every compact record, and OTWD prompts contributors to confirm facts older than the suggested age for their kind. A confirmation records new provenance without changing the value: the contributor sends a `confirm_facts` submission, which becomes a `facts_confirmed` change ([ADR 0036](../adr/0036-record-lifecycle-and-change-origins.md)).
 
 | Fact                                                                                           | Suggested age before a prompt     |
 | ---------------------------------------------------------------------------------------------- | --------------------------------- |

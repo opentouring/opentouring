@@ -17,6 +17,8 @@ An active source is re-imported on the schedule in its row, never more often tha
 
 ## Registry
 
+`schema/seed-sources.json` holds the same sources as structured data, with each one's licence, credit, changes notice and licence review, and the API serves it at `GET /v1/seed-sources` ([ADR 0037](adr/0037-structured-attribution-and-photo-licences.md)). Change both together.
+
 Every source below is a candidate during the Preview. IDs are proposed and become fixed when a source is first imported. The attribution each publisher requires is copied word for word from its catalogue page into this table before the first import.
 
 | Proposed ID                                     | Source and publisher                                                                   | Licence      | Supplies                                                                                         | Re-sync                 | Status                                                                                                                                          |

@@ -1,0 +1,12 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "seq": 33200,
+  "record_id": "otwd:site:01KN14T0TC3HKH7E8NFJZQH1AZ",
+  "kind": "derived_updated",
+  "origin": "recompute",
+  "applied_at": "2026-10-15T00:00:00Z",
+  "previous_seq": 10412,
+  "changed_fields": ["/derived", "/facts/fire_district"],
+  "safety_fact_changed": false,
+  "recompute_reason": "boundary_update"
+}

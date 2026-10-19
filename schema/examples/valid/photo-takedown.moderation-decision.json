@@ -1,0 +1,22 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "id": "otwd:decision:01M2KSAAE0CESPPXH0R8DV3YQC",
+  "subject": "takedown",
+  "outcome": "approved",
+  "decided_by": {
+    "kind": "moderator",
+    "moderator_id": "otwd:contributor:01KKS1RPGCFYJK8VCTP4V7BMX8"
+  },
+  "decided_at": "2026-10-14T05:18:00Z",
+  "reasons": [
+    {
+      "code": "identifiable_person"
+    }
+  ],
+  "takedown": {
+    "record_id": "otwd:site:01KZWYZTN0MXX9EQGP27KYAH36",
+    "reason": "personal_information",
+    "photo_ids": ["otwd:photo:01MZPTP0NX1EBB5G2451W0HFH7"]
+  },
+  "change_seqs": [33140]
+}

@@ -195,11 +195,48 @@
       "available": false
     }
   },
+  "photos": [
+    {
+      "id": "otwd:photo:01KS3V8D2A6K9N4Q7T1W5Y8B3E",
+      "url": "https://cdn.opentouring.org/photos/01KS3V8D2A6K9N4Q7T1W5Y8B3E/full.webp",
+      "thumbnail_url": "https://cdn.opentouring.org/photos/01KS3V8D2A6K9N4Q7T1W5Y8B3E/thumb.webp",
+      "width": 1600,
+      "height": 1067,
+      "caption": [
+        {
+          "text": "Camping area beside the creek.",
+          "lang": "en-AU"
+        }
+      ],
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "Photo: Example Parks Agency",
+      "source_url": "https://parks.example.org/campgrounds/banksia-hollow",
+      "changes": "Resized and location data removed."
+    }
+  ],
   "min_confidence": 0.75,
   "safety_facts_observed_on": "2026-07-02",
   "attribution": [
-    "Open Touring contributors, opentouring.org, CC BY 4.0",
-    "Contains data from Example Parks Agency, licensed under CC BY 4.0",
-    "Contains data from Example Fire Boundaries Agency, licensed under CC BY 4.0"
+    {
+      "text": "Open Touring contributors",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "source_url": "https://opentouring.org"
+    },
+    {
+      "text": "Contains data from Example Parks Agency",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "seed_source": "otwd:seed_source:au-example-parks-campgrounds",
+      "changes": "Mapped to OTWD codes and combined with contributor reports."
+    },
+    {
+      "text": "Contains data from Example Fire Boundaries Agency",
+      "licence": "CC-BY-4.0",
+      "licence_url": "https://creativecommons.org/licenses/by/4.0/",
+      "seed_source": "otwd:seed_source:au-example-fire-districts",
+      "changes": "Fire district boundaries intersected with each site's location."
+    }
   ]
 }

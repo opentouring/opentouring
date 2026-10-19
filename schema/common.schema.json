@@ -35,14 +35,23 @@
       "examples": ["otwd:ferry_service:01KX3QK5B7D9F1H3K5N7Q9S1VX"]
     },
     "RecordId": {
-      "description": "Stable public ID of any record: a site, road restriction, road segment or ferry service. The kind segment names the record type.",
+      "description": "Stable public ID of any record. The kind segment names the record type, which is a code in the record type registry (record-types.json). The pattern accepts any record type code so a consumer written for an earlier minor version still reads IDs of record types added later, and skips records of a type it does not know. The kinds of OTWD's other identifiers are reserved and never name a record type. OTWD and its validator accept only registered record types (x-otwd-registry).",
       "type": "string",
-      "pattern": "^otwd:(site|road_restriction|road_segment|ferry_service):[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+      "pattern": "^otwd:[a-z][a-z0-9_]{1,47}:[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+      "not": {
+        "$ref": "#/$defs/NonRecordId"
+      },
+      "x-otwd-registry": "record-types.json"
+    },
+    "NonRecordId": {
+      "description": "An OTWD identifier whose kind is reserved for something other than a record: a submission, moderation decision, verdict, photo, upload, contributor, partner app, seed source, appeal or API key.",
+      "type": "string",
+      "pattern": "^otwd:(submission|decision|verdict|photo|upload|contributor|partner_app|seed_source|appeal|api_key):"
     },
     "RecordType": {
-      "description": "The record type, as it appears in the kind segment of a record's public ID.",
-      "type": "string",
-      "enum": ["site", "road_restriction", "road_segment", "ferry_service"]
+      "description": "The record type, as it appears in the kind segment of a record's public ID: a code in the record type registry (record-types.json). Open: a minor version can register a new record type, and a consumer skips records, changes and bulk downloads of a record type it does not know.",
+      "$ref": "#/$defs/Code",
+      "x-otwd-registry": "record-types.json"
     },
     "SubmissionId": {
       "description": "ID of a submission, assigned by OTWD when the submission is received.",
@@ -70,7 +79,7 @@
       "pattern": "^otwd:upload:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
     },
     "ContributorId": {
-      "description": "OTWD's own public ID for a contributor. Signed-in contributors receive one at sign-in. Contributors who reach OTWD through a partner app receive one the first time the partner app sends their pseudonymous ID, and the pseudonymous ID itself is never published.",
+      "description": "OTWD's own ID for a contributor. Signed-in contributors receive one at sign-in. Contributors who reach OTWD through a partner app receive one the first time the partner app sends their pseudonymous ID. It is private: it appears in submissions a direct contributor sends, in moderation records and in moderator endpoints, and never in published data (ADR 0038). The pseudonymous ID behind it is never published either.",
       "type": "string",
       "pattern": "^otwd:contributor:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
     },
@@ -78,6 +87,16 @@
       "description": "ID of a partner app, assigned when the partner app is registered.",
       "type": "string",
       "pattern": "^otwd:partner_app:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "ApiKeyId": {
+      "description": "ID of one API key of a partner app. It names the key in key management, rate limit and audit records, and is never the secret itself.",
+      "type": "string",
+      "pattern": "^otwd:api_key:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "AppealId": {
+      "description": "ID of an appeal against a moderation decision.",
+      "type": "string",
+      "pattern": "^otwd:appeal:[0-7][0-9A-HJKMNP-TV-Z]{25}$"
     },
     "SeedSourceId": {
       "description": "ID of a seed source. Seed sources are curated by OTWD maintainers, so the ID is a readable slug that names the publisher and dataset.",
@@ -98,14 +117,51 @@
       "examples": ["1.0"]
     },
     "RecordStatus": {
-      "description": "Whether a record is in use. active: in use. temporarily_closed: a temporary closure, such as a site shut for repairs, a bridge closed after flood damage or a ferry service suspended. closed: a closure, such as a site that no longer operates, a road restriction removed when its structure was replaced, a road segment closed for good or a ferry service withdrawn. The record keeps its public ID and history. merged: the record was a duplicate and redirect_to names the survivor.",
+      "description": "Whether a record is in use. A closed enumeration: a consumer decides what to show from it, so it gains a value only in a new major version. active: in use. temporarily_closed: a temporary closure, such as a site shut for repairs, a bridge closed after flood damage or a ferry service suspended. closed: a closure, such as a site that no longer operates, a road restriction removed when its structure was replaced, a road segment closed for good or a ferry service withdrawn. The record keeps its public ID and history. merged: the record was a duplicate and redirect_to names the survivor, of the same record type. replaced: the record turned out to be another record type, such as a low bridge recorded as a site, and redirect_to names the record of the right type that replaced it. retracted: the record should never have been published, for example because the thing does not exist or a takedown removed it, so only its public ID and status remain. merged, replaced and retracted records are stubs without facts (StubStatus).",
       "type": "string",
-      "enum": ["active", "temporarily_closed", "closed", "merged"]
+      "enum": ["active", "temporarily_closed", "closed", "merged", "replaced", "retracted"]
+    },
+    "StubStatus": {
+      "description": "The statuses of a record that is only a stub: merged and replaced redirect to another record, and retracted has nothing left to show. A stub has no derived values or facts, and the API answers a request for it with 301 (merged, replaced) or 410 (retracted).",
+      "enum": ["merged", "replaced", "retracted"]
+    },
+    "RedirectStatus": {
+      "description": "The statuses of a stub that names another record in redirect_to: merged (same record type) and replaced (another record type).",
+      "enum": ["merged", "replaced"]
     },
     "Code": {
       "description": "A governed list code: lower case letters, digits and underscores, starting with a letter. Codes are never renamed or reused.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]{1,47}$"
+    },
+    "EnumCode": {
+      "description": "A value of an open enumeration: lower case letters, digits and underscores. An open enumeration lists the values known at its schema version in x-otwd-known-values. OTWD only ever sends and accepts known values, and tools/validate.py holds producers to them, but a minor version can add values, so a consumer accepts any value that matches this pattern and follows the fallback the enumeration's description gives for one it does not know (ADR 0035).",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_]{0,47}$"
+    },
+    "SubmissionKind": {
+      "description": "The kind of a submission. Open: a consumer reading submission statuses or moderation decisions treats a kind it does not know as a submission it cannot show in detail. The API rejects a submission of a kind it does not accept with 422.",
+      "$ref": "#/$defs/EnumCode",
+      "x-otwd-known-values": [
+        "new_site",
+        "new_road_restriction",
+        "new_road_segment",
+        "new_ferry_service",
+        "update_facts",
+        "confirm_facts",
+        "add_photo",
+        "report_closure",
+        "request_merge",
+        "request_unmerge",
+        "request_split",
+        "request_replacement",
+        "report_problem"
+      ]
+    },
+    "ModerationOutcome": {
+      "description": "The outcome of a moderation decision. approved: applied as submitted. edited_and_approved: applied after a moderator corrected it. rejected: not applied. needs_info: waiting for the contributor to answer the public note. Open: a consumer treats an outcome it does not know as not applied, unless the decision lists change_seqs.",
+      "$ref": "#/$defs/EnumCode",
+      "x-otwd-known-values": ["approved", "edited_and_approved", "rejected", "needs_info"]
     },
     "SiteTypeCode": {
       "description": "A code from the governed site type vocabulary (site-types.json). The pattern accepts codes added after this schema version so older validators keep working. Consumers ignore codes they do not recognise.",
@@ -259,10 +315,10 @@
       "description": "SPDX licence identifier, or LicenseRef-<name> for a licence that SPDX does not list (for example a government open data licence).",
       "type": "string",
       "pattern": "^([A-Za-z0-9.+-]+|LicenseRef-[A-Za-z0-9.-]+)$",
-      "examples": ["CC-BY-4.0", "CC0-1.0"]
+      "examples": ["CC-BY-4.0", "CC-BY-3.0-AU", "CC0-1.0"]
     },
     "SeedSourceRef": {
-      "description": "Details of the external open dataset a fact was imported from. The licence must be compatible with publishing the fact under CC BY 4.0.",
+      "description": "Details of the external open dataset a fact was imported from, copied from its entry in the seed source registry (seed-sources.json). The licence must be compatible with publishing the fact under CC BY 4.0. An entry under a CC BY licence states the changes OTWD made.",
       "type": "object",
       "required": ["id", "dataset_name", "publisher", "licence", "attribution"],
       "properties": {
@@ -285,8 +341,8 @@
           "$ref": "#/$defs/SpdxLicence"
         },
         "licence_url": {
-          "type": "string",
-          "format": "uri"
+          "description": "The licence text.",
+          "$ref": "#/$defs/HttpsUrl"
         },
         "attribution": {
           "description": "The attribution statement the licence requires. Partner apps that display this fact must show it.",
@@ -307,29 +363,45 @@
         "retrieved_at": {
           "description": "When OTWD downloaded the dataset.",
           "$ref": "#/$defs/Timestamp"
+        },
+        "changes": {
+          "description": "The changes OTWD made to the data, as the licence asks a reuser to indicate, for example: Mapped to OTWD codes and combined with contributor reports. Required when the licence is a CC BY licence.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "licence": {
+            "pattern": "^CC-BY-"
+          }
+        }
+      },
+      "then": {
+        "required": ["changes"],
+        "properties": {
+          "changes": true
+        }
+      }
     },
     "Provenance": {
-      "description": "Who supplied a fact, through which partner app or seed source, when, and with what confidence. Every fact carries one. Every fact reaches the live data through a submission, a moderation decision and a change, including seed source imports, so all three are always named.",
+      "description": "Where a fact came from, as published: the kind of source, the partner app or seed source, the dates, the confidence and the change that set it. It never identifies a contributor (ADR 0038). OTWD keeps who supplied each fact privately, in the submission log, for moderation, trust scores and abuse handling. A direct contributor who chose to be named shows only their display name.",
       "type": "object",
-      "required": [
-        "source_kind",
-        "recorded_at",
-        "confidence",
-        "submission_id",
-        "decision_id",
-        "change_seq"
-      ],
+      "required": ["source_kind", "recorded_at", "confidence", "change_seq"],
       "properties": {
         "source_kind": {
-          "description": "contributor: a signed-in contributor supplied the fact directly. partner_app: a partner app supplied it, usually on behalf of one of its contributors. seed_source: it was imported from an open dataset.",
-          "type": "string",
-          "enum": ["contributor", "partner_app", "seed_source"]
+          "description": "contributor: a signed-in contributor supplied the fact directly. partner_app: a partner app supplied it, usually on behalf of one of its contributors. seed_source: it was imported from an open dataset. Open: a consumer treats a source kind it does not know as an unnamed source and still reads the fact's confidence.",
+          "$ref": "#/$defs/EnumCode",
+          "x-otwd-known-values": ["contributor", "partner_app", "seed_source"]
         },
-        "contributor_id": {
-          "$ref": "#/$defs/ContributorId"
+        "display_name": {
+          "description": "For source_kind contributor only, and only when the direct contributor chose to be named on their contributions, which is off by default: the display name they chose. Never an email address. A name repeated across records links them, so apps should not encourage it.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "^[^@]+$"
         },
         "partner_app_id": {
           "$ref": "#/$defs/PartnerAppId"
@@ -351,14 +423,8 @@
           "minimum": 0,
           "maximum": 1
         },
-        "submission_id": {
-          "$ref": "#/$defs/SubmissionId"
-        },
-        "decision_id": {
-          "$ref": "#/$defs/DecisionId"
-        },
         "change_seq": {
-          "description": "The change that set this fact. Submissions are checked for conflicts against it.",
+          "description": "The change that set this fact. Submissions are checked for conflicts against it, and the change names the moderation decision behind it, unless it was a recompute.",
           "$ref": "#/$defs/ChangeSeq"
         },
         "moderator_edited": {
@@ -378,15 +444,21 @@
             }
           },
           "then": {
-            "required": ["contributor_id"],
-            "properties": {
-              "contributor_id": true
-            },
             "not": {
-              "required": ["seed_source"],
-              "properties": {
-                "seed_source": true
-              }
+              "anyOf": [
+                {
+                  "required": ["seed_source"],
+                  "properties": {
+                    "seed_source": true
+                  }
+                },
+                {
+                  "required": ["partner_app_id"],
+                  "properties": {
+                    "partner_app_id": true
+                  }
+                }
+              ]
             }
           }
         },
@@ -399,16 +471,32 @@
             }
           },
           "then": {
-            "required": ["partner_app_id"],
-            "properties": {
-              "partner_app_id": true
-            },
-            "not": {
-              "required": ["seed_source"],
-              "properties": {
-                "seed_source": true
+            "allOf": [
+              {
+                "required": ["partner_app_id"],
+                "properties": {
+                  "partner_app_id": true
+                }
+              },
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": ["seed_source"],
+                      "properties": {
+                        "seed_source": true
+                      }
+                    },
+                    {
+                      "required": ["display_name"],
+                      "properties": {
+                        "display_name": true
+                      }
+                    }
+                  ]
+                }
               }
-            }
+            ]
           }
         },
         {
@@ -420,36 +508,43 @@
             }
           },
           "then": {
-            "required": ["seed_source"],
-            "properties": {
-              "seed_source": true
-            },
-            "not": {
-              "anyOf": [
-                {
-                  "required": ["contributor_id"],
-                  "properties": {
-                    "contributor_id": true
-                  }
-                },
-                {
-                  "required": ["partner_app_id"],
-                  "properties": {
-                    "partner_app_id": true
-                  }
+            "allOf": [
+              {
+                "required": ["seed_source"],
+                "properties": {
+                  "seed_source": true
                 }
-              ]
-            }
+              },
+              {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": ["partner_app_id"],
+                      "properties": {
+                        "partner_app_id": true
+                      }
+                    },
+                    {
+                      "required": ["display_name"],
+                      "properties": {
+                        "display_name": true
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
     },
     "Confirmations": {
-      "description": "Later reports that the fact is still true, without changing its value.",
+      "description": "Later reports that the fact is still true, from confirm_facts submissions, without changing its value. They reset when the value changes. Only counts are published, never who confirmed (ADR 0038).",
       "type": "object",
       "required": ["count", "last_confirmed_on"],
       "properties": {
         "count": {
+          "description": "How many different contributors confirmed the current value. A contributor counts once however often they confirm, and the contributor who supplied the value does not count.",
           "type": "integer",
           "minimum": 1
         },
@@ -517,7 +612,7 @@
       "additionalProperties": false
     },
     "Photo": {
-      "description": "A published photo of a record, such as a site or the sign at a road restriction. Photos are licensed CC BY 4.0 by the person who took them, and EXIF location data is removed before publication.",
+      "description": "A published photo of a record, such as a site or the sign at a road restriction. A contributor's photo is licensed by the person who took it, CC BY 4.0 unless they chose CC0 1.0. A photo from a seed source keeps that source's licence and credit (ADR 0037). EXIF location data is removed before publication.",
       "type": "object",
       "required": ["id", "url", "width", "height", "licence", "attribution", "provenance"],
       "properties": {
@@ -550,17 +645,30 @@
           "$ref": "#/$defs/LocalDate"
         },
         "licence": {
-          "description": "Always CC-BY-4.0 in schema version 1.",
-          "const": "CC-BY-4.0"
+          "$ref": "#/$defs/PhotoLicence"
         },
         "attribution": {
-          "description": "The credit to show with the photo, as the photographer chose it, for example a display name. Never an email address.",
+          "description": "The credit to show with the photo. For a contributor's photo it is the credit they chose, or Open Touring contributor when they chose none (ADR 0038). For a seed source photo it is the credit the seed source's licence requires. Never an email address.",
           "type": "string",
           "minLength": 1,
-          "maxLength": 100
+          "maxLength": 300
         },
         "provenance": {
           "$ref": "#/$defs/Provenance"
+        },
+        "licence_url": {
+          "description": "The licence text.",
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "source_url": {
+          "description": "For a photo from a seed source: the page the photo was published on.",
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "changes": {
+          "description": "The changes OTWD made to the photo, for example: Resized and location data removed. Stated for every photo from a seed source.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
         }
       },
       "additionalProperties": false
@@ -605,19 +713,34 @@
             "$ref": "#/$defs/LocalDate"
           },
           "licence": {
-            "const": "CC-BY-4.0"
+            "$ref": "#/$defs/PhotoLicence"
           },
           "attribution": {
+            "description": "The credit to show with the photo. For a contributor's photo it is the credit they chose, or Open Touring contributor when they chose none (ADR 0038). For a seed source photo it is the credit the seed source's licence requires. Never an email address.",
             "type": "string",
             "minLength": 1,
-            "maxLength": 100
+            "maxLength": 300
+          },
+          "licence_url": {
+            "description": "The licence text.",
+            "$ref": "#/$defs/HttpsUrl"
+          },
+          "source_url": {
+            "description": "For a photo from a seed source: the page the photo was published on.",
+            "$ref": "#/$defs/HttpsUrl"
+          },
+          "changes": {
+            "description": "The changes OTWD made to the photo, for example: Resized and location data removed. Stated for every photo from a seed source.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
           }
         },
         "additionalProperties": false
       }
     },
     "FullRecord": {
-      "description": "The envelope every record shares in the full form: identity, status, timestamps, change_seq and photos, with the lifecycle rule. A merged record is a stub that names the survivor in redirect_to. Any other record has derived values and facts, and no redirect_to. Each record type's schema narrows id and redirect_to to its own public ID kind and adds derived and facts.",
+      "description": "The envelope every record shares in the full form: identity, status, timestamps, change_seq and photos, with the lifecycle rule. A merged, replaced or retracted record is a stub (StubStatus) without derived values or facts. A merged record names the survivor in redirect_to, of the same record type, and a replaced record names its replacement, of another record type (tools/validate.py checks both). Any other record has derived values and facts, and no redirect_to. Each record type's schema narrows id to its own public ID kind and adds derived and facts.",
       "type": "object",
       "required": ["schema_version", "id", "status", "created_at", "updated_at", "change_seq"],
       "properties": {
@@ -631,7 +754,7 @@
           "$ref": "#/$defs/StatusFact"
         },
         "redirect_to": {
-          "description": "For a merged record only: the public ID of the surviving record, of the same record type. The API answers requests for this record with a 301 redirect to it.",
+          "description": "For a merged record: the public ID of the surviving record, of the same record type. For a replaced record: the public ID of the record of another type that replaced it. The API answers requests for this record with a 301 redirect to it. A consumer that holds this record's ID follows redirect_to, whatever record type it names, and skips it if it does not know that record type.",
           "$ref": "#/$defs/RecordId"
         },
         "created_at": {
@@ -649,39 +772,97 @@
           "$ref": "#/$defs/Photos"
         }
       },
-      "if": {
-        "properties": {
-          "status": {
+      "allOf": [
+        {
+          "description": "A merged or replaced record names the record it redirects to, and no other record has redirect_to.",
+          "if": {
             "properties": {
-              "value": {
-                "const": "merged"
+              "status": {
+                "properties": {
+                  "value": {
+                    "$ref": "#/$defs/RedirectStatus"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": ["redirect_to"],
+            "properties": {
+              "redirect_to": true
+            }
+          },
+          "else": {
+            "not": {
+              "required": ["redirect_to"],
+              "properties": {
+                "redirect_to": true
               }
             }
           }
-        }
-      },
-      "then": {
-        "required": ["redirect_to"],
-        "properties": {
-          "redirect_to": true
-        }
-      },
-      "else": {
-        "required": ["derived", "facts"],
-        "properties": {
-          "derived": true,
-          "facts": true
         },
-        "not": {
-          "required": ["redirect_to"],
-          "properties": {
-            "redirect_to": true
+        {
+          "description": "A record that is not a stub has derived values and facts. A retracted stub keeps none of them, nor photos.",
+          "if": {
+            "properties": {
+              "status": {
+                "properties": {
+                  "value": {
+                    "$ref": "#/$defs/StubStatus"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "if": {
+              "properties": {
+                "status": {
+                  "properties": {
+                    "value": {
+                      "const": "retracted"
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": ["derived"],
+                    "properties": {
+                      "derived": true
+                    }
+                  },
+                  {
+                    "required": ["facts"],
+                    "properties": {
+                      "facts": true
+                    }
+                  },
+                  {
+                    "required": ["photos"],
+                    "properties": {
+                      "photos": true
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "else": {
+            "required": ["derived", "facts"],
+            "properties": {
+              "derived": true,
+              "facts": true
+            }
           }
         }
-      }
+      ]
     },
     "CompactRecord": {
-      "description": "The envelope every record shares in the compact form: identity, status with the closure fields flattened, timestamps, the primary name, photos, and the attribution list, min_confidence and safety_facts_observed_on that stand in for per-fact provenance. A merged record names the survivor in redirect_to, and no other record has one. Each compact schema narrows id and redirect_to, adds its derived values and facts, and lists the fields its record type always has when it is not merged.",
+      "description": "The envelope every record shares in the compact form: identity, status with the closure fields flattened, timestamps, the primary name, photos, and the attribution list, min_confidence and safety_facts_observed_on that stand in for per-fact provenance. A merged or replaced record names the record it redirects to in redirect_to, and no other record has one. Each compact schema narrows id, adds its derived values and facts, and lists the fields its record type always has when it is not a stub. A retracted stub carries only the envelope (tools/validate.py checks this).",
       "type": "object",
       "required": [
         "schema_version",
@@ -751,7 +932,7 @@
       "if": {
         "properties": {
           "status": {
-            "const": "merged"
+            "$ref": "#/$defs/RedirectStatus"
           }
         }
       },
@@ -871,14 +1052,17 @@
       "unevaluatedProperties": false
     },
     "AttributionList": {
-      "description": "Every credit a record's facts require, in the compact form. The first entry is always the Open Touring credit. Seed source credits follow, once each.",
+      "description": "Every credit a record's facts require, in the compact form, as structured entries an app can render in its own words and layout. The first entry is always the Open Touring credit. Seed source credits follow, once each, with their licence, links and the changes OTWD made. Photo credits travel with each photo.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/OpenTouringCredit"
+        }
+      ],
       "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 300
+        "$ref": "#/$defs/AttributionEntry"
       }
     },
     "MinConfidence": {
@@ -965,6 +1149,98 @@
         }
       },
       "additionalProperties": false
+    },
+    "PhotoLicence": {
+      "description": "The licence of a published photo, as an SPDX identifier. A contributor's own photo is CC-BY-4.0 by default, or CC0-1.0 if they choose. A photo from a seed source keeps the seed source's licence, which must be compatible with CC BY 4.0. Open: a consumer that does not know the licence shows the photo with its attribution and licence_url, or leaves it out.",
+      "$ref": "#/$defs/SpdxLicence",
+      "x-otwd-known-values": ["CC-BY-4.0", "CC0-1.0", "CC-BY-3.0-AU"]
+    },
+    "AttributionEntry": {
+      "description": "One credit a record's facts or photos require: the text to show, the licence it is given under, links to the source and the licence, and the changes OTWD made where the licence asks for them.",
+      "type": "object",
+      "required": ["text", "licence"],
+      "properties": {
+        "text": {
+          "description": "The credit as the licensor asks for it, for example: Contains Vicmap Transport data, Department of Transport and Planning (Victoria).",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "licence": {
+          "$ref": "#/$defs/SpdxLicence"
+        },
+        "licence_url": {
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "source_url": {
+          "description": "The source's own page, where the licence asks for a link to the material.",
+          "$ref": "#/$defs/HttpsUrl"
+        },
+        "seed_source": {
+          "description": "The seed source the credit is for, so a reader can look it up at /v1/seed-sources.",
+          "$ref": "#/$defs/SeedSourceId"
+        },
+        "changes": {
+          "description": "The changes OTWD made, where the licence asks a reuser to indicate them.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "Every CC BY licence asks a reuser who modifies the material to say so (CC BY 4.0 section 3(a)(1)(B), CC BY 3.0 AU section 4B). OTWD always maps seed source data to its own codes and combines it with other facts, so an entry or reference for a seed source under a CC BY licence states the changes.",
+          "if": {
+            "allOf": [
+              {
+                "required": ["seed_source"],
+                "properties": {
+                  "seed_source": true
+                }
+              },
+              {
+                "properties": {
+                  "licence": {
+                    "pattern": "^CC-BY-"
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "required": ["changes"],
+            "properties": {
+              "changes": true
+            }
+          }
+        }
+      ]
+    },
+    "OpenTouringCredit": {
+      "description": "The Open Touring credit that leads every attribution list.",
+      "$ref": "#/$defs/AttributionEntry",
+      "properties": {
+        "text": {
+          "const": "Open Touring contributors"
+        },
+        "licence": {
+          "const": "CC-BY-4.0"
+        },
+        "licence_url": {
+          "const": "https://creativecommons.org/licenses/by/4.0/"
+        },
+        "source_url": {
+          "const": "https://opentouring.org"
+        }
+      },
+      "required": ["licence_url", "source_url"],
+      "not": {
+        "required": ["seed_source"],
+        "properties": {
+          "seed_source": true
+        }
+      }
     }
   }
 }

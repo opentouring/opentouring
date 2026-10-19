@@ -19,7 +19,7 @@
       "if": {
         "properties": {
           "status": {
-            "const": "merged"
+            "$ref": "common.schema.json#/$defs/StubStatus"
           }
         }
       },
@@ -42,9 +42,6 @@
   ],
   "properties": {
     "id": {
-      "$ref": "common.schema.json#/$defs/FerryServiceId"
-    },
-    "redirect_to": {
       "$ref": "common.schema.json#/$defs/FerryServiceId"
     }
   },
