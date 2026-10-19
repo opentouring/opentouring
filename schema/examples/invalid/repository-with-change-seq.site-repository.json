@@ -1,0 +1,5 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/caravan-park-nt.site-repository.json",
+  "$patch": [{ "op": "add", "path": "/change_seq", "value": 20211 }]
+}

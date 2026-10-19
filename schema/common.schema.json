@@ -395,6 +395,7 @@
       }
     },
     "Provenance": {
+      "$dynamicAnchor": "provenance",
       "description": "Where a fact came from, as published: the kind of source, the partner app or seed source, the dates, the confidence and the change that set it. It never identifies a contributor (ADR 0038). OTWD keeps who supplied each fact privately, in the submission log, for moderation, trust scores and abuse handling. A direct contributor who chose to be named shows only their display name.",
       "type": "object",
       "required": ["source_kind", "recorded_at", "confidence", "change_seq"],
@@ -442,6 +443,50 @@
         }
       },
       "additionalProperties": false,
+      "$ref": "#/$defs/ProvenanceSources"
+    },
+    "RepositoryProvenance": {
+      "description": "Provenance as a data repository file holds it (ADR 0046): the full form's provenance without confidence and change_seq, which the read model adds when it loads the file.",
+      "type": "object",
+      "required": ["source_kind", "recorded_at"],
+      "additionalProperties": false,
+      "$ref": "#/$defs/ProvenanceSources",
+      "properties": {
+        "source_kind": {
+          "description": "contributor: a signed-in contributor supplied the fact directly. partner_app: a partner app supplied it, usually on behalf of one of its contributors. seed_source: it was imported from an open dataset. Open: a consumer treats a source kind it does not know as an unnamed source and still reads the fact's confidence.",
+          "$ref": "#/$defs/EnumCode",
+          "x-otwd-known-values": ["contributor", "partner_app", "seed_source"]
+        },
+        "display_name": {
+          "description": "For source_kind contributor only, and only when the direct contributor chose to be named on their contributions, which is off by default: the display name they chose. Never an email address. A name repeated across records links them, so apps should not encourage it.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "^[^@]+$"
+        },
+        "partner_app_id": {
+          "$ref": "#/$defs/PartnerAppId"
+        },
+        "seed_source": {
+          "$ref": "#/$defs/SeedSourceRef"
+        },
+        "observed_on": {
+          "description": "The date the fact was observed on the ground, or the date the seed source says the record was current. Older observations are less likely to be true today.",
+          "$ref": "#/$defs/LocalDate"
+        },
+        "recorded_at": {
+          "description": "When OTWD applied the fact to the live data.",
+          "$ref": "#/$defs/Timestamp"
+        },
+        "moderator_edited": {
+          "description": "True when a moderator corrected the submitted value before approving it (outcome edited_and_approved). The decision records the original value.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "ProvenanceSources": {
+      "description": "The rules on which source a fact names, shared by the full form's provenance and the repository form's: a contributor's fact names no partner app or seed source, a partner app's fact names its app and no seed source or display name, and a seed source's fact names its seed source and no partner app or display name.",
       "allOf": [
         {
           "if": {
@@ -569,7 +614,7 @@
       "properties": {
         "value": true,
         "provenance": {
-          "$ref": "#/$defs/Provenance"
+          "$dynamicRef": "#provenance"
         },
         "confirmations": {
           "$ref": "#/$defs/Confirmations"
@@ -614,7 +659,7 @@
           "$ref": "#/$defs/ClosureInfoUrl"
         },
         "provenance": {
-          "$ref": "#/$defs/Provenance"
+          "$dynamicRef": "#provenance"
         }
       },
       "additionalProperties": false
@@ -662,7 +707,7 @@
           "maxLength": 300
         },
         "provenance": {
-          "$ref": "#/$defs/Provenance"
+          "$dynamicRef": "#provenance"
         },
         "licence_url": {
           "description": "The licence text.",
@@ -748,9 +793,9 @@
       }
     },
     "FullRecord": {
-      "description": "The envelope every record shares in the full form: identity, status, timestamps, change_seq and photos, with the lifecycle rule. A merged, replaced or retracted record is a stub (StubStatus) without derived values or facts. A merged record names the survivor in redirect_to, of the same record type, and a replaced record names its replacement, of another record type (tools/validate.py checks both). Any other record has derived values and facts, and no redirect_to. Each record type's schema narrows id to its own public ID kind and adds derived and facts.",
+      "description": "The envelope every record shares in the full form: identity, status, timestamps, change_seq and photos, with the lifecycle rule. A merged, replaced or retracted record is a stub (StubStatus) without derived values or facts. A merged record names the survivor in redirect_to, of the same record type, and a replaced record names its replacement, of another record type (tools/validate.py checks both). Any other record has facts, and no redirect_to. The values OTWD computes on load (updated_at, change_seq and derived values) follow ComputedValues in the full form and RepositoryComputedValues in the repository form, chosen through the computed dynamic anchor. Each record type's schema narrows id to its own public ID kind and adds derived and facts.",
       "type": "object",
-      "required": ["schema_version", "id", "status", "created_at", "updated_at", "change_seq"],
+      "required": ["schema_version", "id", "status", "created_at"],
       "properties": {
         "schema_version": {
           "$ref": "#/$defs/SchemaVersion"
@@ -810,7 +855,7 @@
           }
         },
         {
-          "description": "A record that is not a stub has derived values and facts. A retracted stub keeps none of them, nor photos.",
+          "description": "A record that is not a stub has facts. A retracted stub keeps no derived values, facts or photos.",
           "if": {
             "properties": {
               "status": {
@@ -860,14 +905,63 @@
             }
           },
           "else": {
-            "required": ["derived", "facts"],
+            "required": ["facts"],
             "properties": {
-              "derived": true,
               "facts": true
             }
           }
+        },
+        {
+          "$dynamicRef": "#computed"
         }
       ]
+    },
+    "ComputedValues": {
+      "$dynamicAnchor": "computed",
+      "description": "The values OTWD computes when it loads a record, which the full form always carries: updated_at and change_seq, and derived values on any record that is not a stub.",
+      "required": ["updated_at", "change_seq"],
+      "if": {
+        "properties": {
+          "status": {
+            "properties": {
+              "value": {
+                "$ref": "#/$defs/StubStatus"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "required": ["derived"],
+        "properties": {
+          "derived": true
+        }
+      }
+    },
+    "RepositoryComputedValues": {
+      "description": "The repository form leaves out every value OTWD computes on load (ADR 0046): updated_at, change_seq and derived values.",
+      "not": {
+        "anyOf": [
+          {
+            "required": ["updated_at"],
+            "properties": {
+              "updated_at": true
+            }
+          },
+          {
+            "required": ["change_seq"],
+            "properties": {
+              "change_seq": true
+            }
+          },
+          {
+            "required": ["derived"],
+            "properties": {
+              "derived": true
+            }
+          }
+        ]
+      }
     },
     "CompactRecord": {
       "description": "The envelope every record shares in the compact form: identity, status with the closure fields flattened, timestamps, the primary name, photos, and the attribution list, min_confidence and safety_facts_observed_on that stand in for per-fact provenance. A merged or replaced record names the record it redirects to in redirect_to, and no other record has one. Each compact schema narrows id, adds its derived values and facts, and lists the fields its record type always has when it is not a stub. A retracted stub carries only the envelope (tools/validate.py checks this).",

@@ -125,5 +125,8 @@
   "unknown-self-contained-scheme.site.json": "unknown self-contained scheme code 'blue_warrant'",
   "unknown-sensitivity-reason.site.json": "unknown location sensitivity reason code 'secret'",
   "water-notice-ends-before-start.site.json": "/facts/water_notices/value/0/to: is before from",
-  "water-notice-without-authority-link.site-compact.json": "/water_notices/0: 'info_url' is a required property"
+  "water-notice-without-authority-link.site-compact.json": "/water_notices/0: 'info_url' is a required property",
+  "repository-with-change-seq.site-repository.json": "should not be valid under {'anyOf': [{'required': ['updated_at']",
+  "repository-with-confidence.site-repository.json": "/facts/names/provenance: Additional properties are not allowed ('confidence' was unexpected)",
+  "repository-with-derived.road-segment-repository.json": "should not be valid under {'anyOf': [{'required': ['updated_at']"
 }

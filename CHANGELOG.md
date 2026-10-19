@@ -8,6 +8,7 @@ Each entry says what changed, whether it is an addition or a breaking change, an
 
 ## Unreleased
 
+- **Addition (draft):** each record type has a repository form, `<record-type>-repository.schema.json`, the full form as a data repository file holds it without `updated_at`, `change_seq`, derived values, and provenance `confidence` and `change_seq` ([ADR 0046](docs/adr/0046-live-data-in-a-public-git-repository-per-country.md)). The record type registry gains a required `repository_schema` field. Nothing changes for partner apps that read the API or bulk downloads.
 - **Breaking change (draft):** the older codes that used "site" for a camping spot now say "pitch", matching the glossary term in CONTEXT.md. The contract is still a draft ([ADR 0030](docs/adr/0030-schema-and-api-stay-a-draft-until-v1-0-0-is-released.md)), so this ships without a version bump. Partner apps that read or write these codes need to switch to the new ones. Counts and units are unchanged.
   - Facilities: `tent_sites` is now `tent_pitches`, `ensuite_sites` is now `ensuite_pitches` and `drive_through_sites` is now `drive_through_pitches`. Their labels and the schema.org `amenityFeature` names follow ("Tent pitches", "Ensuite pitches", "Drive-through pitches", and "Powered pitches" for `power`). The OSM tags are unchanged.
   - Prices: `applies_to` values `site_unpowered`, `site_powered`, `site_ensuite` and `tent_site` are now `pitch_unpowered`, `pitch_powered`, `pitch_ensuite` and `tent_pitch`.
