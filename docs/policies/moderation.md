@@ -2,9 +2,9 @@
 
 # Moderation policy
 
-**Version:** `routing-2.0`. **In effect for:** the Preview, where the maintainer moderates the maintainer's own submissions and seed source imports.
+**Version:** `routing-3.0`. **In effect for:** the Preview, where the maintainer moderates the maintainer's own submissions and seed source imports.
 
-This policy says how OTWD moderates submissions: what goes to a person, when automatic approval may switch on, how contributors ask for more time, answer questions and appeal, and how vandalism, seed source re-imports and stale facts are handled. It applies one standard to every submission, whichever partner app or tier sent it ([ADR 0002](../adr/0002-cc-by-4-0-data-with-revenue-from-the-api-service.md)). The pipeline that carries it out is described in [docs/architecture.md](../architecture.md#moderation-pipeline). Terms are defined in [CONTEXT.md](../../CONTEXT.md).
+This policy says how OTWD moderates submissions: what goes to a person, when automatic approval may switch on, how contributors ask for more time, answer questions and appeal, and how vandalism, seed source re-imports and stale facts are handled. It applies one standard to every submission, whichever partner app or tier sent it ([ADR 0002](../adr/0002-cc-by-4-0-data-with-revenue-from-the-api-service.md)). The pipeline that carries it out is described in [docs/architecture.md](../architecture.md#moderation-pipeline). A submission that passes screening is a pull request on the country's data repository, and a moderator's review of it is the moderation decision ([ADR 0047](../adr/0047-moderation-on-github-through-pull-requests.md)). Terms are defined in [CONTEXT.md](../../CONTEXT.md).
 
 ## Versions
 
@@ -31,7 +31,7 @@ This policy also sends these to a person, as a routing rule that cannot be switc
 - Any submission from a contributor or API key whose trust score is below the automatic approval threshold.
 - A seed source re-import that conflicts with a newer community fact (see seed sources below).
 
-Moderators record a moderation decision for each submission: approved, edited and approved (with amendments), rejected, or needs info. Rejected and needs info decisions carry a public note the contributor can read.
+Moderators record a moderation decision for each submission: approved, edited and approved (with amendments), rejected, or needs info. Rejected and needs info decisions carry a public note the contributor can read. A submission rejected in screening never reaches GitHub, and its note reaches the contributor through the partner app or the website.
 
 ## Automatic approval
 
@@ -49,13 +49,13 @@ The figures in this section are starting values for the steering group to confir
 
 ## Needs info
 
-A moderator who needs more detail records a needs info decision with a public note that says exactly what is missing. Open Touring cannot contact a contributor who came through a partner app ([ADR 0011](../adr/0011-no-anonymous-edits-pseudonymous-partner-ids.md)), so the partner app relays the note, and the contributor's reply comes back through the API (ADR 0039) or the website. A reply reopens the submission in the queue with its history. A submission with no reply after 30 days is rejected with the reason code `no_reply`, and the contributor can submit again at any time.
+A moderator who needs more detail records a needs info decision with a public note that says exactly what is missing. Open Touring cannot contact a contributor who came through a partner app ([ADR 0011](../adr/0011-no-anonymous-edits-pseudonymous-partner-ids.md)), so the moderator asks on the pull request, the GitHub App labels it `info-requested`, and the partner app relays the note. The contributor's reply comes back through the API (ADR 0039) or the website, and the App posts it on the pull request. A reply puts the pull request back in the queue with its history. A submission with no reply after 30 days is rejected with the reason code `no_reply`, and the contributor can submit again at any time.
 
 ## Appeals
 
 A contributor can appeal any moderation decision on their own submission, including an automatic approval or a rejection, within 90 days of the decision. Appeals come in through the website or through the partner app by the API ([api/README.md](../../api/README.md#appeals-and-replies)), and say why the decision should change.
 
-A different moderator from the one who made the decision reviews the appeal, and records a new moderation decision that names the earlier one in `appeal_of`. The target is a decision within 14 days. Each decision can be appealed once. A contributor who thinks the policy itself is wrong, rather than its application, can propose a change with the "Moderation policy change" issue form, and the steering group hears appeals that turn on what the policy means.
+An appeal against an approved change is a revert pull request the GitHub App opens, and an appeal against a rejection reopens the submission as a new pull request. Both carry the `appeal` label. A different moderator from the one who made the decision reviews the appeal, enforced by a required check that blocks approval by the original moderator, and records a new moderation decision that names the earlier one in `appeal_of`. The target is a decision within 14 days. Each decision can be appealed once. A contributor who thinks the policy itself is wrong, rather than its application, can propose a change with the "Moderation policy change" issue form, and the steering group hears appeals that turn on what the policy means.
 
 ## Vandalism and reverts
 
@@ -67,7 +67,15 @@ A contributor or API key found vandalising is rate-limited or suspended, and its
 
 ## Seed sources
 
-Seed sources are imported as submissions with seed source provenance and pass through the same pipeline as everyone else. The registry of seed sources and their re-sync schedules is [docs/seed-sources.md](../seed-sources.md).
+Seed sources are imported as submissions with seed source provenance and pass through the same pipeline as everyone else, with one difference: an import or re-import is one batch pull request per seed source per refresh, not one pull request per record ([ADR 0047](../adr/0047-moderation-on-github-through-pull-requests.md)).
+
+**Batch pull requests.** A moderator decides a batch as one moderation decision, after checking:
+
+- the fixed checks report for the whole batch
+- a random sample of the records in the batch: 5% of them, or 20, whichever is more (all of them in a batch of 20 or fewer)
+- every safety fact the report flags, each one checked, not sampled
+
+If any sampled record or flagged safety fact is wrong, the moderator rejects the batch or asks for it to be fixed and sent again, never approves part of it. A re-import that conflicts with a newer community fact (below) is taken out of the batch and sent as its own pull request. The registry of seed sources and their re-sync schedules is [docs/seed-sources.md](../seed-sources.md).
 
 **Re-import over a newer community edit.** Provenance is kept per fact ([ADR 0013](../adr/0013-stable-public-ids-and-per-fact-provenance.md)), so a re-import only proposes the facts the seed source holds. When a re-imported value differs from a fact a contributor supplied, and the contributor observed it after the seed source's own update date, the re-import does not replace it automatically: it goes to a person with both values and both dates. When the seed source's update is newer than the contributor's observation, the re-import is an ordinary submission. A re-import never touches a fact the seed source did not supply.
 
@@ -97,7 +105,7 @@ A suggested age is a minor version change. A prompt goes to partner apps and the
 
 ## Moderators
 
-Moderators are approved by the steering group ([GOVERNANCE.md](../../GOVERNANCE.md#steering-group)). A moderator does not decide a submission about a record they operate, work for or are paid by, or a submission from someone they know personally, and passes it to another moderator. Moderators see the contributor's pseudonymous ID or display name and the partner app, never more ([the privacy policy draft](privacy-draft.md)).
+Moderators are approved by the steering group ([GOVERNANCE.md](../../GOVERNANCE.md#steering-group)). A moderator does not decide a submission about a record they operate, work for or are paid by, or a submission from someone they know personally, and passes it to another moderator. Moderators review on GitHub under their own accounts, as members of a state's moderators team, and their GitHub accounts are public on every review. A pull request on GitHub names no contributor. Moderators see the contributor's pseudonymous ID or display name and the partner app only on opentouring.org, never more ([the privacy policy draft](privacy-draft.md)).
 
 ## History
 
@@ -105,3 +113,4 @@ Moderators are approved by the steering group ([GOVERNANCE.md](../../GOVERNANCE.
 | ------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `routing-1.0` | 16 October 2026 | First published version, matching the `routing-1.0` used in the examples.                                                                                                                                                                |
 | `routing-2.0` | 16 October 2026 | Water notices, tidal access and flood depth markers are safety facts (ADR 0043, ADR 0044). Location sensitivity joins the always-human list, and the `sensitive_location` flag sends changes to a sensitive site to a person (ADR 0045). |
+| `routing-3.0` | 19 October 2026 | Moderation on GitHub through pull requests (ADR 0047): batch pull requests for seed sources with a sample of 5% or 20 records, needs info and appeals through the GitHub App.                                                            |

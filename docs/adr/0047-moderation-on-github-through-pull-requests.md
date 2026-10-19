@@ -16,14 +16,14 @@ With live data in a public git repository per country ([ADR 0046](0046-live-data
 
 **What the checks do.** CI on every pull request validates the files against the pinned schema and runs the fixed checks that need only the repository: on-land, inside a supported country, duplicate candidates and outliers. Checks that need private data, such as trust scores and rate limits, run on opentouring.org and report back as a check run. The AI review runs on opentouring.org too, never in an Action, because repository secrets are not available to pull requests from forks and the model must never see a contributor's identity. Its verdict is posted as a pull request comment.
 
-**Routing on GitHub.** Routing still decides which queue a submission goes to. It sets labels on the pull request: `always-human` for anything on the always-human list, `accessibility-raised` when the fixed checks set that flag, and labels for the record type and state. A moderator's queue is a saved search on those labels.
+**Routing on GitHub.** Routing still decides which queue a submission goes to. It sets labels on the pull request: `always-human` for anything on the always-human list, `accessibility-raised` and `sensitive-location` when the fixed checks set those flags ([ADR 0045](0045-sensitive-locations-are-published-generalised.md)), and labels for the record type and state. A moderator's queue is a saved search on those labels.
 
 **The decision record.** The squash commit carries the public parts of the moderation decision as trailers:
 
 ```
 Decision: otwd:decision:01JB...
 Outcome: approved
-Moderation-policy: routing-1.0
+Moderation-policy: routing-3.0
 Verdict-model: <model version>
 Routing: human
 ```
@@ -38,7 +38,7 @@ The full moderation decision, with the verdict, the reasons and any amendments, 
 
 **Seed imports in batches.** A seed source import or refresh is one pull request per seed source per refresh. A moderator approves the batch on the fixed check report and a random sample, with any safety fact flagged in the report. The sample size is a figure in the moderation policy, which needs changing by its own process before the first batch.
 
-**Automatic approval later.** When the moderation policy switches on automatic approval for a group of submissions, the App approves and merges as a ruleset bypass actor and writes `Routing: automatic` in the trailer. It never bypasses review for a pull request labelled `always-human` or `accessibility-raised`, and fixed code, never the model, makes the call.
+**Automatic approval later.** When the moderation policy switches on automatic approval for a group of submissions, the App approves and merges as a ruleset bypass actor and writes `Routing: automatic` in the trailer. It never bypasses review for a pull request labelled `always-human`, `accessibility-raised` or `sensitive-location`, and fixed code, never the model, makes the call.
 
 ## Considered options
 
