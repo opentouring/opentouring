@@ -45,8 +45,8 @@
       },
       "additionalProperties": false
     },
-    "Location": {
-      "description": "The coordinates of a site or road restriction in WGS84 (EPSG:4326), in decimal degrees. For a large site such as a campground this is the entrance or office, where a traveller would drive to. For a road restriction it is the point on the road where the limit applies, such as the centre of the road under a bridge.",
+    "Coordinates": {
+      "description": "A latitude and longitude in WGS84 (EPSG:4326), in decimal degrees, with an optional accuracy. Location and SiteLocation build on it and close the object.",
       "type": "object",
       "required": ["lat", "lng"],
       "properties": {
@@ -65,6 +65,46 @@
           "type": "number",
           "minimum": 0,
           "maximum": 10000
+        }
+      }
+    },
+    "Location": {
+      "description": "The coordinates of a road restriction: the point on the road where the limit applies, such as the centre of the road under a bridge. Always exact, because a road restriction's location is a safety fact.",
+      "$ref": "#/$defs/Coordinates",
+      "unevaluatedProperties": false
+    },
+    "SiteLocation": {
+      "description": "The coordinates of a site. For a large site such as a campground this is the entrance or office, where a traveller would drive to. When the site has a location_sensitivity fact, the published coordinates are generalised (ADR 0045): lat and lng are rounded to the nearest multiple of generalised.cell_deg and accuracy_m is left out, so they name a grid cell rather than the place. Submissions always carry the exact position and never generalised.",
+      "$ref": "#/$defs/Coordinates",
+      "properties": {
+        "generalised": {
+          "$ref": "#/$defs/Generalisation"
+        }
+      },
+      "unevaluatedProperties": false,
+      "if": {
+        "required": ["generalised"],
+        "properties": {
+          "generalised": true
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["accuracy_m"],
+          "properties": {
+            "accuracy_m": true
+          }
+        }
+      }
+    },
+    "Generalisation": {
+      "description": "How a published site position was generalised. cell_deg: the grid cell size in degrees, 0.01 (about 1.1 km north to south), 0.1 (about 11 km) or 1 (about 111 km). lat and lng are rounded to the nearest multiple of it, which tools/validate.py checks.",
+      "type": "object",
+      "required": ["cell_deg"],
+      "properties": {
+        "cell_deg": {
+          "type": "number",
+          "enum": [0.01, 0.1, 1]
         }
       },
       "additionalProperties": false
@@ -775,6 +815,322 @@
         }
       },
       "unevaluatedProperties": false
+    },
+    "CampingRules": {
+      "description": "Whether a traveller may camp overnight at a site or along a road segment, under the rules of the council or land manager that sets them (ADR 0043). OTWD records the standing rule as the authority publishes or signs it, with the authority and its page for the rules, and never enforcement or day-to-day closures. allowed: camping is allowed, with no conditions beyond those recorded here and in stay_limits. restricted: allowed only under conditions, such as only in marked bays, only in certified self-contained vehicles or only with a permit. prohibited: no overnight camping. A missing fact is unknown, never proof that camping is allowed.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["camping", "authority", "info_url"],
+      "properties": {
+        "camping": {
+          "type": "string",
+          "enum": ["allowed", "restricted", "prohibited"]
+        },
+        "self_contained": {
+          "$ref": "#/$defs/SelfContainedRequirement"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "SelfContainedRequirement": {
+      "description": "Whether only self-contained vehicles may camp, and the certification schemes the authority accepts, from the self-contained scheme governed list (self-contained-schemes.json). required true: only a vehicle certified under one of schemes may camp, so camping must be restricted. schemes absent with required true: the authority asks for a self-contained vehicle without naming a scheme. Each scheme must be used in the record's country.",
+      "type": "object",
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "schemes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/$defs/SelfContainedSchemeCode"
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "required": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["schemes"],
+          "properties": {
+            "schemes": true
+          }
+        }
+      }
+    },
+    "Permits": {
+      "description": "The permits a traveller needs to enter, camp at or travel through a site or road segment (ADR 0043). OTWD records that a permit is needed, who issues it and where to get it, never a traveller's permit.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/Permit"
+      }
+    },
+    "Permit": {
+      "description": "One permit, with the authority that issues it and its page for applying. kind park_entry: a pass to enter a park or reserve. camping: a permit or booking that camping requires. land_entry: a permit to enter land held by its traditional owners or a community, such as Aboriginal land in the Northern Territory. transit: a permit to travel along a road through such land or a reserve, keeping to the road. other: any other permit, described in notes. in_advance true: the permit must be obtained before arrival, not at the site or on the way. free true: the authority issues it without charge.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["kind", "authority", "info_url"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["park_entry", "camping", "land_entry", "transit", "other"]
+        },
+        "in_advance": {
+          "type": "boolean"
+        },
+        "free": {
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false,
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "other"
+          }
+        }
+      },
+      "then": {
+        "required": ["notes"],
+        "properties": {
+          "notes": true
+        }
+      }
+    },
+    "QuietHours": {
+      "description": "The site's quiet hours as its rules or signs give them: local clock times read in the site's time zone, never converted to UTC. A to earlier than from means the period ends after midnight. days limits them to some days of the week, and absent means every day.",
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": {
+          "$ref": "common.schema.json#/$defs/LocalTime"
+        },
+        "to": {
+          "$ref": "common.schema.json#/$defs/LocalTime"
+        },
+        "days": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Weekday"
+          }
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AgeRules": {
+      "description": "Who the site takes by age. children_allowed false: the site takes adults only, and min_guest_age is the age from which it takes a guest, such as 18. min_booking_age: the age the person who books or registers must be, such as 18 or 25, whether or not children are allowed.",
+      "type": "object",
+      "required": ["children_allowed"],
+      "properties": {
+        "children_allowed": {
+          "type": "boolean"
+        },
+        "min_guest_age": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "min_booking_age": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "children_allowed": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["min_guest_age"],
+          "properties": {
+            "min_guest_age": true
+          }
+        }
+      }
+    },
+    "Firewood": {
+      "description": "Firewood at the site. for_sale true: the operator sells firewood on site. provided true: the operator supplies it at no extra charge. collection: whether travellers may gather firewood on or around the site: allowed, restricted (only fallen dead wood, or only in some areas, as notes say) or prohibited. Whether fires are allowed at all is the fires_allowed facility.",
+      "type": "object",
+      "properties": {
+        "for_sale": {
+          "type": "boolean"
+        },
+        "provided": {
+          "type": "boolean"
+        },
+        "collection": {
+          "type": "string",
+          "enum": ["allowed", "restricted", "prohibited"]
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "TidalAccess": {
+      "description": "Safety fact. Reaching the site or driving the road segment depends on the tide, such as a beach drive or a crossing covered at high tide (ADR 0043). OTWD records the standing rule and the tide authority's prediction page in authority and info_url, never live tides or tide times: apps send travellers to info_url for the tides on the day. low_tide_window_h: the hours either side of low tide in which the authority or the signs advise travelling, when they give one. station: the tide station the advice refers to, as the authority names it. time_zone works as on a bait notice, for a road segment that crosses zones.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["authority", "info_url"],
+      "properties": {
+        "low_tide_window_h": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 6
+        },
+        "station": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "time_zone": {
+          "$ref": "#/$defs/ScheduleTimeZone"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "SeasonalOperation": {
+      "description": "The periods each year a site operates, as local month and day read in the site's time zone, such as a caravan park open from April to October (ADR 0043). It is the site's own season, distinct from a seasonal closure, which an authority declares, and from a temporary closure. Outside every period the site is not operating. A site gives its season here or as opening_hours.seasonal_closures, never both. dates_year: the year whose published dates the periods came from, when the operator sets them each year.",
+      "type": "object",
+      "required": ["open"],
+      "properties": {
+        "open": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/AnnualPeriod"
+          }
+        },
+        "dates_year": {
+          "type": "integer",
+          "minimum": 1990,
+          "maximum": 2200
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WaterNotices": {
+      "description": "Safety fact. Notices from a water authority or health department that the water supply at a site is not safe to drink as supplied (ADR 0044). OTWD records each notice as the authority published it, with the affected area, local dates and the authority's page, never a live water quality feed: apps send travellers to info_url for the current advice. Apps that show the drinking_water facility show current water notices beside it.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/WaterNotice"
+      }
+    },
+    "WaterNotice": {
+      "description": "One water notice. kind boil_water: boil the water before drinking it or using it for food. do_not_drink: do not drink the water even after boiling, though it may serve other uses as the notice says. do_not_use: do not use the water at all. other: any other water quality advice, described in notes. from and to are local dates as the notice gives them, read in the site's time zone. A notice with no to stays until the authority lifts it. authority is the authority that issued it and info_url its page for the notice or current notices.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["kind", "area", "authority", "info_url", "from"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["boil_water", "do_not_drink", "do_not_use", "other"]
+        },
+        "area": {
+          "description": "The area or supply the notice covers, as it describes them, for example the town supply of Example Creek.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "from": {
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        },
+        "to": {
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false,
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "other"
+          }
+        }
+      },
+      "then": {
+        "required": ["notes"],
+        "properties": {
+          "notes": true
+        }
+      }
+    },
+    "FloodDepthMarker": {
+      "description": "Safety fact. Whether a depth marker (a depth indicator post graduated in metres) stands at a ford or causeway so travellers can read the depth of water over the road, and the road authority with its page for current road conditions (ADR 0044). OTWD records the marker, never a live depth: water rises and falls by the hour, so apps send travellers to info_url and to the marker itself. present false: the crossing has no marker, so the depth cannot be read on site.",
+      "type": "object",
+      "$ref": "#/$defs/AuthorityLink",
+      "required": ["present", "authority", "info_url"],
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "notes": {
+          "$ref": "common.schema.json#/$defs/Notes"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "LocationSensitivity": {
+      "description": "The site's exact position must not be published, and why (ADR 0045). reason comes from the location sensitivity reason governed list (location-sensitivity-reasons.json). A moderator sets it, and the site's published location is then generalised to a grid cell at least as coarse as the reason's min_cell_deg, without accuracy_m, and the site has no locality. The exact position is held privately for moderation and never appears in the API, bulk downloads or the change feed. It carries no free text, so nothing about the place or the request is published beyond the reason.",
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "reason": {
+          "$ref": "common.schema.json#/$defs/LocationSensitivityReasonCode"
+        },
+        "review_on": {
+          "description": "The local date on which moderators review whether the marking is still needed, when one is set. A marking for cultural_heritage is reviewed only with the people who asked for it.",
+          "$ref": "common.schema.json#/$defs/LocalDate"
+        }
+      },
+      "additionalProperties": false
     },
     "AccessFeature": {
       "description": "Wheelchair access to one feature. yes: a wheelchair user can reach and use it without help. limited: usable with help or with difficulty, such as a ramp steeper than the standard allows or a door narrower than a modern chair. no: a wheelchair user cannot reach or use it. notes says what limits it.",
@@ -2032,9 +2388,6 @@
               "items": {
                 "$ref": "#/$defs/AnnualPeriod"
               }
-            },
-            "bring_own_firewood": {
-              "type": "boolean"
             }
           },
           "additionalProperties": false

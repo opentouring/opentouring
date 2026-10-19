@@ -111,6 +111,15 @@
       "ambulant": false
     }
   },
+  "firewood": {
+    "collection": "prohibited",
+    "notes": [
+      {
+        "text": "Bring your own firewood. Collecting wood in the park is not allowed.",
+        "lang": "en-AU"
+      }
+    ]
+  },
   "rig_limits": {
     "max_length_m": 7,
     "big_rig_suitable": "no",
@@ -169,8 +178,7 @@
     "fires_allowed": {
       "available": true,
       "attributes": {
-        "fire_rings_only": true,
-        "bring_own_firewood": true
+        "fire_rings_only": true
       }
     },
     "picnic_tables": {

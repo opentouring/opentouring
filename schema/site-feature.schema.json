@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/site-feature.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD site as a GeoJSON feature",
+  "description": "A site as one GeoJSON Feature (RFC 7946), as the API serves it with Accept: application/geo+json (properties in the compact form) and as GeoJSON bulk downloads hold it (properties in the full form). The geometry is a Point built from the site's published location and nothing else, so a site whose location is sensitive carries the same generalised coordinates in its geometry as in its properties (ADR 0045). A merged site has no location, so its geometry is null. tools/validate.py checks that the geometry equals the location.",
+  "type": "object",
+  "required": ["type", "id", "geometry", "properties"],
+  "properties": {
+    "type": {
+      "const": "Feature"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/SiteId"
+    },
+    "geometry": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/GeoJsonPoint"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "properties": {
+      "oneOf": [
+        {
+          "$ref": "site-compact.schema.json"
+        },
+        {
+          "$ref": "site.schema.json"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

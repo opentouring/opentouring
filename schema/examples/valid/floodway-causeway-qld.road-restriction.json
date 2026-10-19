@@ -1,0 +1,107 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:road_restriction:01M0F8RMJC88418Z0QRK6QJP9X",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-09-05",
+      "recorded_at": "2026-09-08T22:45:00Z",
+      "confidence": 0.87,
+      "change_seq": 40688
+    }
+  },
+  "created_at": "2026-09-08T22:45:00Z",
+  "updated_at": "2026-09-08T22:45:00Z",
+  "change_seq": 40688,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-QLD",
+    "locality": "Example Creek",
+    "time_zone": "Australia/Brisbane"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Yabby Creek Causeway",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-05",
+        "recorded_at": "2026-09-08T22:45:00Z",
+        "confidence": 0.87,
+        "change_seq": 40688
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -19.30481,
+        "lng": 146.11736,
+        "accuracy_m": 10
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-05",
+        "recorded_at": "2026-09-08T22:45:00Z",
+        "confidence": 0.87,
+        "change_seq": 40688
+      }
+    },
+    "road": {
+      "value": {
+        "name": "Yabby Creek Road"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-05",
+        "recorded_at": "2026-09-08T22:45:00Z",
+        "confidence": 0.87,
+        "change_seq": 40688
+      }
+    },
+    "structure": {
+      "value": {
+        "code": "causeway",
+        "passage": "over"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-05",
+        "recorded_at": "2026-09-08T22:45:00Z",
+        "confidence": 0.87,
+        "change_seq": 40688
+      }
+    },
+    "flood_depth_marker": {
+      "value": {
+        "present": true,
+        "authority": "Example Regional Council",
+        "info_url": "https://www.example.org/council/road-conditions",
+        "notes": [
+          {
+            "text": "Depth marker posts on both approaches, graduated to 2 m.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-09-05",
+        "recorded_at": "2026-09-08T22:45:00Z",
+        "confidence": 0.87,
+        "change_seq": 40688
+      }
+    }
+  }
+}

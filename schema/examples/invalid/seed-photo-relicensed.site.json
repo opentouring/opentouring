@@ -425,8 +425,7 @@
       "value": {
         "available": true,
         "attributes": {
-          "fire_rings_only": true,
-          "bring_own_firewood": true
+          "fire_rings_only": true
         }
       },
       "provenance": {

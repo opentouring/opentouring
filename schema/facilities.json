@@ -391,11 +391,6 @@
           "name": "seasonal_restrictions",
           "type": "list",
           "description": "Periods each year when the site itself does not allow fires."
-        },
-        {
-          "name": "bring_own_firewood",
-          "type": "boolean",
-          "description": "True when collecting firewood on site is not allowed."
         }
       ],
       "osm": [

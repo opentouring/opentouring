@@ -1,0 +1,26 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/road-restriction-created.change.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/kind",
+      "value": "facts_updated"
+    },
+    {
+      "op": "add",
+      "path": "/previous_seq",
+      "value": 30001
+    },
+    {
+      "op": "replace",
+      "path": "/changed_fields",
+      "value": ["/facts/flood_depth_marker"]
+    },
+    {
+      "op": "add",
+      "path": "/safety_fact_changed",
+      "value": false
+    }
+  ]
+}
