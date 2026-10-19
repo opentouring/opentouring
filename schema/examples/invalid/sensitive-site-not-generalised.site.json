@@ -1,0 +1,15 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/sensitive-gallery-walk-nt.site.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/facts/location/value",
+      "value": {
+        "lat": -13.41872,
+        "lng": 132.43519,
+        "accuracy_m": 10
+      }
+    }
+  ]
+}

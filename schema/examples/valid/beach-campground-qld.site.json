@@ -1,0 +1,175 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01MKMNV42AJ5B64V2MN826X8H4",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-08-30",
+      "recorded_at": "2026-09-02T04:00:00Z",
+      "confidence": 0.8,
+      "change_seq": 40377
+    }
+  },
+  "created_at": "2026-09-02T04:00:00Z",
+  "updated_at": "2026-09-02T04:00:00Z",
+  "change_seq": 40377,
+  "derived": {
+    "country_code": "AU",
+    "subdivision_code": "AU-QLD",
+    "locality": "Example Heads",
+    "time_zone": "Australia/Brisbane"
+  },
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Pipi Point Beach Camping Zone",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -25.8471,
+        "lng": 153.0954,
+        "accuracy_m": 50
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "national_park_campsite"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    },
+    "camping_rules": {
+      "value": {
+        "camping": "restricted",
+        "authority": "Example Parks Agency",
+        "info_url": "https://www.example.org/parks/beach-camping",
+        "notes": [
+          {
+            "text": "Camping only with a camping permit, behind the foredune.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    },
+    "permits": {
+      "value": [
+        {
+          "kind": "camping",
+          "authority": "Example Parks Agency",
+          "info_url": "https://www.example.org/parks/camping-permits",
+          "in_advance": true,
+          "free": false
+        },
+        {
+          "kind": "park_entry",
+          "authority": "Example Parks Agency",
+          "info_url": "https://www.example.org/parks/vehicle-access-permit",
+          "in_advance": true,
+          "free": false,
+          "notes": [
+            {
+              "text": "A vehicle access permit is needed to drive on the beach.",
+              "lang": "en-AU"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    },
+    "tidal_access": {
+      "value": {
+        "authority": "Bureau of Meteorology",
+        "info_url": "https://www.bom.gov.au/australia/tides/",
+        "low_tide_window_h": 2,
+        "station": "Example Heads",
+        "notes": [
+          {
+            "text": "The only access is along the beach. Signs at the beach entrance advise driving within 2 hours either side of low tide.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    },
+    "access": {
+      "value": {
+        "road_surface": "sand",
+        "four_wd_required": true
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    },
+    "firewood": {
+      "value": {
+        "for_sale": false,
+        "collection": "prohibited"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-30",
+        "recorded_at": "2026-09-02T04:00:00Z",
+        "confidence": 0.8,
+        "change_seq": 40377
+      }
+    }
+  }
+}

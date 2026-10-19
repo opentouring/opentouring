@@ -1,0 +1,25 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/road-segment-merged.change.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/kind",
+      "value": "facts_updated"
+    },
+    {
+      "op": "remove",
+      "path": "/merged_into"
+    },
+    {
+      "op": "replace",
+      "path": "/changed_fields",
+      "value": ["/facts/tidal_access"]
+    },
+    {
+      "op": "replace",
+      "path": "/safety_fact_changed",
+      "value": false
+    }
+  ]
+}

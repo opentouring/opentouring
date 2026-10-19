@@ -20,7 +20,7 @@
         "charging": "paid",
         "items": [
           {
-            "applies_to": "site_unpowered",
+            "applies_to": "pitch_unpowered",
             "amount": 36,
             "currency": "AUD",
             "per": "site",
@@ -30,7 +30,7 @@
             }
           },
           {
-            "applies_to": "site_powered",
+            "applies_to": "pitch_powered",
             "amount": 50,
             "currency": "AUD",
             "per": "site",
@@ -43,7 +43,7 @@
       }
     },
     "facilities": {
-      "ensuite_sites": {
+      "ensuite_pitches": {
         "available": true,
         "attributes": {
           "count": 6

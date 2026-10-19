@@ -36,6 +36,9 @@
           "time_zone": true
         }
       }
+    },
+    {
+      "$ref": "site.schema.json#/$defs/CompactSensitiveLocationRule"
     }
   ],
   "properties": {

@@ -67,13 +67,13 @@
           "type": "boolean"
         },
         "fixed_check_flags": {
-          "description": "Fixed-check results that send a submission outside the always-human list to a person all the same. Like always_human, the fixed checks set them and routing only reads them. accessibility_raised: the submission raises wheelchair access for any feature of a site or ferry service to yes, sets step_free_access or changing_places to true, or sets toilets.key_required to false. A wrong yes there can strand a traveller, while a wrong no costs far less, so only the raise goes to a person.",
+          "description": "Fixed-check results that send a submission outside the always-human list to a person all the same. Like always_human, the fixed checks set them and routing only reads them. accessibility_raised: the submission raises wheelchair access for any feature of a site or ferry service to yes, sets step_free_access or changing_places to true, or sets toilets.key_required to false. A wrong yes there can strand a traveller, while a wrong no costs far less, so only the raise goes to a person. sensitive_location: the submission changes the location, names or description of a site whose location is sensitive, or adds a photo of one (ADR 0045). The exact position and what can identify the place go to a person, never to a routing rule.",
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["accessibility_raised"]
+            "enum": ["accessibility_raised", "sensitive_location"]
           }
         }
       },
@@ -531,7 +531,7 @@
               "fixed_check_flags": {
                 "not": {
                   "contains": {
-                    "const": "accessibility_raised"
+                    "enum": ["accessibility_raised", "sensitive_location"]
                   }
                 }
               }

@@ -102,6 +102,16 @@
             }
           }
         },
+        "flood_depth_marker": {
+          "description": "Safety fact. Whether a depth marker stands at the ford or causeway, with the road authority and its link. Only a ford or causeway has one, a fixed check.",
+          "x-otwd-safety-fact": true,
+          "$ref": "common.schema.json#/$defs/Fact",
+          "properties": {
+            "value": {
+              "$ref": "values.schema.json#/$defs/FloodDepthMarker"
+            }
+          }
+        },
         "description": {
           "$ref": "common.schema.json#/$defs/Fact",
           "properties": {
@@ -146,13 +156,16 @@
         "length_limit": {
           "$ref": "values.schema.json#/$defs/LengthLimit"
         },
+        "flood_depth_marker": {
+          "$ref": "values.schema.json#/$defs/FloodDepthMarker"
+        },
         "description": {
           "$ref": "values.schema.json#/$defs/Description"
         }
       }
     },
     "RequiredFacts": {
-      "description": "The facts a road restriction always has when it is not a stub (merged, replaced or retracted): location, structure, and at least one limit. Shared by the full form, the compact form and the submission that creates one.",
+      "description": "The facts a road restriction always has when it is not a stub (merged, replaced or retracted): location, structure, and at least one limit or, at a ford or causeway, a flood depth marker fact. Shared by the full form, the compact form and the submission that creates one.",
       "required": ["location", "structure"],
       "properties": {
         "location": true,
@@ -181,6 +194,12 @@
           "required": ["length_limit"],
           "properties": {
             "length_limit": true
+          }
+        },
+        {
+          "required": ["flood_depth_marker"],
+          "properties": {
+            "flood_depth_marker": true
           }
         }
       ]

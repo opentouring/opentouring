@@ -1,0 +1,11 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/seasonal-caravan-park-tas.site-compact.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/age_rules/children_allowed",
+      "value": true
+    }
+  ]
+}
