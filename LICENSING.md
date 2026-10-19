@@ -6,19 +6,19 @@ Open Touring uses three licences: one for the data, one for the server code and 
 
 ## By directory
 
-| Path                                             | Licence                                        | SPDX identifier |
-| ------------------------------------------------ | ---------------------------------------------- | --------------- |
-| `services/`                                      | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `pipelines/`                                     | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `web/`                                           | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `infra/`                                         | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `schema/`                                        | Apache License 2.0                             | `Apache-2.0`    |
-| `api/`                                           | Apache License 2.0                             | `Apache-2.0`    |
-| `sdks/`                                          | Apache License 2.0                             | `Apache-2.0`    |
-| `tools/`, `.claude/` and root tool configuration | Apache License 2.0                             | `Apache-2.0`    |
-| `.github/` (issue forms and templates)           | Apache License 2.0                             | `Apache-2.0`    |
-| Documentation (`*.md` at the root, `docs/`)      | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
-| OTWD data (bulk downloads and API responses)     | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
+| Path                                                            | Licence                                        | SPDX identifier |
+| --------------------------------------------------------------- | ---------------------------------------------- | --------------- |
+| `services/`                                                     | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `pipelines/`                                                    | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `web/`                                                          | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `infra/`                                                        | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `schema/`                                                       | Apache License 2.0                             | `Apache-2.0`    |
+| `api/`                                                          | Apache License 2.0                             | `Apache-2.0`    |
+| `sdks/`                                                         | Apache License 2.0                             | `Apache-2.0`    |
+| `tools/`, `.claude/` and root tool configuration                | Apache License 2.0                             | `Apache-2.0`    |
+| `.github/` (issue forms and templates)                          | Apache License 2.0                             | `Apache-2.0`    |
+| Documentation (`*.md` at the root, `docs/`)                     | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
+| OTWD data (data repositories, bulk downloads and API responses) | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
 
 Sample clients live under `sdks/` and are Apache-2.0. A directory not listed here takes the licence of its nearest listed parent.
 
@@ -40,7 +40,7 @@ Copyright stays with each contributor. Code contributions are licensed under the
 
 ## Data
 
-OTWD data is published under CC BY 4.0. Attribute it as "Open Touring contributors, OTWD, CC BY 4.0" with a link to https://opentouring.org. Some facts come from seed sources that require their own attribution, and that attribution is carried in each fact's provenance and in the attribution file shipped with every bulk download.
+OTWD data is published under CC BY 4.0, in the public data repositories on GitHub (one per supported country, such as `opentouring/otwd-au`), in bulk downloads and through the API ([ADR 0046](docs/adr/0046-live-data-in-a-public-git-repository-per-country.md)). Anyone may clone a data repository without an API key. Attribute it as "Open Touring contributors, OTWD, CC BY 4.0" with a link to https://opentouring.org. Some facts come from seed sources that require their own attribution, and that attribution is carried in each fact's provenance and in the attribution file shipped with every bulk download.
 
 A contributor's photo is licensed by the person who took it under CC BY 4.0, or CC0 1.0 if they choose, and a photo from a seed source keeps that source's compatible licence ([ADR 0037](docs/adr/0037-structured-attribution-and-photo-licences.md)). Data contributors keep ownership of what they submit and grant the operator and its successors the rights described in the contributor terms, which are a draft and not yet in force ([docs/contributor-terms-draft.md](docs/contributor-terms-draft.md)).
 

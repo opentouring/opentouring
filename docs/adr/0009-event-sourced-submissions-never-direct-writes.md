@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR 0046
 ---
 
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
@@ -16,3 +16,5 @@ Every submission is appended to an append-only submission log and never writes t
 ## Consequences
 
 The API has no endpoint that updates a site in place. Partner apps submit and later read the outcome. Approved changes flow out through the change feed, which also drives bulk download rebuilds, cache purges and webhooks.
+
+Superseded by [ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md), which keeps the submission log private on opentouring.org and makes a pull request on the country's data repository the public stage. Live data still changes only when a moderation decision approves a submission.

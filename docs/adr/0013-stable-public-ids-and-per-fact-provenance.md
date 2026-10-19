@@ -13,3 +13,5 @@ Partner apps store OTWD IDs in their own databases, so an ID that changes or dis
 ## Consequences
 
 Storage and payloads are larger, and the API offers a compact form without provenance for readers who do not need it. Merges are always human-moderated because they are hard to undo once partner apps have followed the redirect.
+
+Amended by [ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md): provenance stays per fact in the record files, and the read model adds `change_seq` and `confidence` when it loads them.
