@@ -417,7 +417,7 @@ A level of API service, from the free tier up to paid tiers that add volume, a s
 _Avoid_: plan, subscription, licence
 
 **Moderator**:
-A person who records moderation decisions. Moderators work to one standard for every submission, whichever tier sent it.
+A person who records moderation decisions, by reviewing pull requests on a data repository as a member of a state's moderators team. Moderators work to one standard for every submission, whichever tier sent it.
 _Avoid_: admin, reviewer
 
 **Trust score**:
@@ -431,12 +431,16 @@ _Avoid_: CLA, user agreement
 ### Submitting and moderating
 
 **Submission**:
-A proposed change (new record, edit to facts, photo, closure, merge request) sent by a contributor. It never changes live data directly.
+A proposed change (new record, edit to facts, photo, closure, merge request) sent by a contributor. It never changes live data directly. One that passes screening is carried as a pull request on the data repository, and one pull request carries one submission.
 _Avoid_: edit, proposal, PUT
 
 **Submission log**:
-The append-only record of every submission and every moderation decision, from which live data is built.
+The private, append-only record of every submission and every moderation decision, kept by opentouring.org with the identity link. Rejected submissions that never reach the data repository are recorded only here.
 _Avoid_: queue, staging table, edit history
+
+**Screening**:
+The stage on opentouring.org that runs the fixed checks needing private data and screens a submission for spam and personal information before it becomes a pull request. A submission that fails is rejected and never reaches GitHub.
+_Avoid_: pre-moderation, filter
 
 **Fixed checks**:
 The deterministic checks every submission passes through before any AI review, such as schema validity, distance to existing records and outlier detection.
@@ -484,12 +488,24 @@ _Avoid_: training data, ground truth
 
 ### Publishing
 
+**Data repository**:
+The public git repository on GitHub that holds a supported country's live data, one JSON file per record, such as `opentouring/otwd-au`. Its `main` branch is the source of truth, and anyone can clone it without an API key.
+_Avoid_: data repo (in docs), dump, mirror
+
+**Repository form**:
+The representation of a record in its data repository file: the full form without the values OTWD computes on load, which are `change_seq`, derived values, confidence and `updated_at`.
+_Avoid_: raw form, source form
+
+**Read model**:
+The copy of live data in Postgres with PostGIS that the loader builds from a data repository, adding sequence numbers and computed values, and that the API, change feed and bulk downloads serve. It can be rebuilt from the data repository at any time.
+_Avoid_: database (when the dataset is meant), cache
+
 **Live data**:
-The current state of every record, built from approved changes, which the API and bulk downloads serve.
+The current state of every record, as the `main` branch of its data repository holds it, built from approved changes.
 _Avoid_: production table, master data
 
 **Change**:
-One update to the live data, with a sequence number in the change feed. Its kind says what happened to the record and its change origin says why.
+One update to the live data, carried by one squash commit on a data repository's `main` and given a sequence number in the change feed by the loader. Its kind says what happened to the record and its change origin says why.
 _Avoid_: update, edit, commit
 
 **Change origin**:

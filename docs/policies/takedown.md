@@ -45,13 +45,14 @@ Notices and counter-notices are kept for 2 years. Whether Open Touring can rely 
 
 A takedown removes the content from everywhere OTWD serves it:
 
-- **API and website.** The photo or text leaves live data in the takedown change. Website pages that showed it are purged from the CDN cache by the change event, like any other change ([docs/architecture.md](../architecture.md#the-three-paths)).
+- **Data repository.** The takedown is a commit on the data repository's `main` that removes the text or the photo reference ([ADR 0047](../adr/0047-moderation-on-github-through-pull-requests.md)). For personal information or copyright, an organisation owner then rewrites the repository's history so the content is gone from every earlier commit, and asks GitHub Support to purge cached views of the old commits. Anyone who cloned or forked the repository before the rewrite still holds a copy, and OTWD cannot recall it. A takedown for any other reason is the commit alone.
+- **API and website.** The photo or text leaves the read model when the loader applies the takedown commit, or rebuilds after a history rewrite. Website pages that showed it are purged from the CDN cache by the change event, like any other change ([docs/architecture.md](../architecture.md#the-three-paths)).
 - **Photo files.** The file is deleted from Bunny Storage and its URL purged from Bunny CDN. A blurred replacement, if any, gets a new photo ID.
 - **Bulk downloads.** The next rebuild of the full download for that record type leaves it out, and the delta file for that range carries the takedown change. Earlier full downloads that held it are deleted from storage once the rebuild is published.
 - **Backups.** Backups expire on their normal schedule ([the disaster recovery runbook](../operations/disaster-recovery.md)). The takedown is applied again to any backup that is restored.
-- **The submission log.** The original submission stays in the append-only log, with the photo file and text removed and a note that a takedown removed them, so the history still shows what happened.
+- **The submission log.** The original submission stays in the private submission log on opentouring.org, with the photo file and text removed and a note that a takedown removed them, so the history still shows what happened.
 
-Partner apps that keep copies are told through the change feed and the `changeApplied` webhook, and the API terms of service, once written, will require them to act on takedown changes. Copies made by others under CC BY 4.0 before the takedown are beyond OTWD's reach. We can tell the person who asked where the content was published, so they can contact those holders.
+Partner apps that keep copies are told through the change feed and the `changeApplied` webhook, and the API terms of service, once written, will require them to act on takedown changes. Copies made by others under CC BY 4.0 before the takedown, clones and forks of the data repository among them, are beyond OTWD's reach. We can tell the person who asked where the content was published, so they can contact those holders.
 
 ## Appeals
 

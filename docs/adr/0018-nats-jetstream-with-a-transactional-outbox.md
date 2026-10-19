@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR 0046
 ---
 
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
@@ -16,3 +16,5 @@ Events between components (new submission, moderation decision, change applied) 
 ## Consequences
 
 Consumers (moderation workers, bulk download builder, cache purger, webhook sender) must be idempotent, because the relay can publish an event more than once.
+
+Superseded by [ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md), which replaces the outbox and the event bus with a loader that applies commits from the data repository in order and drives the bulk download builder, cache purger and webhook sender.

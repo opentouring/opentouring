@@ -30,6 +30,10 @@ This permission passes to any successor operator, including the not-for-profit h
 
 The permission above covers your contributions as data, and it cannot be withdrawn: CC BY 4.0 itself is irrevocable, and others may already have copied the data under it. What can be removed is anything that identifies you. You can ask the operator to erase your personal information and the links between you and your contributions, as set out in [the privacy policy draft](policies/privacy-draft.md). Your contributions then stay in OTWD with nothing that identifies you. The licence itself allows this: section 3(a)(3) of CC BY 4.0 lets a licensor ask for the attribution information to be removed where reasonably practicable ([the licence text](../LICENSES/CC-BY-4.0.txt)). A photo that shows you, your vehicle or your property can be taken down through [the takedown process](policies/takedown.md), whoever took it.
 
+## Published in public git history
+
+Approved contributions are published as commits in a public git repository on GitHub, one per country, which anyone can copy without asking ([ADR 0046](adr/0046-live-data-in-a-public-git-repository-per-country.md)). A commit made for a contribution you sent through the website or a partner app names no contributor. If you open a pull request from your own GitHub account, your account name is published with it in that history, and it stays there. The operator removes content from the history only through [the takedown process](policies/takedown.md), and copies made before that cannot be recalled.
+
 ## Photos
 
 Photos you submit must be your own. You license each photo under CC BY 4.0 as its author, or dedicate it under CC0 1.0 if you choose, and you also give the operator the permission above. You choose how the photo is credited, and without a choice it is credited to "Open Touring contributor". Location data embedded in photos is removed before publication. Avoid photographing people and readable number plates. A photo that shows them may be declined or taken down.

@@ -125,7 +125,7 @@ tags:
   - name: Submissions
     description: Send a contributor's new records, corrections, confirmations, photos, closures, merge, unmerge, split and replacement requests and problem reports for moderation.
   - name: Moderation
-    description: Not for partner apps. The moderation queue, cases, decisions, reverts and takedowns the website's moderate pages use, for moderators signed in through OIDC.
+    description: Not for partner apps. Cases, an API key's changes, reverts and takedowns, for moderators signed in through OIDC. The queue and decisions are on GitHub (ADR 0047).
   - name: Partner keys and tokens
     description: Manage a partner app's API keys, and mint short-lived contributor tokens so mobile apps never hold an API key.
 
@@ -1693,67 +1693,18 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
-  /v1/moderation/queue:
-    get:
-      tags: [Moderation]
-      operationId: listModerationQueue
-      summary: List the moderation queue
-      description: |
-        Not for partner apps. The submissions and appeals waiting for a moderator, oldest first,
-        for the website's moderate pages ([ADR 0023](https://github.com/opentouring/opentouring/blob/main/docs/adr/0023-the-website-is-just-another-api-client.md)).
-        Needs a moderator signed in through OIDC. Every read and decision is logged against the
-        moderator. Items name the contributor only by their trust summary.
-      security:
-        - Moderator: [moderator]
-      x-otwd-audience: moderators
-      parameters:
-        - name: record_type
-          in: query
-          schema:
-            $ref: "../schema/common.schema.json#/$defs/RecordType"
-        - name: submission_kind
-          in: query
-          schema:
-            $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
-        - name: always_human
-          in: query
-          schema:
-            type: boolean
-        - name: item
-          in: query
-          description: submissions, appeals or both.
-          schema:
-            type: string
-            enum: [submissions, appeals, both]
-            default: both
-        - $ref: "#/components/parameters/Cursor"
-        - $ref: "#/components/parameters/Limit"
-      responses:
-        "200":
-          description: A page of the queue.
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [data, next_cursor]
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ModerationQueueItem"
-                  next_cursor:
-                    type: [string, "null"]
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/ModeratorOnly"
-
   /v1/moderation/submissions/{submission_id}:
     get:
       tags: [Moderation]
       operationId: getModerationCase
       summary: Get a submission for moderation
-      description: Not for partner apps. Everything a moderator needs to decide a submission, an appeal of it or a reply to needs_info, including the private contributor reference for trust and abuse handling.
+      description: |
+        Not for partner apps. Everything a moderator needs to decide a submission, an appeal of it
+        or a reply to needs_info, including the private contributor reference for trust, abuse
+        handling and conflicts of interest. Moderators review and decide on the pull request in the
+        country's data repository, which names no contributor, so this is where they look up who
+        sent it ([ADR 0047](https://github.com/opentouring/opentouring/blob/main/docs/adr/0047-moderation-on-github-through-pull-requests.md)).
+        A submission rejected in screening has no pull request and is looked up here by its ID.
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
@@ -1773,88 +1724,42 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /v1/moderation/submissions/{submission_id}/claim:
-    post:
+  /v1/moderation/pull-requests/{repository}/{number}:
+    get:
       tags: [Moderation]
-      operationId: claimSubmission
-      summary: Claim a submission
-      description: Not for partner apps. Marks the submission as being reviewed by the signed-in moderator for 30 minutes, so two moderators do not decide it at once. Claiming again extends the claim.
+      operationId: getModerationCaseByPullRequest
+      summary: Get the submission behind a pull request
+      description: Not for partner apps. The same case as getModerationCase, found from the data repository pull request a moderator is reviewing. The pull request carries no submission ID, so this lookup is how a moderator reaches the case.
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
       parameters:
-        - $ref: "#/components/parameters/SubmissionIdPath"
+        - name: repository
+          in: path
+          required: true
+          description: The data repository's name, such as otwd-au.
+          schema:
+            type: string
+            pattern: "^otwd-[a-z]{2}(-[a-z0-9-]+)?$"
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
       responses:
         "200":
-          description: Claimed.
+          description: The case.
           content:
             application/json:
               schema:
-                type: object
-                required: [claimed_until]
-                properties:
-                  claimed_until:
-                    $ref: "../schema/common.schema.json#/$defs/Timestamp"
+                $ref: "#/components/schemas/ModerationCase"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/ModeratorOnly"
         "404":
           $ref: "#/components/responses/NotFound"
-        "409":
-          description: Another moderator holds the claim (problem type claimed).
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/moderation/submissions/{submission_id}/decisions:
-    post:
-      tags: [Moderation]
-      operationId: decideSubmission
-      summary: Decide a submission or an appeal
-      description: |
-        Not for partner apps. Records the signed-in moderator's decision on a submission, or on
-        an appeal of an earlier decision when appeal_id is given. An appeal must be decided by a
-        different moderator from the one who made the appealed decision. The response is the
-        full moderation decision. Approving applies the change at once.
-      security:
-        - Moderator: [moderator]
-      x-otwd-audience: moderators
-      parameters:
-        - $ref: "#/components/parameters/SubmissionIdPath"
-        - $ref: "#/components/parameters/IdempotencyKey"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ModeratorDecisionRequest"
-      responses:
-        "201":
-          description: The decision.
-          content:
-            application/json:
-              schema:
-                $ref: "../schema/moderation-decision.schema.json"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/ModeratorOnly"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "409":
-          description: The submission is claimed by another moderator, already decided, or the record changed since the submission's base_change_seq (problem type claimed, already-decided or conflict).
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ConflictProblem"
-        "422":
-          description: The decision does not validate against moderation-decision.schema.json once completed, for example a rejection without a public note.
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ValidationProblem"
 
   /v1/moderation/api-keys/{api_key_id}/changes:
     get:
@@ -1905,7 +1810,7 @@ paths:
       tags: [Moderation]
       operationId: revertChanges
       summary: Revert changes
-      description: Not for partner apps. Records a moderator's decision to undo earlier changes (subject revert) and applies it, producing one change with origin revert for each change undone (ADR 0036).
+      description: Not for partner apps. Opens a pull request in the data repository, through the GitHub App, that undoes earlier changes. When a moderator approves it and it merges, the decision (subject revert) is recorded and each change undone gets a change with origin revert (ADR 0036, ADR 0047).
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
@@ -1918,12 +1823,12 @@ paths:
             schema:
               $ref: "#/components/schemas/RevertRequest"
       responses:
-        "201":
-          description: The decision, with the changes it produced.
+        "202":
+          description: The pull request is open. The decision is recorded when it merges.
           content:
             application/json:
               schema:
-                $ref: "../schema/moderation-decision.schema.json"
+                $ref: "#/components/schemas/ModerationPullRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1946,7 +1851,7 @@ paths:
       tags: [Moderation]
       operationId: takeDownContent
       summary: Take content down
-      description: Not for partner apps. Records a moderator's decision to remove facts, photos or a whole record for a stated reason (subject takedown) and applies it as changes with origin takedown. Who asked for the takedown is kept in the restricted case under the moderation policy, never in the decision or the change feed (ADR 0036).
+      description: Not for partner apps. Opens a pull request in the data repository, through the GitHub App, that removes facts, photos or a whole record for a stated reason. When it merges, the decision (subject takedown) is recorded and the changes get origin takedown. A takedown for personal information or copyright is then completed by a history rewrite an organisation owner does by hand. Who asked for the takedown is kept in the restricted case under the moderation policy, never in the pull request, the decision or the change feed (ADR 0036, ADR 0047).
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
@@ -1959,12 +1864,12 @@ paths:
             schema:
               $ref: "#/components/schemas/TakedownRequest"
       responses:
-        "201":
-          description: The decision, with the changes it produced.
+        "202":
+          description: The pull request is open. The decision is recorded when it merges.
           content:
             application/json:
               schema:
-                $ref: "../schema/moderation-decision.schema.json"
+                $ref: "#/components/schemas/ModerationPullRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -3105,33 +3010,6 @@ components:
             type: string
         expires_at:
           $ref: "#/components/schemas/Timestamp"
-    ModerationQueueItem:
-      type: object
-      required: [submission_id, kind, record_type, received_at, always_human, waiting_for]
-      properties:
-        submission_id:
-          $ref: "../schema/common.schema.json#/$defs/SubmissionId"
-        kind:
-          $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
-        record_type:
-          $ref: "../schema/common.schema.json#/$defs/RecordType"
-        record_id:
-          $ref: "../schema/common.schema.json#/$defs/RecordId"
-        received_at:
-          $ref: "../schema/common.schema.json#/$defs/Timestamp"
-        always_human:
-          type: boolean
-        waiting_for:
-          description: decision (a new submission), reply_review (a reply to needs_info) or appeal. An open enumeration.
-          $ref: "../schema/common.schema.json#/$defs/EnumCode"
-          x-otwd-known-values: [decision, reply_review, appeal]
-        appeal_id:
-          $ref: "../schema/common.schema.json#/$defs/AppealId"
-        verdict_category:
-          description: The latest verdict's category, as advice.
-          $ref: "../schema/common.schema.json#/$defs/EnumCode"
-        claimed_until:
-          $ref: "../schema/common.schema.json#/$defs/Timestamp"
     ModerationCase:
       type: object
       required: [submission, status, contributor, fixed_checks, verdicts, decisions]
@@ -3206,25 +3084,17 @@ components:
                 properties:
                   reason:
                     type: string
-    ModeratorDecisionRequest:
-      description: The parts of a moderation decision the moderator chooses. OTWD fills in the ID, subject, decider, time, routing, verdicts and change sequence numbers, and validates the result against moderation-decision.schema.json.
+    ModerationPullRequest:
       type: object
-      required: [outcome, reasons]
+      required: [repository, number, url]
       properties:
-        outcome:
-          $ref: "../schema/common.schema.json#/$defs/ModerationOutcome"
-        appeal_id:
-          description: Set when this decision answers an appeal.
-          $ref: "../schema/common.schema.json#/$defs/AppealId"
-        reasons:
-          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
-        public_note:
-          $ref: "../schema/moderation-decision.schema.json#/properties/public_note"
-        amendments:
-          $ref: "../schema/moderation-decision.schema.json#/properties/amendments"
-        merge:
-          $ref: "../schema/moderation-decision.schema.json#/properties/merge"
-      additionalProperties: false
+        repository:
+          type: string
+        number:
+          type: integer
+          minimum: 1
+        url:
+          $ref: "../schema/common.schema.json#/$defs/HttpsUrl"
     RevertRequest:
       type: object
       required: [revert, reasons]

@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by ADR 0046
 ---
 
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
@@ -15,3 +15,5 @@ Every read of OTWD needs an API key, including bulk downloads. The free tier cos
 ## Consequences
 
 Bulk download files are served from the CDN through signed or key-checked URLs. The website uses an API key like any other partner app.
+
+Superseded by [ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md), which keeps API keys for the query API, the change feed, webhooks and bulk downloads from the CDN, and lets anyone clone the data repositories without a key.

@@ -11,3 +11,5 @@ Every submission is tied to a contributor. Partner apps send a stable pseudonymo
 ## Consequences
 
 Open Touring cannot contact a contributor who came through a partner app. Requests for more information go back through the partner app, and the API supports that. Trust scores are kept both per contributor and per API key, so a partner app that sends poor data is visible as a whole.
+
+Amended by [ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md): the identity stays in the private identity link, and nothing in the data repositories identifies a contributor, except contributors who choose to open a pull request from their own GitHub account.
