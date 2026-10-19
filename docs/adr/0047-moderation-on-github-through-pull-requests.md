@@ -48,4 +48,4 @@ The full moderation decision, with the verdict, the reasons and any amendments, 
 
 ## Consequences
 
-The moderation policy describes where each stage runs and gains the seed batch sample size, the `info-requested` time limit and the appeal check. The website gains contribute and appeal pages that write to opentouring.org, not to GitHub. A moderator needs a GitHub account and joins a state team. The always-human list, appeals by a different moderator and the record of every decision all carry over.
+The moderation policy describes where each stage runs and gains the seed batch sample size, the `info-requested` time limit and the appeal check. The website gains contribute and appeal pages that write to opentouring.org, not to GitHub. The moderator endpoints under `/v1/moderation/` lose the queue, claims and decisions, which live on GitHub, and keep the case (found by submission ID or by pull request), an API key's changes, and reverts and takedowns, which now open pull requests. A moderator needs a GitHub account and joins a state team. The always-human list, appeals by a different moderator and the record of every decision all carry over.
