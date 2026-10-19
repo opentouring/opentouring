@@ -66,7 +66,7 @@ A new kind of record beside sites, road restrictions, road segments and ferry se
 
 1. Open an issue with the "New fact or record type proposal" form, and write the ADR first. It explains why the thing is not a site type or a fact on an existing record type.
 2. `schema/common.schema.json`: add the code to `RecordType`, an ID definition (`<CamelCase>Id`, pattern `otwd:<code>:<ULID>`) and the ID to `RecordId`.
-3. New `schema/<record-type>.schema.json` (with `Facts`, `FactValues`, `RequiredFacts` and the safety fact markers) and `schema/<record-type>-compact.schema.json`, built on `FullRecord` and `CompactRecord`.
+3. New `schema/<record-type>.schema.json` (with `Facts`, `FactValues`, `RequiredFacts` and the safety fact markers) `schema/<record-type>-compact.schema.json`, built on `FullRecord` and `CompactRecord`, and `schema/<record-type>-repository.schema.json`, a copy of another record type's with the names changed. Add all three to the entry in `schema/record-types.json`.
 4. `schema/submission.schema.json`: a `new_<code>` creation kind. `schema/moderation-decision.schema.json`: the kind in `submission_kind`. `schema/change.schema.json`: the record type in changes.
 5. `schema/tools/validate.py`: add a `RecordType` to `RECORD_TYPES`. Schema file names, document suffixes and the creation kind follow from its code.
 6. Any new governed lists, with their entries, mappings and the list name in `GOVERNED_LISTS` in the validator.

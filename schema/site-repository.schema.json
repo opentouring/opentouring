@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/site-repository.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD site, repository form",
+  "description": "A site as its file in a data repository holds it (ADR 0046): the full form in site.schema.json without the values OTWD computes when the loader reads the file. Provenance has no confidence or change_seq, and the record has no updated_at, change_seq or derived values. Everything else, the facts, their provenance and the lifecycle rules, is the full form's.",
+  "$ref": "site.schema.json",
+  "$defs": {
+    "Provenance": {
+      "$dynamicAnchor": "provenance",
+      "$ref": "common.schema.json#/$defs/RepositoryProvenance"
+    },
+    "Computed": {
+      "$dynamicAnchor": "computed",
+      "$ref": "common.schema.json#/$defs/RepositoryComputedValues"
+    }
+  }
+}

@@ -43,6 +43,7 @@
         "geometry",
         "full_schema",
         "compact_schema",
+        "repository_schema",
         "collection",
         "creation_kind",
         "introduced_in",
@@ -82,6 +83,11 @@
           "description": "The schema of the compact form, relative to this file.",
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]*-compact\\.schema\\.json$"
+        },
+        "repository_schema": {
+          "description": "The schema of the repository form, the record as its data repository file holds it (ADR 0046), relative to this file.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*-repository\\.schema\\.json$"
         },
         "collection": {
           "description": "The API path that lists records of this type.",

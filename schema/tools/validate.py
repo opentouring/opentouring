@@ -41,7 +41,9 @@ The script runs three stages:
    replacements, retracted stubs that keep nothing, photo licences against their
    provenance, and a few cross-field rules. Every published document (records in
    both forms and changes) is walked for contributor, submission, upload and API
-   key identifiers, which it must never carry (ADR 0038).
+   key identifiers, which it must never carry (ADR 0038). The repository form
+   (*.site-repository.json and so on) is the full form without the values the
+   read model computes on load, chosen through $dynamicRef (ADR 0046).
 
 A top-level "$comment" in a document (the SPDX header of the example files)
 is removed before validation against the schema. A document that holds "$base"
@@ -155,6 +157,8 @@ PRIVATE_KEYS = {"contributor_id", "pseudonymous_id", "submission_id", "moderator
 # The licences a contributor may choose for their own photo (ADR 0037).
 CONTRIBUTOR_PHOTO_LICENCES = {"CC-BY-4.0", "CC0-1.0"}
 # The top-level fields of a retracted stub: everything else was removed with the record.
+# Provenance values the read model adds when it loads a data repository file (ADR 0046).
+LOADED = frozenset({"confidence", "change_seq"})
 STUB_FIELDS = {"schema_version", "id", "status", "created_at", "updated_at", "change_seq"}
 STUB_FIELDS_COMPACT = STUB_FIELDS | {"status_reason", "attribution"}
 
@@ -194,6 +198,10 @@ class RecordType:
     @property
     def compact(self) -> str:
         return schema_file(f"{self.stem}-compact")
+
+    @property
+    def repository(self) -> str:
+        return schema_file(f"{self.stem}-repository")
 
     @property
     def camel(self) -> str:
@@ -426,7 +434,7 @@ class Context:
         sites: dict[str, set[str]] = {}
         for path in paths:
             kind = DocumentKind.for_path(path)
-            if kind and kind.stem in ("site", "site-compact", "site-feature"):
+            if kind and kind.stem in ("site", "site-compact", "site-repository", "site-feature"):
                 document = load_document(path)
                 if kind.stem == "site-feature":
                     document = document["properties"]
@@ -1162,6 +1170,7 @@ DOCUMENT_KINDS = tuple(
     for kind in (
         DocumentKind(record_type.stem, full_record),
         DocumentKind(f"{record_type.stem}-compact", compact_record),
+        DocumentKind(f"{record_type.stem}-repository", full_record),
     )
 ) + (
     DocumentKind("site-feature", check_site_feature),
@@ -1293,6 +1302,7 @@ def check_schemas(context: Context) -> list[str]:
     problems += check_facilities(context)
     problems += check_record_type_registry(context)
     problems += check_seed_source_registry(context)
+    problems += check_repository_provenance(context)
     problems += check_open_enumerations(context)
     return problems
 
@@ -1314,12 +1324,14 @@ def check_record_type_registry(context: Context) -> list[str]:
         if reserved.match(f"otwd:{code}:"):
             problems.append(f"{where}: the ID kind is reserved for another identifier")
         stem = code.replace("_", "-")
-        if (entry["full_schema"], entry["compact_schema"]) != (
+        schemas = (entry["full_schema"], entry["compact_schema"], entry["repository_schema"])
+        if schemas != (
             schema_file(stem),
             schema_file(f"{stem}-compact"),
+            schema_file(f"{stem}-repository"),
         ):
             problems.append(f"{where}: schemas must be named after the code, as {stem}.schema.json")
-        for name in (entry["full_schema"], entry["compact_schema"]):
+        for name in schemas:
             if name not in context.schemas:
                 problems.append(f"{where}: {name} does not exist")
         if entry["creation_kind"] != f"new_{code}":
@@ -1327,6 +1339,24 @@ def check_record_type_registry(context: Context) -> list[str]:
         if entry["creation_kind"] not in submission_kinds(context):
             problems.append(f"{where}: {entry['creation_kind']} is not a known submission kind")
     return problems
+
+
+def check_repository_provenance(context: Context) -> list[str]:
+    """The repository form's provenance is the full form's without the values OTWD computes."""
+    full = context.definition("common.schema.json", "Provenance")
+    repository = context.definition("common.schema.json", "RepositoryProvenance")
+    expected = {name: shape for name, shape in full["properties"].items() if name not in LOADED}
+    if repository["properties"] != expected:
+        return [
+            "common.schema.json RepositoryProvenance: properties must be Provenance's without "
+            f"{' and '.join(sorted(LOADED))}"
+        ]
+    if set(repository["required"]) != set(full["required"]) - LOADED:
+        return [
+            f"common.schema.json RepositoryProvenance: required must be Provenance's without "
+            f"{' and '.join(sorted(LOADED))}"
+        ]
+    return []
 
 
 def check_seed_source_registry(context: Context) -> list[str]:
