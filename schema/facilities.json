@@ -212,7 +212,7 @@
       ],
       "schema_org": {
         "property": "amenityFeature",
-        "value": "Powered sites",
+        "value": "Powered pitches",
         "match": "exact"
       }
     },
@@ -777,9 +777,9 @@
       "schema_org": null
     },
     {
-      "code": "drive_through_sites",
-      "label": "Drive-through sites",
-      "description": "Sites a rig can drive into and out of without reversing.",
+      "code": "drive_through_pitches",
+      "label": "Drive-through pitches",
+      "description": "Pitches a rig can drive into and out of without reversing.",
       "status": "active",
       "introduced_in": "1.0.0",
       "safety_fact": false,
@@ -787,20 +787,20 @@
         {
           "name": "count",
           "type": "integer",
-          "description": "Number of drive-through sites."
+          "description": "Number of drive-through pitches."
         }
       ],
       "osm": [],
       "schema_org": {
         "property": "amenityFeature",
-        "value": "Drive-through sites",
+        "value": "Drive-through pitches",
         "match": "exact"
       }
     },
     {
-      "code": "ensuite_sites",
-      "label": "Ensuite sites",
-      "description": "Sites with a private bathroom.",
+      "code": "ensuite_pitches",
+      "label": "Ensuite pitches",
+      "description": "Pitches with a private bathroom.",
       "status": "active",
       "introduced_in": "1.0.0",
       "safety_fact": false,
@@ -808,13 +808,13 @@
         {
           "name": "count",
           "type": "integer",
-          "description": "Number of ensuite sites."
+          "description": "Number of ensuite pitches."
         }
       ],
       "osm": [],
       "schema_org": {
         "property": "amenityFeature",
-        "value": "Ensuite sites",
+        "value": "Ensuite pitches",
         "match": "exact"
       }
     },
@@ -845,9 +845,9 @@
       }
     },
     {
-      "code": "tent_sites",
-      "label": "Tent sites",
-      "description": "Sites where tents are allowed.",
+      "code": "tent_pitches",
+      "label": "Tent pitches",
+      "description": "Pitches where tents are allowed.",
       "status": "active",
       "introduced_in": "1.0.0",
       "safety_fact": false,
@@ -855,7 +855,7 @@
         {
           "name": "count",
           "type": "integer",
-          "description": "Number of tent sites."
+          "description": "Number of tent pitches."
         }
       ],
       "osm": [
@@ -866,7 +866,7 @@
       ],
       "schema_org": {
         "property": "amenityFeature",
-        "value": "Tent sites",
+        "value": "Tent pitches",
         "match": "exact"
       }
     },

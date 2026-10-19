@@ -526,7 +526,7 @@
             }
           }
         },
-        "ensuite_sites": {
+        "ensuite_pitches": {
           "$ref": "#/$defs/FacilityFact",
           "properties": {
             "value": {
@@ -542,7 +542,7 @@
             }
           }
         },
-        "drive_through_sites": {
+        "drive_through_pitches": {
           "$ref": "#/$defs/FacilityFact",
           "properties": {
             "value": {
@@ -550,7 +550,7 @@
             }
           }
         },
-        "tent_sites": {
+        "tent_pitches": {
           "$ref": "#/$defs/FacilityFact",
           "properties": {
             "value": {

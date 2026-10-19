@@ -112,10 +112,10 @@ Rig limits have no direct mapping. OSM records `maxlength`, `maxheight` and `max
 | `big_rig_access`        | `maxlength=*`                     | related  | Length limits on the access road, not a property of the site.                                                    |
 | `big_rig_access`        | `maxheight=*`                     | related  | Height limits on the access road, not a property of the site.                                                    |
 | `big_rig_access`        | `maxweight=*`                     | related  | Weight limits on the access road, not a property of the site.                                                    |
-| `drive_through_sites`   | none                              |          |                                                                                                                  |
-| `ensuite_sites`         | none                              |          |                                                                                                                  |
+| `drive_through_pitches` | none                              |          |                                                                                                                  |
+| `ensuite_pitches`       | none                              |          |                                                                                                                  |
 | `cabins`                | `cabins=yes`                      | exact    |                                                                                                                  |
-| `tent_sites`            | `tents=yes`                       | exact    |                                                                                                                  |
+| `tent_pitches`          | `tents=yes`                       | exact    |                                                                                                                  |
 | `camp_kitchen`          | `kitchen=yes`                     | exact    |                                                                                                                  |
 
 ## Structures

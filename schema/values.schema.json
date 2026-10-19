@@ -349,10 +349,10 @@
           "description": "What is being paid for. Use other with notes when none fits. Open: a consumer that does not know the value shows the price as other.",
           "$ref": "common.schema.json#/$defs/EnumCode",
           "x-otwd-known-values": [
-            "site_unpowered",
-            "site_powered",
-            "site_ensuite",
-            "tent_site",
+            "pitch_unpowered",
+            "pitch_powered",
+            "pitch_ensuite",
+            "tent_pitch",
             "cabin",
             "entry",
             "shower",
@@ -1432,12 +1432,12 @@
       "description": "How many vehicles or groups the site holds.",
       "type": "object",
       "properties": {
-        "sites": {
+        "pitches": {
           "type": "integer",
           "minimum": 0,
           "maximum": 10000
         },
-        "powered_sites": {
+        "powered_pitches": {
           "type": "integer",
           "minimum": 0,
           "maximum": 10000
@@ -2088,16 +2088,16 @@
         "generators_allowed": {
           "$ref": "#/$defs/GeneratorsAllowedValue"
         },
-        "ensuite_sites": {
+        "ensuite_pitches": {
           "$ref": "#/$defs/CountedValue"
         },
         "cabins": {
           "$ref": "#/$defs/CountedValue"
         },
-        "drive_through_sites": {
+        "drive_through_pitches": {
           "$ref": "#/$defs/CountedValue"
         },
-        "tent_sites": {
+        "tent_pitches": {
           "$ref": "#/$defs/CountedValue"
         }
       },
