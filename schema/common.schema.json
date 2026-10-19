@@ -195,6 +195,14 @@
       "description": "A code from the governed pet species vocabulary (pet-species.json). Consumers ignore codes they do not recognise.",
       "$ref": "#/$defs/Code"
     },
+    "SelfContainedSchemeCode": {
+      "description": "A code from the governed self-contained scheme vocabulary (self-contained-schemes.json). Consumers ignore codes they do not recognise.",
+      "$ref": "#/$defs/Code"
+    },
+    "LocationSensitivityReasonCode": {
+      "description": "A code from the governed location sensitivity reason vocabulary (location-sensitivity-reasons.json). Consumers ignore codes they do not recognise.",
+      "$ref": "#/$defs/Code"
+    },
     "ReasonCode": {
       "description": "A machine-readable reason in a verdict or a moderation decision, for example price_outlier or duplicate_of_existing_site.",
       "type": "string",

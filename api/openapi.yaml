@@ -115,7 +115,7 @@ tags:
   - name: Ferry services
     description: Read ferry services, crossings between two ferry terminals with the vehicles they carry, their limits and fares.
   - name: Governed lists
-    description: The record type registry, and the site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes and pet species records are described with.
+    description: The record type registry, and the site types, facilities, structures, surfaces, vehicle access classes, vehicle classes, key schemes, pet species, self-contained schemes and location sensitivity reasons records are described with.
   - name: Seed sources
     description: The external open datasets OTWD imports, with their licences, credits and latest sync.
   - name: Bulk downloads
@@ -125,7 +125,7 @@ tags:
   - name: Submissions
     description: Send a contributor's new records, corrections, confirmations, photos, closures, merge, unmerge, split and replacement requests and problem reports for moderation.
   - name: Moderation
-    description: Not for partner apps. The moderation queue, cases, decisions, reverts and takedowns the website's moderate pages use, for moderators signed in through OIDC.
+    description: Not for partner apps. Cases, an API key's changes, reverts and takedowns, for moderators signed in through OIDC. The queue and decisions are on GitHub (ADR 0047).
   - name: Partner keys and tokens
     description: Manage a partner app's API keys, and mint short-lived contributor tokens so mobile apps never hold an API key.
 
@@ -148,6 +148,10 @@ paths:
 
         With `near`, results are ordered by distance and `distances_km` gives each site's
         distance. Otherwise they are ordered by public ID.
+
+        A site whose location is sensitive (a location_sensitivity fact) is served with its
+        generalised location only, in every view and format, and `bbox`, `near` and
+        `distances_km` use that generalised position. The exact position is never served.
       parameters:
         - $ref: "#/components/parameters/Bbox"
         - $ref: "#/components/parameters/Near"
@@ -261,6 +265,66 @@ paths:
         - name: has_bait_notice
           in: query
           description: When true, returns only sites with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the site's time zone. When false, only sites without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
+          schema:
+            type: boolean
+        - name: camping
+          in: query
+          description: Values of camping_rules.camping to include, for example allowed,restricted to leave out places where the council or land manager prohibits camping. A record with no camping rules stays in unless `camping_rules_known=true`, because a missing rule is unknown, never proof that camping is allowed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [allowed, restricted, prohibited]
+        - name: self_contained_required
+          in: query
+          description: When false, leaves out records where only certified self-contained vehicles may camp, for a traveller whose vehicle is not certified. When true, returns only those records. Records with no camping rules stay in unless `camping_rules_known=true`.
+          schema:
+            type: boolean
+        - name: camping_rules_known
+          in: query
+          description: When true, excludes records with no camping_rules fact.
+          schema:
+            type: boolean
+            default: false
+        - name: permit_kind
+          in: query
+          description: Permit kinds. Returns records that need a permit of one of these kinds, for example transit,land_entry to find roads and places that need a permit before travel. A record with no permits fact may still need one, so its absence is never proof that no permit is needed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 5
+            items:
+              type: string
+              enum: [park_entry, camping, land_entry, transit, other]
+        - name: tide_dependent
+          in: query
+          description: When true, returns only records whose access depends on the tide (a tidal_access fact). When false, only records without one. A missing fact is unknown, so false is not proof that the tide never matters.
+          schema:
+            type: boolean
+        - name: children_allowed
+          in: query
+          description: When true, leaves out adults-only sites. When false, returns only adults-only sites. Sites with no age rules stay in unless `age_rules_known=true`.
+          schema:
+            type: boolean
+        - name: age_rules_known
+          in: query
+          description: When true, excludes sites with no age_rules fact.
+          schema:
+            type: boolean
+            default: false
+        - name: open_on
+          in: query
+          description: A local date. Leaves out sites whose seasonal_operation, or whose opening_hours.seasonal_closures, says they do not operate on that date, compared in the site's time zone. Sites with neither stay in, because their season is unknown.
+          schema:
+            $ref: "../schema/common.schema.json#/$defs/LocalDate"
+          example: "2026-12-27"
+        - name: has_water_notice
+          in: query
+          description: When true, returns only sites with a water notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the site's time zone. When false, only sites without a current notice. A missing notice is unknown, so false is not proof that the water is safe to drink.
           schema:
             type: boolean
         - $ref: "#/components/parameters/Status"
@@ -488,6 +552,11 @@ paths:
             maxItems: 20
             items:
               $ref: "../schema/common.schema.json#/$defs/StructureCode"
+        - name: flood_depth_marker
+          in: query
+          description: When true, returns only fords and causeways with a depth marker. When false, only those recorded as having none, which is where a traveller cannot read the depth on site. Restrictions with no flood_depth_marker fact are left out either way.
+          schema:
+            type: boolean
         - $ref: "#/components/parameters/RigLengthM"
         - $ref: "#/components/parameters/RigHeightM"
         - $ref: "#/components/parameters/RigWidthM"
@@ -670,6 +739,44 @@ paths:
         - name: has_bait_notice
           in: query
           description: When true, returns only segments with a bait notice current on the request date, meaning its from date is on or before that date and its to date is on or after it or absent, compared as local dates in the segment's time zone, or in the notice's own time_zone when it has one. When false, only segments without a current notice. Records keep expired notices with their dates until a moderator removes them, so a consumer reading bait_notices checks the dates itself. A missing notice is unknown, so false is not proof that no baits are laid.
+          schema:
+            type: boolean
+        - name: camping
+          in: query
+          description: Values of camping_rules.camping to include, for example allowed,restricted to leave out places where the council or land manager prohibits camping. A record with no camping rules stays in unless `camping_rules_known=true`, because a missing rule is unknown, never proof that camping is allowed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 3
+            items:
+              type: string
+              enum: [allowed, restricted, prohibited]
+        - name: self_contained_required
+          in: query
+          description: When false, leaves out records where only certified self-contained vehicles may camp, for a traveller whose vehicle is not certified. When true, returns only those records. Records with no camping rules stay in unless `camping_rules_known=true`.
+          schema:
+            type: boolean
+        - name: camping_rules_known
+          in: query
+          description: When true, excludes records with no camping_rules fact.
+          schema:
+            type: boolean
+            default: false
+        - name: permit_kind
+          in: query
+          description: Permit kinds. Returns records that need a permit of one of these kinds, for example transit,land_entry to find roads and places that need a permit before travel. A record with no permits fact may still need one, so its absence is never proof that no permit is needed.
+          style: form
+          explode: false
+          schema:
+            type: array
+            maxItems: 5
+            items:
+              type: string
+              enum: [park_entry, camping, land_entry, transit, other]
+        - name: tide_dependent
+          in: query
+          description: When true, returns only records whose access depends on the tide (a tidal_access fact). When false, only records without one. A missing fact is unknown, so false is not proof that the tide never matters.
           schema:
             type: boolean
         - $ref: "#/components/parameters/RigLengthM"
@@ -1043,6 +1150,44 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
+  /v1/self-contained-schemes:
+    get:
+      tags: [Governed lists]
+      operationId: listSelfContainedSchemes
+      summary: List self-contained schemes
+      description: Returns the governed list of self-contained vehicle certification schemes that camping rules name, with the countries each is used in and whether it is issued under a law.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
+  /v1/location-sensitivity-reasons:
+    get:
+      tags: [Governed lists]
+      operationId: listLocationSensitivityReasons
+      summary: List location sensitivity reasons
+      description: Returns the governed list of reasons a site's exact position is withheld, with the finest grid each allows its published location to be generalised to.
+      parameters:
+        - $ref: "#/components/parameters/IfNoneMatch"
+        - $ref: "#/components/parameters/AcceptLanguage"
+      responses:
+        "200":
+          $ref: "#/components/responses/GovernedList"
+        "304":
+          $ref: "#/components/responses/NotModified"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+
   /v1/seed-sources:
     get:
       tags: [Seed sources]
@@ -1137,7 +1282,9 @@ paths:
         type. Full downloads hold every record of that type that is not merged, in the compact form
         for GeoParquet and in the full form for GeoJSON, with point geometry for sites and road
         restrictions and line geometry for road segments and ferry services. Delta files hold the
-        changes between two sequence numbers and need a paid tier.
+        changes between two sequence numbers and need a paid tier. A site whose location is
+        sensitive appears with its generalised location only, in its properties and its geometry
+        alike (site-feature.schema.json).
 
         Download URLs are signed for the API key and expire. Verify each file against its sha256.
       parameters:
@@ -1546,67 +1693,18 @@ paths:
         "429":
           $ref: "#/components/responses/TooManyRequests"
 
-  /v1/moderation/queue:
-    get:
-      tags: [Moderation]
-      operationId: listModerationQueue
-      summary: List the moderation queue
-      description: |
-        Not for partner apps. The submissions and appeals waiting for a moderator, oldest first,
-        for the website's moderate pages ([ADR 0023](https://github.com/opentouring/opentouring/blob/main/docs/adr/0023-the-website-is-just-another-api-client.md)).
-        Needs a moderator signed in through OIDC. Every read and decision is logged against the
-        moderator. Items name the contributor only by their trust summary.
-      security:
-        - Moderator: [moderator]
-      x-otwd-audience: moderators
-      parameters:
-        - name: record_type
-          in: query
-          schema:
-            $ref: "../schema/common.schema.json#/$defs/RecordType"
-        - name: submission_kind
-          in: query
-          schema:
-            $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
-        - name: always_human
-          in: query
-          schema:
-            type: boolean
-        - name: item
-          in: query
-          description: submissions, appeals or both.
-          schema:
-            type: string
-            enum: [submissions, appeals, both]
-            default: both
-        - $ref: "#/components/parameters/Cursor"
-        - $ref: "#/components/parameters/Limit"
-      responses:
-        "200":
-          description: A page of the queue.
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [data, next_cursor]
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ModerationQueueItem"
-                  next_cursor:
-                    type: [string, "null"]
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/ModeratorOnly"
-
   /v1/moderation/submissions/{submission_id}:
     get:
       tags: [Moderation]
       operationId: getModerationCase
       summary: Get a submission for moderation
-      description: Not for partner apps. Everything a moderator needs to decide a submission, an appeal of it or a reply to needs_info, including the private contributor reference for trust and abuse handling.
+      description: |
+        Not for partner apps. Everything a moderator needs to decide a submission, an appeal of it
+        or a reply to needs_info, including the private contributor reference for trust, abuse
+        handling and conflicts of interest. Moderators review and decide on the pull request in the
+        country's data repository, which names no contributor, so this is where they look up who
+        sent it ([ADR 0047](https://github.com/opentouring/opentouring/blob/main/docs/adr/0047-moderation-on-github-through-pull-requests.md)).
+        A submission rejected in screening has no pull request and is looked up here by its ID.
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
@@ -1626,88 +1724,42 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
-  /v1/moderation/submissions/{submission_id}/claim:
-    post:
+  /v1/moderation/pull-requests/{repository}/{number}:
+    get:
       tags: [Moderation]
-      operationId: claimSubmission
-      summary: Claim a submission
-      description: Not for partner apps. Marks the submission as being reviewed by the signed-in moderator for 30 minutes, so two moderators do not decide it at once. Claiming again extends the claim.
+      operationId: getModerationCaseByPullRequest
+      summary: Get the submission behind a pull request
+      description: Not for partner apps. The same case as getModerationCase, found from the data repository pull request a moderator is reviewing. The pull request carries no submission ID, so this lookup is how a moderator reaches the case.
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
       parameters:
-        - $ref: "#/components/parameters/SubmissionIdPath"
+        - name: repository
+          in: path
+          required: true
+          description: The data repository's name, such as otwd-au.
+          schema:
+            type: string
+            pattern: "^otwd-[a-z]{2}(-[a-z0-9-]+)?$"
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
       responses:
         "200":
-          description: Claimed.
+          description: The case.
           content:
             application/json:
               schema:
-                type: object
-                required: [claimed_until]
-                properties:
-                  claimed_until:
-                    $ref: "../schema/common.schema.json#/$defs/Timestamp"
+                $ref: "#/components/schemas/ModerationCase"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/ModeratorOnly"
         "404":
           $ref: "#/components/responses/NotFound"
-        "409":
-          description: Another moderator holds the claim (problem type claimed).
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-
-  /v1/moderation/submissions/{submission_id}/decisions:
-    post:
-      tags: [Moderation]
-      operationId: decideSubmission
-      summary: Decide a submission or an appeal
-      description: |
-        Not for partner apps. Records the signed-in moderator's decision on a submission, or on
-        an appeal of an earlier decision when appeal_id is given. An appeal must be decided by a
-        different moderator from the one who made the appealed decision. The response is the
-        full moderation decision. Approving applies the change at once.
-      security:
-        - Moderator: [moderator]
-      x-otwd-audience: moderators
-      parameters:
-        - $ref: "#/components/parameters/SubmissionIdPath"
-        - $ref: "#/components/parameters/IdempotencyKey"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ModeratorDecisionRequest"
-      responses:
-        "201":
-          description: The decision.
-          content:
-            application/json:
-              schema:
-                $ref: "../schema/moderation-decision.schema.json"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/ModeratorOnly"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "409":
-          description: The submission is claimed by another moderator, already decided, or the record changed since the submission's base_change_seq (problem type claimed, already-decided or conflict).
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ConflictProblem"
-        "422":
-          description: The decision does not validate against moderation-decision.schema.json once completed, for example a rejection without a public note.
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ValidationProblem"
 
   /v1/moderation/api-keys/{api_key_id}/changes:
     get:
@@ -1758,7 +1810,7 @@ paths:
       tags: [Moderation]
       operationId: revertChanges
       summary: Revert changes
-      description: Not for partner apps. Records a moderator's decision to undo earlier changes (subject revert) and applies it, producing one change with origin revert for each change undone (ADR 0036).
+      description: Not for partner apps. Opens a pull request in the data repository, through the GitHub App, that undoes earlier changes. When a moderator approves it and it merges, the decision (subject revert) is recorded and each change undone gets a change with origin revert (ADR 0036, ADR 0047).
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
@@ -1771,12 +1823,12 @@ paths:
             schema:
               $ref: "#/components/schemas/RevertRequest"
       responses:
-        "201":
-          description: The decision, with the changes it produced.
+        "202":
+          description: The pull request is open. The decision is recorded when it merges.
           content:
             application/json:
               schema:
-                $ref: "../schema/moderation-decision.schema.json"
+                $ref: "#/components/schemas/ModerationPullRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1799,7 +1851,7 @@ paths:
       tags: [Moderation]
       operationId: takeDownContent
       summary: Take content down
-      description: Not for partner apps. Records a moderator's decision to remove facts, photos or a whole record for a stated reason (subject takedown) and applies it as changes with origin takedown. Who asked for the takedown is kept in the restricted case under the moderation policy, never in the decision or the change feed (ADR 0036).
+      description: Not for partner apps. Opens a pull request in the data repository, through the GitHub App, that removes facts, photos or a whole record for a stated reason. When it merges, the decision (subject takedown) is recorded and the changes get origin takedown. A takedown for personal information or copyright is then completed by a history rewrite an organisation owner does by hand. Who asked for the takedown is kept in the restricted case under the moderation policy, never in the pull request, the decision or the change feed (ADR 0036, ADR 0047).
       security:
         - Moderator: [moderator]
       x-otwd-audience: moderators
@@ -1812,12 +1864,12 @@ paths:
             schema:
               $ref: "#/components/schemas/TakedownRequest"
       responses:
-        "201":
-          description: The decision, with the changes it produced.
+        "202":
+          description: The pull request is open. The decision is recorded when it merges.
           content:
             application/json:
               schema:
-                $ref: "../schema/moderation-decision.schema.json"
+                $ref: "#/components/schemas/ModerationPullRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -2528,7 +2580,7 @@ components:
           type: string
           example: "Data: Open Touring contributors, opentouring.org, CC BY 4.0"
     SiteFeatureCollection:
-      description: The same page as GeoJSON (RFC 7946). Each feature is a Point whose properties are the compact site form. next_cursor and attribution are foreign members.
+      description: The same page as GeoJSON (RFC 7946). Each feature is a Point built from the site's published location, whose properties are the compact site form (site-feature.schema.json). next_cursor and attribution are foreign members.
       type: object
       required: [type, features, next_cursor]
       properties:
@@ -2537,17 +2589,7 @@ components:
         features:
           type: array
           items:
-            type: object
-            required: [type, id, geometry, properties]
-            properties:
-              type:
-                const: Feature
-              id:
-                $ref: "../schema/common.schema.json#/$defs/SiteId"
-              geometry:
-                $ref: "../schema/common.schema.json#/$defs/GeoJsonPoint"
-              properties:
-                $ref: "../schema/site-compact.schema.json"
+            $ref: "../schema/site-feature.schema.json"
         next_cursor:
           type: [string, "null"]
         attribution:
@@ -2968,33 +3010,6 @@ components:
             type: string
         expires_at:
           $ref: "#/components/schemas/Timestamp"
-    ModerationQueueItem:
-      type: object
-      required: [submission_id, kind, record_type, received_at, always_human, waiting_for]
-      properties:
-        submission_id:
-          $ref: "../schema/common.schema.json#/$defs/SubmissionId"
-        kind:
-          $ref: "../schema/common.schema.json#/$defs/SubmissionKind"
-        record_type:
-          $ref: "../schema/common.schema.json#/$defs/RecordType"
-        record_id:
-          $ref: "../schema/common.schema.json#/$defs/RecordId"
-        received_at:
-          $ref: "../schema/common.schema.json#/$defs/Timestamp"
-        always_human:
-          type: boolean
-        waiting_for:
-          description: decision (a new submission), reply_review (a reply to needs_info) or appeal. An open enumeration.
-          $ref: "../schema/common.schema.json#/$defs/EnumCode"
-          x-otwd-known-values: [decision, reply_review, appeal]
-        appeal_id:
-          $ref: "../schema/common.schema.json#/$defs/AppealId"
-        verdict_category:
-          description: The latest verdict's category, as advice.
-          $ref: "../schema/common.schema.json#/$defs/EnumCode"
-        claimed_until:
-          $ref: "../schema/common.schema.json#/$defs/Timestamp"
     ModerationCase:
       type: object
       required: [submission, status, contributor, fixed_checks, verdicts, decisions]
@@ -3069,25 +3084,17 @@ components:
                 properties:
                   reason:
                     type: string
-    ModeratorDecisionRequest:
-      description: The parts of a moderation decision the moderator chooses. OTWD fills in the ID, subject, decider, time, routing, verdicts and change sequence numbers, and validates the result against moderation-decision.schema.json.
+    ModerationPullRequest:
       type: object
-      required: [outcome, reasons]
+      required: [repository, number, url]
       properties:
-        outcome:
-          $ref: "../schema/common.schema.json#/$defs/ModerationOutcome"
-        appeal_id:
-          description: Set when this decision answers an appeal.
-          $ref: "../schema/common.schema.json#/$defs/AppealId"
-        reasons:
-          $ref: "../schema/moderation-decision.schema.json#/properties/reasons"
-        public_note:
-          $ref: "../schema/moderation-decision.schema.json#/properties/public_note"
-        amendments:
-          $ref: "../schema/moderation-decision.schema.json#/properties/amendments"
-        merge:
-          $ref: "../schema/moderation-decision.schema.json#/properties/merge"
-      additionalProperties: false
+        repository:
+          type: string
+        number:
+          type: integer
+          minimum: 1
+        url:
+          $ref: "../schema/common.schema.json#/$defs/HttpsUrl"
     RevertRequest:
       type: object
       required: [revert, reasons]

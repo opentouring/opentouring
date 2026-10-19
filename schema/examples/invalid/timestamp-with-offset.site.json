@@ -239,8 +239,7 @@
       "value": {
         "available": true,
         "attributes": {
-          "fire_rings_only": false,
-          "bring_own_firewood": false
+          "fire_rings_only": false
         }
       },
       "provenance": {

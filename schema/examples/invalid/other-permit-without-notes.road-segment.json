@@ -1,0 +1,15 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/transit-road-nt.road-segment.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/facts/permits/value/0/kind",
+      "value": "other"
+    },
+    {
+      "op": "remove",
+      "path": "/facts/permits/value/0/notes"
+    }
+  ]
+}

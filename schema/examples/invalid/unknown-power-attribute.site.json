@@ -68,7 +68,7 @@
     "description": {
       "value": [
         {
-          "text": "Shady park on the river side of town with grassed powered sites, a camp kitchen and a pool. Drive-through sites suit long rigs. The dump point is open to non-guests for a small fee.",
+          "text": "Shady park on the river side of town with grassed powered pitches, a camp kitchen and a pool. Drive-through pitches suit long rigs. The dump point is open to non-guests for a small fee.",
           "lang": "en-AU"
         }
       ],
@@ -128,7 +128,7 @@
         "charging": "paid",
         "items": [
           {
-            "applies_to": "site_unpowered",
+            "applies_to": "pitch_unpowered",
             "amount": 34,
             "currency": "AUD",
             "per": "site",
@@ -138,7 +138,7 @@
             }
           },
           {
-            "applies_to": "site_powered",
+            "applies_to": "pitch_powered",
             "amount": 48,
             "currency": "AUD",
             "per": "site",
@@ -152,7 +152,7 @@
             }
           },
           {
-            "applies_to": "site_powered",
+            "applies_to": "pitch_powered",
             "amount": 42,
             "currency": "AUD",
             "per": "site",
@@ -236,8 +236,8 @@
     },
     "capacity": {
       "value": {
-        "sites": 96,
-        "powered_sites": 70
+        "pitches": 96,
+        "powered_pitches": 70
       },
       "provenance": {
         "source_kind": "contributor",
@@ -252,7 +252,7 @@
         "allowed": "by_arrangement",
         "notes": [
           {
-            "text": "Small dogs on powered sites only, outside school holidays.",
+            "text": "Small dogs on powered pitches only, outside school holidays.",
             "lang": "en-AU"
           }
         ]
@@ -440,7 +440,7 @@
         "change_seq": 15120
       }
     },
-    "drive_through_sites": {
+    "drive_through_pitches": {
       "value": {
         "available": true,
         "attributes": {
@@ -470,7 +470,7 @@
         "change_seq": 15120
       }
     },
-    "ensuite_sites": {
+    "ensuite_pitches": {
       "value": {
         "available": false
       },
@@ -482,7 +482,7 @@
         "change_seq": 15120
       }
     },
-    "tent_sites": {
+    "tent_pitches": {
       "value": {
         "available": true
       },

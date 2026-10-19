@@ -1,0 +1,11 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/seasonal-caravan-park-tas.site.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/facts/quiet_hours/value/from",
+      "value": "11:00Z"
+    }
+  ]
+}

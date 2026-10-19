@@ -46,14 +46,14 @@
     "charging": "paid",
     "items": [
       {
-        "applies_to": "site_unpowered",
+        "applies_to": "pitch_unpowered",
         "amount": 6.5,
         "currency": "AUD",
         "per": "adult",
         "period": "night"
       },
       {
-        "applies_to": "site_unpowered",
+        "applies_to": "pitch_unpowered",
         "amount": 3.5,
         "currency": "AUD",
         "per": "child",
@@ -67,7 +67,7 @@
     "url": "https://www.example.org/parks/banksia-hollow"
   },
   "capacity": {
-    "sites": 14
+    "pitches": 14
   },
   "pets": {
     "allowed": "no"
@@ -110,6 +110,15 @@
       "accessible_count": 1,
       "ambulant": false
     }
+  },
+  "firewood": {
+    "collection": "prohibited",
+    "notes": [
+      {
+        "text": "Bring your own firewood. Collecting wood in the park is not allowed.",
+        "lang": "en-AU"
+      }
+    ]
   },
   "rig_limits": {
     "max_length_m": 7,
@@ -169,14 +178,13 @@
     "fires_allowed": {
       "available": true,
       "attributes": {
-        "fire_rings_only": true,
-        "bring_own_firewood": true
+        "fire_rings_only": true
       }
     },
     "picnic_tables": {
       "available": true
     },
-    "tent_sites": {
+    "tent_pitches": {
       "available": true,
       "attributes": {
         "count": 14

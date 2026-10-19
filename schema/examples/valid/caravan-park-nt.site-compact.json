@@ -25,7 +25,7 @@
   },
   "description": [
     {
-      "text": "Shady park on the river side of town with grassed powered sites, a camp kitchen and a pool. Drive-through sites suit long rigs. The dump point is open to non-guests for a small fee.",
+      "text": "Shady park on the river side of town with grassed powered pitches, a camp kitchen and a pool. Drive-through pitches suit long rigs. The dump point is open to non-guests for a small fee.",
       "lang": "en-AU"
     }
   ],
@@ -58,7 +58,7 @@
     "charging": "paid",
     "items": [
       {
-        "applies_to": "site_unpowered",
+        "applies_to": "pitch_unpowered",
         "amount": 34,
         "currency": "AUD",
         "per": "site",
@@ -68,7 +68,7 @@
         }
       },
       {
-        "applies_to": "site_powered",
+        "applies_to": "pitch_powered",
         "amount": 48,
         "currency": "AUD",
         "per": "site",
@@ -82,7 +82,7 @@
         }
       },
       {
-        "applies_to": "site_powered",
+        "applies_to": "pitch_powered",
         "amount": 42,
         "currency": "AUD",
         "per": "site",
@@ -138,8 +138,8 @@
     "phone": "+61855501234"
   },
   "capacity": {
-    "sites": 96,
-    "powered_sites": 70
+    "pitches": 96,
+    "powered_pitches": 70
   },
   "pets": {
     "allowed": "by_arrangement",
@@ -183,7 +183,7 @@
     },
     "notes": [
       {
-        "text": "Small dogs on powered sites only, outside school holidays.",
+        "text": "Small dogs on powered pitches only, outside school holidays.",
         "lang": "en-AU"
       }
     ]
@@ -211,7 +211,7 @@
         "access": "limited",
         "notes": [
           {
-            "text": "Compacted gravel between the powered sites. Sealed path from reception to the amenities block.",
+            "text": "Compacted gravel between the powered pitches. Sealed path from reception to the amenities block.",
             "lang": "en-AU"
           }
         ]
@@ -244,7 +244,7 @@
       "path_surface": "mixed",
       "gradient_notes": [
         {
-          "text": "Gentle slope down to the river sites.",
+          "text": "Gentle slope down to the river pitches.",
           "lang": "en-AU"
         }
       ]
@@ -329,7 +329,7 @@
         "fee": false
       }
     },
-    "drive_through_sites": {
+    "drive_through_pitches": {
       "available": true,
       "attributes": {
         "count": 18
@@ -341,10 +341,10 @@
         "count": 12
       }
     },
-    "ensuite_sites": {
+    "ensuite_pitches": {
       "available": false
     },
-    "tent_sites": {
+    "tent_pitches": {
       "available": true
     },
     "accessible_facilities": {

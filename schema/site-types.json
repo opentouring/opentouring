@@ -41,7 +41,7 @@
     {
       "code": "caravan_park",
       "label": "Caravan park",
-      "description": "A commercial park with powered and unpowered sites for caravans, motorhomes and tents, usually with amenities blocks and often cabins. Called a holiday park or RV park in some places.",
+      "description": "A commercial park with powered and unpowered pitches for caravans, motorhomes and tents, usually with amenities blocks and often cabins. Called a holiday park or RV park in some places.",
       "group": "overnight",
       "status": "active",
       "introduced_in": "1.0.0",

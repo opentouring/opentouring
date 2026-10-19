@@ -1,0 +1,10 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/freedom-camp-nz.site.json",
+  "$patch": [
+    {
+      "op": "remove",
+      "path": "/facts/camping_rules/value/info_url"
+    }
+  ]
+}

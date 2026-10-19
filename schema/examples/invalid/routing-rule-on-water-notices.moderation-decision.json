@@ -1,0 +1,25 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "$base": "../valid/approved.moderation-decision.json",
+  "$patch": [
+    {
+      "op": "replace",
+      "path": "/decided_by",
+      "value": {
+        "kind": "routing_rule",
+        "rule_id": "auto_approve.trusted_contributor",
+        "rule_version": "1"
+      }
+    },
+    {
+      "op": "replace",
+      "path": "/routing/route",
+      "value": "auto_approval"
+    },
+    {
+      "op": "replace",
+      "path": "/routing/fields",
+      "value": ["/facts/water_notices"]
+    }
+  ]
+}
