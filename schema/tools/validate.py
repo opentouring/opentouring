@@ -1265,6 +1265,15 @@ def repository_file_problems(
     return check_document_as(path, context, REPOSITORY_KINDS[record_type.code])
 
 
+def config_problems(path: Path, context: Context) -> list[str]:
+    """otwd.json (ADR 0046): valid JSON that matches the otwd-config schema."""
+    try:
+        document = load_document(path)
+    except json.JSONDecodeError as error:
+        return [f"not valid JSON: {error}"]
+    return all_errors(list(context.validator("otwd-config.schema.json").iter_errors(document)))
+
+
 def check_data_repository(
     root: Path, context: Context, ignore_root: frozenset[str] = frozenset()
 ) -> list[tuple[str, list[str]]]:
@@ -1274,8 +1283,13 @@ def check_data_repository(
     root entries that are not part of the repository itself, such as a fixture's expected.json."""
     ulid = re.compile(context.definition("common.schema.json", "Ulid")["pattern"])
     entries: list[tuple[str, list[str]]] = []
+    if not (root / "otwd.json").is_file():
+        entries.append(("otwd.json", ["missing: every data repository needs its otwd.json"]))
     for entry in sorted(root.iterdir()):
         if entry.name in ignore_root:
+            continue
+        if entry.name == "otwd.json" and entry.is_file():
+            entries.append((entry.name, config_problems(entry, context)))
             continue
         if entry.is_file():
             if entry.name not in ROOT_FILES:

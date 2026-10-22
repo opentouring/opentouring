@@ -6,5 +6,6 @@
   "nsw/sites/not-a-ulid.json": "file name must be the record's own ULID",
   "nsw/sites/11HFE865V215DE1CTEWH0AVNH9.json": "does not match its file name",
   "nsw/sites/3N65R6PPG2X7R5JQC42EJ5E6RH.json": "'not_a_status' is not one of",
-  "vic/road-segments/7QAQPDH4AFAXRHEM3E2MSH4DMD.json": "not valid JSON"
+  "vic/road-segments/7QAQPDH4AFAXRHEM3E2MSH4DMD.json": "not valid JSON",
+  "otwd.json": "does not match"
 }
