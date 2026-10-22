@@ -168,7 +168,16 @@ STUB_FIELDS_COMPACT = STUB_FIELDS | {"status_reason", "attribution"}
 STATE_FOLDERS = frozenset({"act", "nsw", "nt", "qld", "sa", "tas", "vic", "wa", "interstate"})
 # The files a data repository carries at its root besides its state folders.
 ROOT_FILES = frozenset(
-    {"README.md", "LICENSE", "ATTRIBUTION.md", "otwd.json", "CODEOWNERS", "AGENTS.md"}
+    {
+        "README.md",
+        "LICENSE",
+        "ATTRIBUTION.md",
+        "otwd.json",
+        "CODEOWNERS",
+        "AGENTS.md",
+        ".gitignore",
+        ".gitattributes",
+    }
 )
 ROOT_DIRS = frozenset({".github"})
 # A checkout's own git data: a directory, or a file in a worktree or submodule. Root only.

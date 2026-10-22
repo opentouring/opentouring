@@ -9,5 +9,6 @@
   "vic/road-segments/7QAQPDH4AFAXRHEM3E2MSH4DMD.json": "not valid JSON",
   "otwd.json": "does not match",
   "act/notes.txt": "not a known record type folder",
-  "nsw/sites/.gitkeep": "file name must be the record's own ULID"
+  "nsw/sites/.gitkeep": "file name must be the record's own ULID",
+  "act/.gitignore": "not a known record type folder"
 }
