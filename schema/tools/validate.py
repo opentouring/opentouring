@@ -161,6 +161,12 @@ CONTRIBUTOR_PHOTO_LICENCES = {"CC-BY-4.0", "CC0-1.0"}
 LOADED = frozenset({"confidence", "change_seq"})
 STUB_FIELDS = {"schema_version", "id", "status", "created_at", "updated_at", "change_seq"}
 STUB_FIELDS_COMPACT = STUB_FIELDS | {"status_reason", "attribution"}
+# A data repository's state folders (ADR 0046): every supported state and territory, plus
+# interstate for a record that crosses a border.
+STATE_FOLDERS = frozenset({"act", "nsw", "nt", "qld", "sa", "tas", "vic", "wa", "interstate"})
+# The files a data repository carries at its root besides its state folders.
+ROOT_FILES = frozenset({"README.md", "LICENSE", "ATTRIBUTION.md", "otwd.json", "CODEOWNERS"})
+ROOT_DIRS = frozenset({".github"})
 
 
 def schema_file(stem: str) -> str:
@@ -255,6 +261,15 @@ def load_record_types() -> tuple[RecordType, ...]:
 
 RECORD_TYPES = load_record_types()
 RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_TYPES}
+
+
+def record_type_folders(record_types: tuple[RecordType, ...]) -> dict[str, RecordType]:
+    """The record type folder names a data repository uses (ADR 0046), such as sites and
+    road-restrictions: each record type's stem, pluralised."""
+    return {f"{record_type.stem}s": record_type for record_type in record_types}
+
+
+RECORD_TYPE_FOLDERS = record_type_folders(RECORD_TYPES)
 
 
 def without_comment(document: Any) -> Any:
@@ -1180,6 +1195,24 @@ DOCUMENT_KINDS = tuple(
     DocumentKind("change", check_change),
 )
 TRANSLATION = DocumentKind("translation", check_translation, file_check=translation_file)
+# The repository form DocumentKind for each record type (ADR 0046), keyed by record type code,
+# for a data repository file found by its folder rather than its file name suffix.
+REPOSITORY_KINDS = {
+    record_type.code: next(kind for kind in DOCUMENT_KINDS if kind.schema == record_type.repository)
+    for record_type in RECORD_TYPES
+}
+
+
+def check_document_as(path: Path, context: Context, kind: DocumentKind) -> list[str]:
+    """A document already known to be of kind, such as a data repository file found by folder."""
+    raw = load_json(path)
+    document = load_document(path)
+    schema_errors = list(context.validator(kind.schema).iter_errors(document))
+    if schema_errors:
+        return all_errors(schema_errors)
+    checker = SemanticChecker(context, kind.rejects_deprecated)
+    kind.semantic_check(document, checker)
+    return checker.errors + kind.file_check(path, raw)
 
 
 def check_document(path: Path, context: Context) -> list[str]:
@@ -1190,14 +1223,85 @@ def check_document(path: Path, context: Context) -> list[str]:
             f"/: cannot tell the schema from the file name (expected one of {suffixes}, "
             f"or a translation at {I18N}/<language>/<list file>)"
         ]
-    raw = load_json(path)
-    document = load_document(path)
-    schema_errors = list(context.validator(kind.schema).iter_errors(document))
-    if schema_errors:
-        return all_errors(schema_errors)
-    checker = SemanticChecker(context, kind.rejects_deprecated)
-    kind.semantic_check(document, checker)
-    return checker.errors + kind.file_check(path, raw)
+    return check_document_as(path, context, kind)
+
+
+def repository_file_problems(
+    path: Path, record_type: RecordType, context: Context, ulid: re.Pattern[str]
+) -> list[str]:
+    """A data repository file (ADR 0046): named for its own ULID, and valid in the repository
+    form. The loader decides whether its state folder matches its location, so that is not
+    checked here."""
+    if not path.is_file():
+        return ["must be a file"]
+    if path.suffix != ".json" or not ulid.match(path.stem):
+        return ["file name must be the record's own ULID, with a .json extension"]
+    try:
+        document = load_document(path)
+    except json.JSONDecodeError as error:
+        return [f"not valid JSON: {error}"]
+    record_id = document.get("id") if isinstance(document, dict) else None
+    if isinstance(record_id, str) and not record_id.endswith(f":{path.stem}"):
+        return [f"id {record_id} does not match its file name {path.name}"]
+    return check_document_as(path, context, REPOSITORY_KINDS[record_type.code])
+
+
+def check_data_repository(
+    root: Path, context: Context, ignore_root: frozenset[str] = frozenset()
+) -> list[tuple[str, list[str]]]:
+    """Every entry in a data repository (ADR 0046): the root, its state folders and record type
+    folders, and each record file against its record type's repository schema. One entry per
+    checked path, relative to root, with its problems (empty when it passes). ignore_root skips
+    root entries that are not part of the repository itself, such as a fixture's expected.json."""
+    ulid = re.compile(context.definition("common.schema.json", "Ulid")["pattern"])
+    entries: list[tuple[str, list[str]]] = []
+    for entry in sorted(root.iterdir()):
+        if entry.name in ignore_root:
+            continue
+        if entry.is_file():
+            if entry.name not in ROOT_FILES:
+                entries.append(
+                    (
+                        entry.name,
+                        [
+                            f"not an allowed root file (expected one of "
+                            f"{', '.join(sorted(ROOT_FILES))}, or a state folder)"
+                        ],
+                    )
+                )
+            continue
+        if entry.name in ROOT_DIRS:
+            continue
+        if entry.name not in STATE_FOLDERS:
+            entries.append(
+                (
+                    f"{entry.name}/",
+                    [
+                        f"not a known state folder (expected one of "
+                        f"{', '.join(sorted(STATE_FOLDERS))})"
+                    ],
+                )
+            )
+            continue
+        for record_entry in sorted(entry.iterdir()):
+            record_type = RECORD_TYPE_FOLDERS.get(record_entry.name)
+            if not record_entry.is_dir() or record_type is None:
+                entries.append(
+                    (
+                        f"{entry.name}/{record_entry.name}/",
+                        [
+                            f"not a known record type folder (expected one of "
+                            f"{', '.join(sorted(RECORD_TYPE_FOLDERS))})"
+                        ],
+                    )
+                )
+                continue
+            for file_path in sorted(record_entry.iterdir()):
+                name = f"{entry.name}/{record_entry.name}/{file_path.name}"
+                entries.append(
+                    (name, repository_file_problems(file_path, record_type, context, ulid))
+                )
+    return entries
 
 
 def check_record_type(context: Context, record_type: RecordType) -> list[str]:
@@ -1558,11 +1662,64 @@ def check_invalid_examples(context: Context) -> tuple[bool, int]:
     return ok, len(paths)
 
 
+def check_data_repository_examples(context: Context) -> tuple[bool, int]:
+    """The data repository fixtures under schema/examples/ (ADR 0046): the valid tree must pass
+    in full, and the invalid tree's entries must each fail with their expected error."""
+    ok = True
+    print("\nData repository: valid example (must pass)")
+    valid_entries = check_data_repository(EXAMPLES / "data-repository-valid", context)
+    for name, problems in valid_entries:
+        report("pass" if not problems else "FAIL", name, problems, "  ")
+        ok &= not problems
+
+    print("\nData repository: invalid example (each entry must fail with the expected error)")
+    folder = EXAMPLES / "data-repository-invalid"
+    expected: dict[str, str] = without_comment(load_json(folder / "expected.json"))
+    invalid_entries = check_data_repository(
+        folder, context, ignore_root=frozenset({"expected.json"})
+    )
+    names = [name for name, _ in invalid_entries]
+    for name, problems in invalid_entries:
+        fragment = expected.get(name)
+        if fragment is None:
+            print(f"  FAIL  {name}: no entry in expected.json")
+            ok = False
+        elif not problems:
+            print(f"  FAIL  {name}: validated, but it must fail")
+            ok = False
+        elif not any(fragment in message for message in problems):
+            report("FAIL", f"{name}: failed, but not with {fragment!r}", problems[:8], "  ")
+            ok = False
+        else:
+            print(f"  fail  {name}  ({fragment})")
+    for name in sorted(set(expected) - set(names)):
+        print(f"  FAIL  expected.json names {name}, which does not exist")
+        ok = False
+    return ok, len(valid_entries) + len(invalid_entries)
+
+
+def run_data_repository(root: Path, context: Context) -> int:
+    """The --data-repository DIR mode: check every entry in a data repository and report it."""
+    print(f"Data repository: {root}")
+    entries = check_data_repository(root, context)
+    for name, problems in entries:
+        report("pass" if not problems else "FAIL", name, problems, indent="  ")
+    ok = all(not problems for _, problems in entries)
+    print(f"\n{len(entries)} entries: {'all expectations met' if ok else 'EXPECTATIONS NOT MET'}")
+    return 0 if ok else 1
+
+
 def main(arguments: list[str]) -> int:
     missing = REQUIRED_FORMATS - set(Draft202012Validator.FORMAT_CHECKER.checkers)
     if missing:
         print(f"Format checkers missing: {sorted(missing)}. Install schema/tools/requirements.txt.")
         return 1
+
+    if arguments and arguments[0] == "--data-repository":
+        if len(arguments) != 2:
+            print("Usage: validate.py --data-repository DIR")
+            return 1
+        return run_data_repository(Path(arguments[1]), Context.load())
 
     context = Context.load()
     if arguments:
@@ -1585,11 +1742,19 @@ def main(arguments: list[str]) -> int:
     invalid_ok, invalid_count = check_invalid_examples(context)
     consumer_ok, consumer_count = check_consumer_examples(context)
     translations_ok, translation_count = check_translations(context)
-    ok = not problems and valid_ok and invalid_ok and consumer_ok and translations_ok
+    data_repository_ok, data_repository_count = check_data_repository_examples(context)
+    ok = (
+        not problems
+        and valid_ok
+        and invalid_ok
+        and consumer_ok
+        and translations_ok
+        and data_repository_ok
+    )
     verdict = "all expectations met" if ok else "EXPECTATIONS NOT MET"
     counts = (
         f"{valid_count} valid, {invalid_count} invalid, {consumer_count} consumer, "
-        f"{translation_count} translations"
+        f"{translation_count} translations, {data_repository_count} data repository entries"
     )
     print(f"\n{counts}: {verdict}")
     return 0 if ok else 1

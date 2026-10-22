@@ -1,0 +1,1 @@
+A file that is not one of the root files a data repository allows (ADR 0046).

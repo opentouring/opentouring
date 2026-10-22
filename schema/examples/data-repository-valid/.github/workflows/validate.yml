@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+# Fixture workflow, standing in for a real data repository's CI (ADR 0046). The validator
+# never descends into .github/.
+name: validate

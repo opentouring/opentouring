@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: Apache-2.0
+# Fixture CODEOWNERS, standing in for a real data repository's moderators teams (ADR 0047).
+* @opentouring/maintainers

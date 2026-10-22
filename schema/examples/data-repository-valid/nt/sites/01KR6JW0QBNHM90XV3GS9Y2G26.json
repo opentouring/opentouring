@@ -1,0 +1,567 @@
+{
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "schema_version": "1.0",
+  "id": "otwd:site:01KR6JW0QBNHM90XV3GS9Y2G26",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "contributor",
+      "observed_on": "2026-07-02",
+      "recorded_at": "2026-07-04T00:15:00Z"
+    }
+  },
+  "created_at": "2026-07-04T00:15:00Z",
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Pandanus Flats Caravan Park",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -14.4521,
+        "lng": 132.2705,
+        "accuracy_m": 10
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "caravan_park",
+        "others": ["dump_point"]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "description": {
+      "value": [
+        {
+          "text": "Shady park on the river side of town with grassed powered pitches, a camp kitchen and a pool. Drive-through pitches suit long rigs. The dump point is open to non-guests for a small fee.",
+          "lang": "en-AU"
+        }
+      ],
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "opening_hours": {
+      "value": {
+        "always_open": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "reception_hours": {
+      "value": {
+        "weekly": [
+          {
+            "days": ["mo", "tu", "we", "th", "fr"],
+            "opens": "07:30",
+            "closes": "18:00"
+          },
+          {
+            "days": ["sa", "su"],
+            "opens": "08:00",
+            "closes": "12:00"
+          }
+        ],
+        "osm_opening_hours": "Mo-Fr 07:30-18:00; Sa,Su 08:00-12:00",
+        "exceptions": [
+          {
+            "from": "2026-12-25",
+            "to": "2026-12-25",
+            "closed": true
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "prices": {
+      "value": {
+        "charging": "paid",
+        "items": [
+          {
+            "applies_to": "pitch_unpowered",
+            "amount": 34,
+            "currency": "AUD",
+            "per": "site",
+            "period": "night",
+            "conditions": {
+              "persons_included": 2
+            }
+          },
+          {
+            "applies_to": "pitch_powered",
+            "amount": 48,
+            "currency": "AUD",
+            "per": "site",
+            "period": "night",
+            "conditions": {
+              "persons_included": 2,
+              "season": {
+                "from": "05-01",
+                "to": "09-30"
+              }
+            }
+          },
+          {
+            "applies_to": "pitch_powered",
+            "amount": 42,
+            "currency": "AUD",
+            "per": "site",
+            "period": "night",
+            "conditions": {
+              "persons_included": 2,
+              "season": {
+                "from": "10-01",
+                "to": "04-30"
+              }
+            }
+          },
+          {
+            "applies_to": "extra_person",
+            "amount": 12,
+            "currency": "AUD",
+            "per": "person",
+            "period": "night"
+          },
+          {
+            "applies_to": "dump_point",
+            "amount": 10,
+            "currency": "AUD",
+            "per": "vehicle",
+            "period": "use",
+            "conditions": {
+              "notes": [
+                {
+                  "text": "Free for guests.",
+                  "lang": "en-AU"
+                }
+              ]
+            }
+          }
+        ],
+        "payment_methods": ["card", "cash", "online"]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-08-28",
+        "recorded_at": "2026-08-30T02:02:44Z"
+      }
+    },
+    "bookings": {
+      "value": {
+        "booking": "recommended",
+        "url": "https://www.example.com/pandanus-flats/book",
+        "phone": "+61855501234",
+        "check_in_from": "14:00",
+        "check_out_by": "10:00",
+        "notes": [
+          {
+            "text": "Book ahead from June to August.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "contact": {
+      "value": {
+        "website": "https://www.example.com/pandanus-flats",
+        "phone": "+61855501234"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "capacity": {
+      "value": {
+        "pitches": 96,
+        "powered_pitches": 70
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "pets": {
+      "value": {
+        "allowed": "by_arrangement",
+        "species": [
+          {
+            "species": "dog",
+            "allowed": "by_arrangement",
+            "max_number": 2
+          },
+          {
+            "species": "cat",
+            "allowed": "no"
+          }
+        ],
+        "conditions": {
+          "max_pets": 2,
+          "size_or_breed_restrictions": [
+            {
+              "text": "Small dogs under 10 kg only.",
+              "lang": "en-AU"
+            }
+          ],
+          "fee": {
+            "amount": 5,
+            "currency": "AUD",
+            "period": "night"
+          },
+          "areas": ["designated_pitches"],
+          "not_allowed_periods": [
+            {
+              "from": "12-15",
+              "to": "01-31",
+              "notes": [
+                {
+                  "text": "Summer school holidays.",
+                  "lang": "en-AU"
+                }
+              ]
+            }
+          ]
+        },
+        "notes": [
+          {
+            "text": "Small dogs on powered pitches only, outside school holidays.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "accessibility": {
+      "value": {
+        "basis": {
+          "kind": "assessed_to_standard",
+          "standard": "AS 1428.1-2021",
+          "assessed_on": "2026-05-12"
+        },
+        "wheelchair": {
+          "arrival": {
+            "access": "yes"
+          },
+          "toilets": {
+            "access": "yes"
+          },
+          "showers": {
+            "access": "yes"
+          },
+          "parking": {
+            "access": "yes"
+          },
+          "paths": {
+            "access": "limited",
+            "notes": [
+              {
+                "text": "Compacted gravel between the powered pitches. Sealed path from reception to the amenities block.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "pitches": {
+            "access": "limited"
+          },
+          "cabins": {
+            "access": "yes",
+            "notes": [
+              {
+                "text": "One accessible cabin with a roll-in shower.",
+                "lang": "en-AU"
+              }
+            ]
+          },
+          "camp_kitchen": {
+            "access": "yes"
+          }
+        },
+        "toilets": {
+          "accessible_count": 2,
+          "ambulant_count": 2,
+          "changing_places": false,
+          "key_required": false
+        },
+        "accessible_parking_spaces": 2,
+        "step_free_access": true,
+        "paths": {
+          "path_surface": "mixed",
+          "gradient_notes": [
+            {
+              "text": "Gentle slope down to the river pitches.",
+              "lang": "en-AU"
+            }
+          ]
+        },
+        "hearing_loop": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "max_length_m": 22,
+        "big_rig_suitable": "yes"
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "access": {
+      "value": {
+        "road_surface": "sealed",
+        "four_wd_required": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    }
+  },
+  "facilities": {
+    "toilets": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "kind": "flush",
+          "count": 14
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "showers": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "hot": true,
+          "fee": false,
+          "count": 12
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "drinking_water": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "potable": true,
+          "treated": true,
+          "source": "town_supply",
+          "tank_fill": true
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "power": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "amps": 15,
+          "outlets": 70,
+          "metered": false,
+          "outlet_type": "AS/NZS 3112 15 A"
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "dump_point_access": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "accepts": "cassette_and_tank",
+          "drive_over": true,
+          "rinse_water": true,
+          "guests_only": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "pool": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "heated": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "laundry": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "washers": 4,
+          "dryers": 3,
+          "fee": true
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "camp_kitchen": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "wifi": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "fee": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "drive_through_pitches": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "count": 18
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "cabins": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "count": 12
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "ensuite_pitches": {
+      "value": {
+        "available": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "tent_pitches": {
+      "value": {
+        "available": true
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "generators_allowed": {
+      "value": {
+        "available": false
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    },
+    "bbq": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "fuel": "electric",
+          "fee": false
+        }
+      },
+      "provenance": {
+        "source_kind": "contributor",
+        "observed_on": "2026-07-02",
+        "recorded_at": "2026-07-04T00:15:00Z"
+      }
+    }
+  }
+}
