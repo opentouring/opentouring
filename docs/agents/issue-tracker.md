@@ -15,6 +15,10 @@ Issues and specs for this repo live as GitHub issues on `github.com/opentouring/
 
 Infer the repo from `git remote -v`. `gh` does this automatically when run inside a clone.
 
+## Data repositories
+
+Live data lives in one public repository per country, starting with `opentouring/otwd-au` ([ADR 0046](../adr/0046-live-data-in-a-public-git-repository-per-country.md)). Issues about the data, the schema or the platform still go on `opentouring/opentouring`. In a data repository, pull requests are moderation: a review on one is a moderation decision ([ADR 0047](../adr/0047-moderation-on-github-through-pull-requests.md)), so an agent never approves or merges one. Pass `--repo opentouring/otwd-au` to `gh` when working outside a clone of it.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests. `/triage` reads this flag.)_
