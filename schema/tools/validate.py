@@ -68,7 +68,9 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import sys
+import tempfile
 import zoneinfo
 from dataclasses import dataclass
 from collections.abc import Callable, Iterable
@@ -165,8 +167,14 @@ STUB_FIELDS_COMPACT = STUB_FIELDS | {"status_reason", "attribution"}
 # interstate for a record that crosses a border.
 STATE_FOLDERS = frozenset({"act", "nsw", "nt", "qld", "sa", "tas", "vic", "wa", "interstate"})
 # The files a data repository carries at its root besides its state folders.
-ROOT_FILES = frozenset({"README.md", "LICENSE", "ATTRIBUTION.md", "otwd.json", "CODEOWNERS"})
+ROOT_FILES = frozenset(
+    {"README.md", "LICENSE", "ATTRIBUTION.md", "otwd.json", "CODEOWNERS", "AGENTS.md"}
+)
 ROOT_DIRS = frozenset({".github"})
+# A checkout's own git data: a directory, or a file in a worktree or submodule. Root only.
+GIT_ENTRY = ".git"
+# Lets an empty state folder exist in git. Allowed directly inside a state folder only.
+KEEP_FILE = ".gitkeep"
 
 
 def schema_file(stem: str) -> str:
@@ -1286,7 +1294,7 @@ def check_data_repository(
     if not (root / "otwd.json").is_file():
         entries.append(("otwd.json", ["missing: every data repository needs its otwd.json"]))
     for entry in sorted(root.iterdir()):
-        if entry.name in ignore_root:
+        if entry.name in ignore_root or entry.name == GIT_ENTRY:
             continue
         if entry.name == "otwd.json" and entry.is_file():
             entries.append((entry.name, config_problems(entry, context)))
@@ -1317,11 +1325,14 @@ def check_data_repository(
             )
             continue
         for record_entry in sorted(entry.iterdir()):
+            if record_entry.name == KEEP_FILE and record_entry.is_file():
+                continue
             record_type = RECORD_TYPE_FOLDERS.get(record_entry.name)
             if not record_entry.is_dir() or record_type is None:
+                suffix = "/" if record_entry.is_dir() else ""
                 entries.append(
                     (
-                        f"{entry.name}/{record_entry.name}/",
+                        f"{entry.name}/{record_entry.name}{suffix}",
                         [
                             f"not a known record type folder (expected one of "
                             f"{', '.join(sorted(RECORD_TYPE_FOLDERS))})"
@@ -1721,7 +1732,39 @@ def check_data_repository_examples(context: Context) -> tuple[bool, int]:
         folder, context, ignore_root=frozenset({"expected.json"})
     )
     invalid_ok = check_against_expected(invalid_entries, expected)
-    return valid_ok and invalid_ok, len(valid_entries) + len(invalid_entries)
+    git_ok = check_git_entry_ignored(valid_root, context)
+    return valid_ok and invalid_ok and git_ok, len(valid_entries) + len(invalid_entries)
+
+
+def check_git_entry_ignored(valid_root: Path, context: Context) -> bool:
+    """A checkout's root .git, a directory or the file a worktree or submodule has, is not part
+    of the repository. A copy of the valid fixture gets each in turn, and a .git below the root
+    must still fail. Built in a temporary folder, as git cannot commit a .git into the fixtures."""
+    print("\nData repository: root .git (must be skipped, below the root it must fail)")
+    ok = True
+    with tempfile.TemporaryDirectory() as temporary:
+        copy = Path(temporary) / "repository"
+        shutil.copytree(valid_root, copy)
+        git = copy / ".git"
+        for label, make in (
+            (".git directory", lambda: git.mkdir()),
+            (".git file", lambda: git.write_text("gitdir: ../elsewhere\n")),
+        ):
+            make()
+            entries = check_data_repository(copy, context.with_data_repository_sites(copy))
+            passed = all(not problems for _, problems in entries)
+            report("pass" if passed else "FAIL", f"root {label}", [], "  ")
+            ok = ok and passed
+            if git.is_dir():
+                git.rmdir()
+            else:
+                git.unlink()
+        (copy / "vic" / ".git").mkdir()
+        entries = check_data_repository(copy, context.with_data_repository_sites(copy))
+        failed = any(name.startswith("vic/.git") and problems for name, problems in entries)
+        report("pass" if failed else "FAIL", "vic/.git", [], "  ")
+        ok = ok and failed
+    return ok
 
 
 def run_data_repository(root: Path, context: Context) -> int:

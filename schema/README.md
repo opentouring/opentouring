@@ -181,7 +181,7 @@ To check a whole data repository, name its root:
 python3 schema/tools/validate.py --data-repository my-clone-of-otwd-au
 ```
 
-This walks `<state>/<record-type>/*.json`, taking each file's schema from its record type folder, checking its file name is the record's own ULID, and checking the state and record type folders are known ones. It does not check that a record's state folder matches its location, which is the loader's job. It requires `otwd.json` at the root and checks its content against `otwd-config.schema.json`, including the schema tag. Every other file or folder at the root fails, except `README.md`, `LICENSE`, `ATTRIBUTION.md`, `otwd.json`, `CODEOWNERS` and `.github/`.
+This walks `<state>/<record-type>/*.json`, taking each file's schema from its record type folder, checking its file name is the record's own ULID, and checking the state and record type folders are known ones. It does not check that a record's state folder matches its location, which is the loader's job. It requires `otwd.json` at the root and checks its content against `otwd-config.schema.json`, including the schema tag. Every other file or folder at the root fails, except `README.md`, `LICENSE`, `ATTRIBUTION.md`, `otwd.json`, `CODEOWNERS`, `AGENTS.md` and `.github/`. A checkout's own root `.git` is skipped, and a `.gitkeep` is allowed directly inside a state folder so an empty one can exist in git.
 
 ## Examples
 
