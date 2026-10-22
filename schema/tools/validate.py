@@ -456,6 +456,25 @@ class Context:
                 types = site_types_of(document)
                 if types is not None:
                     sites[document["id"]] = types
+        return self._with_known_sites(sites, complete)
+
+    def with_data_repository_sites(self, root: Path) -> Context:
+        """Context with every site in root's sites folders (ADR 0046), for the ferry terminal
+        cross-check when checking a whole data repository. A file check_data_repository will
+        itself report as malformed is skipped here rather than reported twice."""
+        sites: dict[str, set[str]] = {}
+        for path in sorted(root.glob("*/sites/*.json")):
+            try:
+                document = load_document(path)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(document, dict) and isinstance(document.get("id"), str):
+                types = site_types_of(document)
+                if types is not None:
+                    sites[document["id"]] = types
+        return self._with_known_sites(sites, complete=True)
+
+    def _with_known_sites(self, sites: dict[str, set[str]], complete: bool) -> Context:
         return Context(
             self.registry,
             self.schemas,
@@ -1635,15 +1654,13 @@ def check_consumer_examples(context: Context) -> tuple[bool, int]:
     return ok, len(paths)
 
 
-def check_invalid_examples(context: Context) -> tuple[bool, int]:
-    print("\nInvalid examples (must fail with the expected error)")
+def check_against_expected(items: list[tuple[str, list[str]]], expected: dict[str, str]) -> bool:
+    """Each (name, problems) must fail, and one of its problems must hold the fragment
+    expected.json names for it, so an invalid example cannot pass by failing for the wrong
+    reason. Every name in expected.json must name one of items."""
     ok = True
-    folder = EXAMPLES / "invalid"
-    expected: dict[str, str] = without_comment(load_json(folder / "expected.json"))
-    paths = documents_in(folder)
-    names = [str(path.relative_to(folder)) for path in paths]
-    for path, name in zip(paths, names):
-        problems = check_document(path, context)
+    names = [name for name, _ in items]
+    for name, problems in items:
         fragment = expected.get(name)
         if fragment is None:
             print(f"  FAIL  {name}: no entry in expected.json")
@@ -1659,18 +1676,29 @@ def check_invalid_examples(context: Context) -> tuple[bool, int]:
     for name in sorted(set(expected) - set(names)):
         print(f"  FAIL  expected.json names {name}, which does not exist")
         ok = False
-    return ok, len(paths)
+    return ok
+
+
+def check_invalid_examples(context: Context) -> tuple[bool, int]:
+    print("\nInvalid examples (must fail with the expected error)")
+    folder = EXAMPLES / "invalid"
+    expected: dict[str, str] = without_comment(load_json(folder / "expected.json"))
+    paths = documents_in(folder)
+    items = [(str(path.relative_to(folder)), check_document(path, context)) for path in paths]
+    return check_against_expected(items, expected), len(paths)
 
 
 def check_data_repository_examples(context: Context) -> tuple[bool, int]:
     """The data repository fixtures under schema/examples/ (ADR 0046): the valid tree must pass
     in full, and the invalid tree's entries must each fail with their expected error."""
-    ok = True
     print("\nData repository: valid example (must pass)")
-    valid_entries = check_data_repository(EXAMPLES / "data-repository-valid", context)
+    valid_root = EXAMPLES / "data-repository-valid"
+    valid_entries = check_data_repository(
+        valid_root, context.with_data_repository_sites(valid_root)
+    )
     for name, problems in valid_entries:
         report("pass" if not problems else "FAIL", name, problems, "  ")
-        ok &= not problems
+    valid_ok = all(not problems for _, problems in valid_entries)
 
     print("\nData repository: invalid example (each entry must fail with the expected error)")
     folder = EXAMPLES / "data-repository-invalid"
@@ -1678,29 +1706,14 @@ def check_data_repository_examples(context: Context) -> tuple[bool, int]:
     invalid_entries = check_data_repository(
         folder, context, ignore_root=frozenset({"expected.json"})
     )
-    names = [name for name, _ in invalid_entries]
-    for name, problems in invalid_entries:
-        fragment = expected.get(name)
-        if fragment is None:
-            print(f"  FAIL  {name}: no entry in expected.json")
-            ok = False
-        elif not problems:
-            print(f"  FAIL  {name}: validated, but it must fail")
-            ok = False
-        elif not any(fragment in message for message in problems):
-            report("FAIL", f"{name}: failed, but not with {fragment!r}", problems[:8], "  ")
-            ok = False
-        else:
-            print(f"  fail  {name}  ({fragment})")
-    for name in sorted(set(expected) - set(names)):
-        print(f"  FAIL  expected.json names {name}, which does not exist")
-        ok = False
-    return ok, len(valid_entries) + len(invalid_entries)
+    invalid_ok = check_against_expected(invalid_entries, expected)
+    return valid_ok and invalid_ok, len(valid_entries) + len(invalid_entries)
 
 
 def run_data_repository(root: Path, context: Context) -> int:
     """The --data-repository DIR mode: check every entry in a data repository and report it."""
     print(f"Data repository: {root}")
+    context = context.with_data_repository_sites(root)
     entries = check_data_repository(root, context)
     for name, problems in entries:
         report("pass" if not problems else "FAIL", name, problems, indent="  ")
