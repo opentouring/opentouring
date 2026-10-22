@@ -6,20 +6,19 @@ Open Touring uses three licences: one for the data, one for the server code and 
 
 ## By directory
 
-| Path                                                              | Licence                                        | SPDX identifier |
-| ----------------------------------------------------------------- | ---------------------------------------------- | --------------- |
-| `services/`                                                       | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `pipelines/`                                                      | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `web/`                                                            | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `infra/`                                                          | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
-| `schema/`                                                         | Apache License 2.0                             | `Apache-2.0`    |
-| `api/`                                                            | Apache License 2.0                             | `Apache-2.0`    |
-| `sdks/`                                                           | Apache License 2.0                             | `Apache-2.0`    |
-| `tools/`, `.claude/` and root tool configuration                  | Apache License 2.0                             | `Apache-2.0`    |
-| `.github/` (issue forms and templates)                            | Apache License 2.0                             | `Apache-2.0`    |
-| Documentation (`*.md` at the root, `docs/`)                       | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
-| CI workflows and scripts in data repositories and `otwd-template` | Apache License 2.0                             | `Apache-2.0`    |
-| OTWD data (data repositories, bulk downloads and API responses)   | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
+| Path                                                            | Licence                                        | SPDX identifier |
+| --------------------------------------------------------------- | ---------------------------------------------- | --------------- |
+| `services/`                                                     | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `pipelines/`                                                    | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `web/`                                                          | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `infra/`                                                        | GNU Affero General Public License v3.0 only    | `AGPL-3.0-only` |
+| `schema/`                                                       | Apache License 2.0                             | `Apache-2.0`    |
+| `api/`                                                          | Apache License 2.0                             | `Apache-2.0`    |
+| `sdks/`                                                         | Apache License 2.0                             | `Apache-2.0`    |
+| `tools/`, `.claude/` and root tool configuration                | Apache License 2.0                             | `Apache-2.0`    |
+| `.github/` (issue forms and templates)                          | Apache License 2.0                             | `Apache-2.0`    |
+| Documentation (`*.md` at the root, `docs/`)                     | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
+| OTWD data (data repositories, bulk downloads and API responses) | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
 
 Sample clients live under `sdks/` and are Apache-2.0. The records in a data repository stay CC-BY-4.0, while its CI workflows and scripts are Apache-2.0 with an SPDX header, and each data repository's README says so ([ADR 0048](docs/adr/0048-data-repository-layout-and-ci-file-licence.md)). A directory not listed here takes the licence of its nearest listed parent.
 

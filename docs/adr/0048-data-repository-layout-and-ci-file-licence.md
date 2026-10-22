@@ -19,7 +19,7 @@ Accepted 2026-10-22. Builds on [ADR 0046](0046-live-data-in-a-public-git-reposit
 - `country`: the ISO 3166-1 alpha-2 code of the country the repository covers, `AU` for `opentouring/otwd-au`.
 - `schema`: the tag of `opentouring/opentouring` the data conforms to, first `v1.0.0-draft.1`.
 
-Its schema is `schema/otwd-config.schema.json`. CI validates every pull request against the tag in `schema`, as ADR 0046 sets.
+Its schema is `schema/otwd-config.schema.json`, which lands with the validator's data repository mode in a separate pull request. CI validates every pull request against the tag in `schema`, as ADR 0046 sets.
 
 **Who checks the state folder.** CI checks only that a state folder is one of the known codes or `interstate`. The loader checks that a record's state folder matches the record's location. CI needs no boundary data, and a record in the wrong state folder is a loader error that a moderator corrects by moving the file ([ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md)).
 
@@ -29,7 +29,7 @@ Its schema is `schema/otwd-config.schema.json`. CI validates every pull request 
 
 Paths and `otwd.json` are a public contract. The loader parses them, CI validates against them and anyone who clones a repository relies on them. Once a country has records, renaming a folder moves every file and breaks every clone and fork, so the names are fixed before the first record.
 
-Putting the state check in the loader keeps CI small. Checking a record against a state's boundary needs boundary data, and CI would have to fetch and version it. The loader already holds that data to compute derived values.
+Putting the state check in the loader keeps CI small. Checking a record against a state's boundary needs boundary data, and CI would have to fetch and version it. The loader runs on opentouring.org, where that data can be kept without being copied into every data repository.
 
 CI files are code, not data, and they sit in repositories whose records are CC-BY-4.0. Apache-2.0 matches the licence of `schema/`, which CI runs, and lets a partner or another country's maintainers copy the workflow without taking on the AGPL.
 
