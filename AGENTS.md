@@ -2,7 +2,7 @@
 
 # Open Touring agent instructions
 
-Open Touring is an open, crowd-contributed database of places travellers stop at on the road. OTWD (Open Touring and Waypoint Database) is the dataset, API and SDKs. This monorepo holds the platform: Rust API on Spin and moderation workers (`services/`), Python data pipelines (`pipelines/`), the Astro website (`web/`), infrastructure as code (`infra/`), the JSON Schema (`schema/`), the OpenAPI spec (`api/`) and generated SDKs (`sdks/`). It is in Preview: outside data contributions are off.
+Open Touring is an open, crowd-contributed database of places travellers stop at on the road. OTWD (Open Touring and Waypoint Database) is the dataset, API and SDKs. This monorepo holds the platform: Rust API on Spin, screening, the GitHub App and the loader (`services/`), Python data pipelines (`pipelines/`), the Astro website (`web/`), infrastructure as code (`infra/`), the JSON Schema (`schema/`), the OpenAPI spec (`api/`) and generated SDKs (`sdks/`). Live data is not kept here: it lives in a public data repository per country, starting with `opentouring/otwd-au` (ADR 0046). It is in Preview: outside data contributions are off.
 
 ## Vocabulary
 

@@ -56,6 +56,8 @@ The governed lists are written in en-AU, the reference language, and can be tran
 
 Outside data contributions are not open yet. When they open, every contributor will accept the data contributor terms first, and partner apps will need each contributor's consent to those terms before submitting on their behalf. The plain-English draft of those terms is in [docs/contributor-terms-draft.md](docs/contributor-terms-draft.md) and is not in force.
 
+Every change to live data arrives in the data repository for its country, such as `opentouring/otwd-au`, as a pull request, and a moderator's review on it is the moderation decision. A submission through a partner app or opentouring.org is screened first and then opened as a pull request by the Open Touring GitHub App, which names no contributor. You can also open a pull request on a data repository from your own GitHub account, once it is linked to an opentouring.org account that has accepted the contributor terms. Your GitHub handle is then public on that pull request. See [ADR 0047](docs/adr/0047-moderation-on-github-through-pull-requests.md).
+
 If you represent a council, tourism body or park agency and can release data under CC BY 4.0 or a compatible licence, open an issue with the "Seed source proposal" form or email hello@opentouring.org. Seed sources are imported through the same moderation pipeline as other submissions and credited in every fact they supply. The sources in use and planned are listed in [docs/seed-sources.md](docs/seed-sources.md).
 
 How submissions are moderated is published in [the moderation policy](docs/policies/moderation.md). How personal information is handled is set out in [the privacy policy draft](docs/policies/privacy-draft.md), which is not in force.

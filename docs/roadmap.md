@@ -24,12 +24,13 @@ Open Touring is built as a working concept before a host is approached, so that 
 One site end to end, on infrastructure as code.
 
 - [ ] Accounts created fresh under an Open Touring email: GitHub organisation, domain, cloud, CDN, AI provider
-- [ ] Cluster, database, event bus, cache and gateway defined in OpenTofu and deployed by Argo CD
+- [ ] GitHub organisation set up for live data: `otwd-template`, `otwd-au` with CI validation, rulesets and CODEOWNERS, `otwd-au-staging` and the moderator teams
+- [ ] Cluster, database, cache and gateway defined in OpenTofu and deployed by Argo CD
 - [ ] Seed one site from a government dataset as a submission with seed-source provenance
 - [ ] Query API returns the site
 - [ ] Submit API appends a submission to the submission log
-- [ ] Moderation queue shows the submission and records a moderation decision
-- [ ] Approved change is applied, gets a sequence number and is published
+- [ ] The GitHub App opens the screened submission as a pull request, and a moderator's review records a moderation decision
+- [ ] The loader applies the merged pull request to the read model, gives it a sequence number and publishes it
 - [ ] Website renders the site page from the public API
 
 ### 3. Breadth

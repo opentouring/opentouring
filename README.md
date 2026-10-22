@@ -16,7 +16,9 @@ The Preview runs the production stack at minimum size with seeded government dat
 
 Each site is a point (latitude and longitude) with its site types, facilities, prices, opening hours, rig limits, photos and a short description. Road restrictions are points too, with their structure and their vertical clearance, width, weight and length limits. Road segments are lines with their surface, vehicle access class (2WD to 4WD only), whether towing is permitted and seasonal closures. Ferry services are lines between two ferry terminals with the vehicle classes they carry, vehicle limits, fares and hours. Every fact records where it came from and when. Public IDs never change.
 
-Partner apps can query records through the API, by area or along a route, download the whole dataset as GeoParquet or GeoJSON, and submit new records and corrections on behalf of their contributors, the people using the app who choose to send them. Every use needs an API key. The free tier covers reading and bulk downloads, and contributing is always free. Paid tiers add volume, a service level, change feeds and their webhooks, delta files and support. OTWD provides no map tiles: apps draw its points and lines on their own maps.
+Live data is kept in a public git repository per country, starting with `opentouring/otwd-au`. Every record is a JSON file and every change is a reviewed pull request, so anyone can clone the whole dataset with its history, no API key needed.
+
+Partner apps can query records through the API, by area or along a route, download the whole dataset as GeoParquet or GeoJSON, and submit new records and corrections on behalf of their contributors, the people using the app who choose to send them. The API and bulk downloads need an API key. The free tier covers reading and bulk downloads, and contributing is always free. Paid tiers add volume, a service level, change feeds and their webhooks, delta files and support. OTWD provides no map tiles: apps draw its points and lines on their own maps.
 
 ## Licences
 

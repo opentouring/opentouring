@@ -139,7 +139,7 @@ Removing or renaming a field, code or endpoint, changing a field's meaning, or m
 2. `api/openapi.yaml`: the path, `operationId`, parameters, responses and problem types, with bodies referencing `schema/`.
 3. Review it against this list:
    - It follows the conventions in [api/README.md](../api/README.md): `OTWD-API-Key`, cursor pagination, ETags, RFC 9457 errors, rate limit headers.
-   - It writes nothing to live data. Writes go through `POST /v1/submissions` ([ADR 0009](adr/0009-event-sourced-submissions-never-direct-writes.md)).
+   - It writes nothing to live data. Writes go through `POST /v1/submissions` and reach the data repository only as a pull request after screening ([ADR 0046](adr/0046-live-data-in-a-public-git-repository-per-country.md)).
    - The website would use it through the public API like any partner app ([ADR 0023](adr/0023-the-website-is-just-another-api-client.md)).
    - It exposes no contributor identity beyond what [the privacy policy draft](policies/privacy-draft.md) allows.
    - The tier it needs is stated, and anything on the contribute path is free ([ADR 0008](adr/0008-free-api-key-required-even-for-bulk-downloads.md)).

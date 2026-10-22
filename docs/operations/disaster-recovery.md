@@ -15,16 +15,17 @@ Staging has no objectives. It is rebuilt from the preview's latest backup when n
 
 ## What is protected, and how
 
-| What                                                                     | Primary copy                     | Protection                                                                                |
-| ------------------------------------------------------------------------ | -------------------------------- | ----------------------------------------------------------------------------------------- |
-| Submission log, moderation decisions, live data, trust scores, outbox    | Managed Postgres, Sydney         | Managed backups and point-in-time restore, plus encrypted off-site logical backups        |
-| Contributor identity links and the sign-in service's database            | Managed Postgres, Sydney         | As above, with identity links also exported to a separately encrypted file                |
-| Photo files                                                              | Bunny Storage, Sydney            | Hash and metadata in the submission log. See known gaps                                   |
-| Bulk downloads                                                           | Bunny Storage, Sydney            | None needed: rebuilt from live data                                                       |
-| Cache and rate limit counters                                            | Managed Valkey                   | None needed: rebuilt as traffic arrives                                                   |
-| Kubernetes cluster and its workloads                                     | LKE, Sydney                      | None needed: rebuilt from this repository by OpenTofu and Argo CD                         |
-| OpenTofu state                                                           | Linode Object Storage, Singapore | OpenTofu state encryption                                                                 |
-| Secrets needed to restore (backup decryption keys, provider credentials) | The operator's password manager  | A sealed copy held for the host, see [GOVERNANCE.md](../../GOVERNANCE.md#transfer-intent) |
+| What                                                                     | Primary copy                        | Protection                                                                                                                                      |
+| ------------------------------------------------------------------------ | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Live data and its history                                                | Data repository per country, GitHub | Every clone, and the read-only mirror on a second forge                                                                                         |
+| Submission log, moderation decisions, read model, trust scores           | Managed Postgres, Sydney            | Managed backups and point-in-time restore, plus encrypted off-site logical backups. The read model can also be rebuilt from the data repository |
+| Contributor identity links and the sign-in service's database            | Managed Postgres, Sydney            | As above, with identity links also exported to a separately encrypted file                                                                      |
+| Photo files                                                              | Bunny Storage, Sydney               | Hash and metadata in the submission log. See known gaps                                                                                         |
+| Bulk downloads                                                           | Bunny Storage, Sydney               | None needed: rebuilt from live data                                                                                                             |
+| Cache and rate limit counters                                            | Managed Valkey                      | None needed: rebuilt as traffic arrives                                                                                                         |
+| Kubernetes cluster and its workloads                                     | LKE, Sydney                         | None needed: rebuilt from this repository by OpenTofu and Argo CD                                                                               |
+| OpenTofu state                                                           | Linode Object Storage, Singapore    | OpenTofu state encryption                                                                                                                       |
+| Secrets needed to restore (backup decryption keys, provider credentials) | The operator's password manager     | A sealed copy held for the host, see [GOVERNANCE.md](../../GOVERNANCE.md#transfer-intent)                                                       |
 
 ## Managed backups
 
@@ -87,7 +88,8 @@ Every quarter, the maintainer restores the latest off-site backup of production 
 
 When Open Touring moves to the host or a successor ([GOVERNANCE.md](../../GOVERNANCE.md#transfer-intent)), the outgoing operator produces a final off-site backup set and hands over:
 
-- the submission log, moderation decisions and live data, in the logical backup
+- the submission log and moderation decisions, in the logical backup
+- the GitHub organisation, which holds the data repositories and the GitHub App, transferred with ownership
 - contributor identity links and the sign-in service's database, in their separately encrypted file
 - the backup private keys and every secret in the table above, handed over in person or through an encrypted channel, never in this repository
 - the photo files, copied from Bunny Storage, unless the Bunny account itself is transferred
@@ -98,3 +100,5 @@ The receiving operator restores the set to its own accounts with the off-site re
 ## Known gaps
 
 Photo files live only in Bunny Storage. Losing the Bunny account would lose them, though every photo's hash, author and licence survive in the submission log. A copy outside Bunny needs a provider decision, because [ADR 0029](../adr/0029-object-storage-deferred-singapore-bucket-for-infrastructure-state-only.md) keeps Linode Object Storage to infrastructure state. Until that decision, a photo copy is made with every host handover and before any change to the Bunny account.
+
+The restore steps above still treat Postgres as the home of live data. Since [ADR 0046](../adr/0046-live-data-in-a-public-git-repository-per-country.md), recovering live data is a rebuild of the read model from the data repository, and the restore steps are rewritten for that when the read side is designed.
