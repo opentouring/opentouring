@@ -1325,7 +1325,11 @@ def check_data_repository(
             )
             continue
         for record_entry in sorted(entry.iterdir()):
-            if record_entry.name == KEEP_FILE and record_entry.is_file():
+            if (
+                record_entry.name == KEEP_FILE
+                and not record_entry.is_symlink()
+                and record_entry.is_file()
+            ):
                 continue
             record_type = RECORD_TYPE_FOLDERS.get(record_entry.name)
             if not record_entry.is_dir() or record_type is None:
@@ -1759,7 +1763,7 @@ def check_git_entry_ignored(valid_root: Path, context: Context) -> bool:
                 git.rmdir()
             else:
                 git.unlink()
-        (copy / "vic" / ".git").mkdir()
+        (copy / "vic" / ".git").mkdir(parents=True)
         entries = check_data_repository(copy, context.with_data_repository_sites(copy))
         failed = any(name.startswith("vic/.git") and problems for name, problems in entries)
         report("pass" if failed else "FAIL", "vic/.git", [], "  ")
