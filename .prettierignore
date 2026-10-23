@@ -4,3 +4,5 @@ package-lock.json
 node_modules/
 # Deliberately malformed JSON, a fixture for validate.py --data-repository's JSON error handling.
 schema/examples/data-repository-invalid/vic/road-segments/7QAQPDH4AFAXRHEM3E2MSH4DMD.json
+# A symlink, a fixture for validate.py --data-repository's symlink check. Prettier refuses symlinks.
+schema/examples/data-repository-invalid/sa/sites/01M330FR008NQD6VCS6A308BBH.json

@@ -10,5 +10,8 @@
   "otwd.json": "does not match",
   "act/notes.txt": "not a known record type folder",
   "nsw/sites/.gitkeep": "file name must be the record's own ULID",
-  "act/.gitignore": "not a known record type folder"
+  "act/.gitignore": "not a known record type folder",
+  "sa/sites/01M330FR008NQD6VCS6A308BBH.json": "symlink",
+  "qld/": "symlink",
+  "tas/sites/": "symlink"
 }

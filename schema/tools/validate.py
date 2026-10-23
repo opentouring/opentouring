@@ -184,6 +184,8 @@ ROOT_DIRS = frozenset({".github"})
 GIT_ENTRY = ".git"
 # Lets an empty state folder exist in git. Allowed directly inside a state folder only.
 KEEP_FILE = ".gitkeep"
+# A pull request can add a symlink, so the validator never follows one out of the checkout.
+SYMLINK_PROBLEM = "is a symlink, which a data repository must not contain"
 
 
 def schema_file(stem: str) -> str:
@@ -209,10 +211,17 @@ class RecordType:
 
     code: str
     computed: frozenset[str] = frozenset()
+    collection: str = ""
 
     @property
     def stem(self) -> str:
         return self.code.replace("_", "-")
+
+    @property
+    def folder(self) -> str:
+        """The record type folder in a data repository: the last segment of the API collection
+        path, so /v1/sites gives sites (ADR 0046, ADR 0048)."""
+        return self.collection.rsplit("/", 1)[-1]
 
     @property
     def full(self) -> str:
@@ -272,7 +281,8 @@ def load_record_types() -> tuple[RecordType, ...]:
     """The record types in the registry, record-types.json, in its order."""
     entries = load_json(SCHEMA_DIR / RECORD_TYPE_REGISTRY)["entries"]
     return tuple(
-        RecordType(entry["code"], frozenset(entry.get("computed_facts", []))) for entry in entries
+        RecordType(entry["code"], frozenset(entry.get("computed_facts", [])), entry["collection"])
+        for entry in entries
     )
 
 
@@ -282,8 +292,8 @@ RECORD_TYPE_BY_CODE = {record_type.code: record_type for record_type in RECORD_T
 
 def record_type_folders(record_types: tuple[RecordType, ...]) -> dict[str, RecordType]:
     """The record type folder names a data repository uses (ADR 0046), such as sites and
-    road-restrictions: each record type's stem, pluralised."""
-    return {f"{record_type.stem}s": record_type for record_type in record_types}
+    road-restrictions: the last segment of each record type's API collection path."""
+    return {record_type.folder: record_type for record_type in record_types}
 
 
 RECORD_TYPE_FOLDERS = record_type_folders(RECORD_TYPES)
@@ -1268,6 +1278,8 @@ def repository_file_problems(
     """A data repository file (ADR 0046): named for its own ULID, and valid in the repository
     form. The loader decides whether its state folder matches its location, so that is not
     checked here."""
+    if path.is_symlink():
+        return [SYMLINK_PROBLEM]
     if not path.is_file():
         return ["must be a file"]
     if path.suffix != ".json" or not ulid.match(path.stem):
@@ -1306,7 +1318,8 @@ def check_data_repository(
         if entry.name in ignore_root or entry.name == GIT_ENTRY:
             continue
         if entry.name == "otwd.json" and entry.is_file():
-            entries.append((entry.name, config_problems(entry, context)))
+            problems = [SYMLINK_PROBLEM] if entry.is_symlink() else config_problems(entry, context)
+            entries.append((entry.name, problems))
             continue
         if entry.is_file():
             if entry.name not in ROOT_FILES:
@@ -1320,7 +1333,7 @@ def check_data_repository(
                     )
                 )
             continue
-        if entry.name in ROOT_DIRS:
+        if entry.name in ROOT_DIRS and not entry.is_symlink():
             continue
         if entry.name not in STATE_FOLDERS:
             entries.append(
@@ -1333,6 +1346,9 @@ def check_data_repository(
                 )
             )
             continue
+        if entry.is_symlink():
+            entries.append((f"{entry.name}/", [SYMLINK_PROBLEM]))
+            continue
         for record_entry in sorted(entry.iterdir()):
             if (
                 record_entry.name == KEEP_FILE
@@ -1341,6 +1357,9 @@ def check_data_repository(
             ):
                 continue
             record_type = RECORD_TYPE_FOLDERS.get(record_entry.name)
+            if record_type is not None and record_entry.is_symlink():
+                entries.append((f"{entry.name}/{record_entry.name}/", [SYMLINK_PROBLEM]))
+                continue
             if not record_entry.is_dir() or record_type is None:
                 suffix = "/" if record_entry.is_dir() else ""
                 entries.append(
@@ -1802,7 +1821,11 @@ def main(arguments: list[str]) -> int:
         if len(arguments) != 2:
             print("Usage: validate.py --data-repository DIR")
             return 1
-        return run_data_repository(Path(arguments[1]), Context.load())
+        root = Path(arguments[1])
+        if not root.is_dir():
+            print(f"Usage: validate.py --data-repository DIR (not a folder: {root})")
+            return 1
+        return run_data_repository(root, Context.load())
 
     context = Context.load()
     if arguments:
