@@ -43,4 +43,4 @@ CI files are code, not data, and they sit in repositories whose records are CC-B
 
 ## Consequences
 
-`schema/otwd-config.schema.json` lands with the validator's data repository mode. `otwd-template` and `opentouring/otwd-au` start with this layout, an `otwd.json` pinned to `v1.0.0-draft.1`, Apache-2.0 headers on their workflow and scripts, and the README note. The loader reports a record whose state folder does not match its location. `LICENSING.md` gains a row for CI files in data repositories. Changing a folder name or an `otwd.json` key needs a new ADR that supersedes this one.
+`schema/otwd-config.schema.json` lands with the validator's data repository mode. `otwd-template` and `opentouring/otwd-au` start with this layout, an `otwd.json` pinned to `v1.0.0-draft.1`, Apache-2.0 headers on their workflow and scripts, and the README note. The loader reports a record whose state folder does not match its location. `LICENSING.md` gains a sentence on CI files in data repositories. Changing a folder name or an `otwd.json` key needs a new ADR that supersedes this one.
