@@ -12,7 +12,7 @@ Accepted 2026-10-22. Builds on [ADR 0046](0046-live-data-in-a-public-git-reposit
 
 **State folders.** A state folder is the lower-case code of a state or territory: `act`, `nsw`, `nt`, `qld`, `sa`, `tas`, `vic` or `wa`. Records that cross a border live under `interstate`, as ADR 0046 sets. No other top-level folder holds records.
 
-**Record type folders.** A record type folder is plural and in kebab case: `sites`, `road-restrictions`, `road-segments` and `ferry-services`. A record is at `vic/sites/<ulid>.json`, as in ADR 0046.
+**Record type folders.** A record type folder is plural and in kebab case: `sites`, `road-restrictions`, `road-segments` and `ferry-services`. A record is at `vic/sites/<ulid>.json`, as in ADR 0046. The folder name is the last segment of the `collection` field in the record type registry. A new record type gets its folder through the record type checklist in `docs/extending.md`, with no separate ADR.
 
 **`otwd.json`.** The file at the repository root holds two values:
 
@@ -21,7 +21,7 @@ Accepted 2026-10-22. Builds on [ADR 0046](0046-live-data-in-a-public-git-reposit
 
 Its schema is `schema/otwd-config.schema.json`, which lands with the validator's data repository mode in a separate pull request. CI validates every pull request against the tag in `schema`, as ADR 0046 sets.
 
-**Who checks the state folder.** CI checks only that a state folder is one of the known codes or `interstate`. The loader checks that a record's state folder matches the record's location. CI needs no boundary data, and a record in the wrong state folder is a loader error that a moderator corrects by moving the file ([ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md)).
+**Who checks the state folder.** CI checks only that a state folder is one of the known codes or `interstate`. The loader checks that a record's state folder matches the record's location. CI needs no boundary data, and a record in the wrong state folder is a loader error that a moderator corrects by moving the file ([ADR 0046](0046-live-data-in-a-public-git-repository-per-country.md)). The loader also reports a record under `interstate/` that does not cross a state or territory border.
 
 **Licence of CI files.** The workflow and any scripts in a data repository, and in `otwd-template`, are Apache-2.0 and start with an SPDX header, matching `schema/`. Records stay CC-BY-4.0. Each data repository's README carries a REUSE-style note that says so. `LICENSING.md` lists the rule.
 
