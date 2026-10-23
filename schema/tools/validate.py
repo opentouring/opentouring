@@ -210,8 +210,8 @@ class RecordType:
     """
 
     code: str
-    computed: frozenset[str] = frozenset()
-    collection: str = ""
+    computed: frozenset[str]
+    collection: str
 
     @property
     def stem(self) -> str:
@@ -220,7 +220,7 @@ class RecordType:
     @property
     def folder(self) -> str:
         """The record type folder in a data repository: the last segment of the API collection
-        path, so /v1/sites gives sites (ADR 0046, ADR 0048)."""
+        path, so /v1/sites gives sites (ADR 0046)."""
         return self.collection.rsplit("/", 1)[-1]
 
     @property
@@ -1333,7 +1333,9 @@ def check_data_repository(
                     )
                 )
             continue
-        if entry.name in ROOT_DIRS and not entry.is_symlink():
+        if entry.name in ROOT_DIRS:
+            if entry.is_symlink():
+                entries.append((f"{entry.name}/", [SYMLINK_PROBLEM]))
             continue
         if entry.name not in STATE_FOLDERS:
             entries.append(
