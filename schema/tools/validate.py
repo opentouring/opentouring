@@ -1254,11 +1254,12 @@ def check_document(path: Path, context: Context) -> list[str]:
     return check_document_as(path, context, kind)
 
 
-def read_repository_file(path: Path) -> tuple[Any, list[str]]:
+def read_repository_file(path: Path, allow_comment: bool = False) -> tuple[Any, list[str]]:
     """A data repository file as plain JSON, or the problems that stop it being read. It must
     be a regular file and not a symlink, small enough, strict UTF-8 and JSON. $base and $patch
     belong to the schema examples, so a file that uses one is refused rather than followed.
-    So is a top-level $comment, which the repository schemas do not allow.
+    So is a top-level $comment on a record, which the repository schemas do not allow.
+    otwd.json passes allow_comment, because its schema allows one.
     The size comes from stat() before the file is opened, and nothing here raises."""
     try:
         status = path.lstat()
@@ -1269,7 +1270,10 @@ def read_repository_file(path: Path) -> tuple[Any, list[str]]:
     if not stat.S_ISREG(status.st_mode):
         return None, ["must be a file"]
     if status.st_size > MAX_FILE_BYTES:
-        return None, [f"too large ({status.st_size} bytes, the limit is {MAX_FILE_BYTES})"]
+        return None, [
+            f"too large ({status.st_size} bytes, the limit is {MAX_FILE_BYTES}): "
+            "split the record, such as a long road segment, into smaller ones"
+        ]
     try:
         text = path.read_bytes().decode("utf-8")
     except UnicodeDecodeError as error:
@@ -1283,7 +1287,8 @@ def read_repository_file(path: Path) -> tuple[Any, list[str]]:
     except ValueError as error:
         return None, [f"not valid JSON: {error}"]
     if isinstance(document, dict):
-        used = [key for key in (BASE_KEY, PATCH_KEY, COMMENT_KEY) if key in document]
+        refused = (BASE_KEY, PATCH_KEY) if allow_comment else (BASE_KEY, PATCH_KEY, COMMENT_KEY)
+        used = [key for key in refused if key in document]
         if used:
             return None, [f"must not use {' or '.join(used)}: a data repository file stands alone"]
     return document, []
@@ -1329,7 +1334,7 @@ def repository_record_problems(
 
 def repository_config_problems(path: Path, context: Context) -> list[str]:
     """otwd.json (ADR 0046): valid JSON that matches the otwd-config schema."""
-    document, problems = read_repository_file(path)
+    document, problems = read_repository_file(path, allow_comment=True)
     if problems:
         return problems
     return all_errors(list(context.validator("otwd-config.schema.json").iter_errors(document)))
@@ -1343,17 +1348,16 @@ def folder_problem(kind: str, options: Iterable[str]) -> list[str]:
 def duplicate_ids(
     entries: list[tuple[str, list[str]]], candidates: list[tuple[int, Path, RecordType]]
 ) -> dict[int, list[str]]:
-    """For each entry whose file name (a record's public id) also appears under another state
-    folder, the other paths. ADR 0046 moves a record's file when its state changes, so one id
-    is one file."""
+    """For each entry whose file name (a record's public id) also appears anywhere else in the
+    repository, in any record type and any state folder, the other paths. ADR 0046 moves a
+    record's file when its state changes, so one id is one file."""
     by_name: dict[str, list[int]] = {}
     for index, file_path, _ in candidates:
         by_name.setdefault(file_path.name, []).append(index)
     duplicates: dict[int, list[str]] = {}
     for indexes in by_name.values():
         for index in indexes:
-            state = entries[index][0].split("/")[0]
-            others = [entries[i][0] for i in indexes if entries[i][0].split("/")[0] != state]
+            others = [entries[i][0] for i in indexes if i != index]
             if others:
                 duplicates[index] = others
     return duplicates
@@ -1440,7 +1444,7 @@ def check_data_repository(
             repository_record_problems(file_path, raw, record_type, known),
         )
     for index, others in repeated.items():
-        problem = f"same id as {', '.join(others)}: a record lives in one state folder"
+        problem = f"same id as {', '.join(others)}: a record is one file"
         entries[index] = (entries[index][0], [*entries[index][1], problem])
     return entries
 
@@ -1919,7 +1923,7 @@ def hostile_cases(valid_root: Path) -> list[tuple[str, str, str, Callable[[Path]
         (
             "file over the size limit",
             record,
-            "too large",
+            "split the record",
             write(record, b'{"a": "' + b"a" * MAX_FILE_BYTES + b'"}'),
         ),
         ("deep nesting", record, "too deeply nested", write(record, b"[" * 100000 + b"]" * 100000)),

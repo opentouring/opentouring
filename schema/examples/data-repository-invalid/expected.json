@@ -19,5 +19,7 @@
   "CODEOWNERS": "symlink",
   "act/sites/01M330FR008NQD6VCS6A308BBG.json": "same id as interstate/sites/01M330FR008NQD6VCS6A308BBG.json",
   "interstate/sites/01M330FR008NQD6VCS6A308BBG.json": "same id as act/sites/01M330FR008NQD6VCS6A308BBG.json",
-  "sa/road-segments/01M330FR008NQD6VCS6A308BBN.json": "$comment"
+  "sa/road-segments/01M330FR008NQD6VCS6A308BBN.json": "$comment",
+  "sa/sites/01M330FR008NQD6VCS6A308BBP.json": "same id as sa/road-segments/01M330FR008NQD6VCS6A308BBP.json",
+  "sa/road-segments/01M330FR008NQD6VCS6A308BBP.json": "same id as sa/sites/01M330FR008NQD6VCS6A308BBP.json"
 }

@@ -1,4 +1,5 @@
 {
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
   "country": "AU",
   "schema": "v1.0.0-draft.1"
 }
