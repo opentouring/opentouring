@@ -1258,7 +1258,8 @@ def read_repository_file(path: Path) -> tuple[Any, list[str]]:
     """A data repository file as plain JSON, or the problems that stop it being read. It must
     be a regular file and not a symlink, small enough, strict UTF-8 and JSON. $base and $patch
     belong to the schema examples, so a file that uses one is refused rather than followed.
-    So is a top-level $comment, which the repository schemas do not allow. The size comes from stat() before the file is opened, and nothing here raises."""
+    So is a top-level $comment, which the repository schemas do not allow.
+    The size comes from stat() before the file is opened, and nothing here raises."""
     try:
         status = path.lstat()
     except OSError as error:
