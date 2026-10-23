@@ -5,6 +5,7 @@
 Usage:
     python3 schema/tools/validate.py              # check everything
     python3 schema/tools/validate.py FILE...      # check documents of your own
+    python3 schema/tools/validate.py --data-repository DIR   # check a data repository checkout
 
 A document's schema is chosen from its file name suffix: *.site.json is checked
 against site.schema.json, *.site-compact.json against site-compact.schema.json,
@@ -67,8 +68,10 @@ The exit status is 0 when every expectation holds and 1 otherwise.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
+import stat
 import sys
 import tempfile
 import zoneinfo
@@ -185,6 +188,8 @@ GIT_ENTRY = ".git"
 # Lets an empty state folder exist in git. Allowed directly inside a state folder only.
 KEEP_FILE = ".gitkeep"
 # A pull request can add a symlink, so the validator never follows one out of the checkout.
+# A record or otwd.json is read whole, so a pull request must not be able to make that large.
+MAX_FILE_BYTES = 1024 * 1024
 SYMLINK_PROBLEM = "is a symlink, which a data repository must not contain"
 
 
@@ -484,22 +489,6 @@ class Context:
                 if types is not None:
                     sites[document["id"]] = types
         return self._with_known_sites(sites, complete)
-
-    def with_data_repository_sites(self, root: Path) -> Context:
-        """Context with every site in root's sites folders (ADR 0046), for the ferry terminal
-        cross-check when checking a whole data repository. A file check_data_repository will
-        itself report as malformed is skipped here rather than reported twice."""
-        sites: dict[str, set[str]] = {}
-        for path in sorted(root.glob("*/sites/*.json")):
-            try:
-                document = load_document(path)
-            except json.JSONDecodeError:
-                continue
-            if isinstance(document, dict) and isinstance(document.get("id"), str):
-                types = site_types_of(document)
-                if types is not None:
-                    sites[document["id"]] = types
-        return self._with_known_sites(sites, complete=True)
 
     def _with_known_sites(self, sites: dict[str, set[str]], complete: bool) -> Context:
         return Context(
@@ -1250,15 +1239,8 @@ REPOSITORY_KINDS = {
 
 
 def check_document_as(path: Path, context: Context, kind: DocumentKind) -> list[str]:
-    """A document already known to be of kind, such as a data repository file found by folder."""
-    raw = load_json(path)
-    document = load_document(path)
-    schema_errors = list(context.validator(kind.schema).iter_errors(document))
-    if schema_errors:
-        return all_errors(schema_errors)
-    checker = SemanticChecker(context, kind.rejects_deprecated)
-    kind.semantic_check(document, checker)
-    return checker.errors + kind.file_check(path, raw)
+    """A document already known to be of kind, such as an example found by its file name."""
+    return check_loaded_document(path, load_json(path), load_document(path), context, kind)
 
 
 def check_document(path: Path, context: Context) -> list[str]:
@@ -1272,35 +1254,90 @@ def check_document(path: Path, context: Context) -> list[str]:
     return check_document_as(path, context, kind)
 
 
-def repository_file_problems(
-    path: Path, record_type: RecordType, context: Context, ulid: re.Pattern[str]
+def read_repository_file(path: Path) -> tuple[Any, list[str]]:
+    """A data repository file as plain JSON, or the problems that stop it being read. It must
+    be a regular file and not a symlink, small enough, strict UTF-8 and JSON. $base and $patch
+    belong to the schema examples, so a file that uses one is refused rather than followed.
+    The size comes from stat() before the file is opened, and nothing here raises."""
+    try:
+        status = path.lstat()
+    except OSError as error:
+        return None, [f"cannot be read: {error.strerror}"]
+    if stat.S_ISLNK(status.st_mode):
+        return None, [SYMLINK_PROBLEM]
+    if not stat.S_ISREG(status.st_mode):
+        return None, ["must be a file"]
+    if status.st_size > MAX_FILE_BYTES:
+        return None, [f"too large ({status.st_size} bytes, the limit is {MAX_FILE_BYTES})"]
+    try:
+        text = path.read_bytes().decode("utf-8")
+    except UnicodeDecodeError as error:
+        return None, [f"not valid UTF-8: {error.reason} at byte {error.start}"]
+    except OSError as error:
+        return None, [f"cannot be read: {error.strerror}"]
+    try:
+        document = json.loads(text)
+    except RecursionError:
+        return None, ["too deeply nested to read"]
+    except ValueError as error:
+        return None, [f"not valid JSON: {error}"]
+    if isinstance(document, dict):
+        used = [key for key in (BASE_KEY, PATCH_KEY) if key in document]
+        if used:
+            return None, [f"must not use {' or '.join(used)}: a data repository file stands alone"]
+    return document, []
+
+
+def check_loaded_document(
+    path: Path, raw: Any, document: Any, context: Context, kind: DocumentKind
 ) -> list[str]:
-    """A data repository file (ADR 0046): named for its own ULID, and valid in the repository
-    form. The loader decides whether its state folder matches its location, so that is not
-    checked here."""
+    schema_errors = list(context.validator(kind.schema).iter_errors(document))
+    if schema_errors:
+        return all_errors(schema_errors)
+    checker = SemanticChecker(context, kind.rejects_deprecated)
+    kind.semantic_check(document, checker)
+    return checker.errors + kind.file_check(path, raw)
+
+
+def repository_name_problems(path: Path, ulid: re.Pattern[str]) -> list[str]:
+    """The checks on a record file before it is read: a regular file named for a ULID."""
     if path.is_symlink():
         return [SYMLINK_PROBLEM]
     if not path.is_file():
         return ["must be a file"]
     if path.suffix != ".json" or not ulid.match(path.stem):
         return ["file name must be the record's own ULID, with a .json extension"]
-    try:
-        document = load_document(path)
-    except json.JSONDecodeError as error:
-        return [f"not valid JSON: {error}"]
-    record_id = document.get("id") if isinstance(document, dict) else None
+    return []
+
+
+def repository_record_problems(
+    path: Path, raw: Any, record_type: RecordType, context: Context
+) -> list[str]:
+    """A data repository record (ADR 0046): its id ends in its file name, and it is valid in the
+    repository form. The loader decides whether its state folder matches its location, so that
+    is not checked here."""
+    record_id = raw.get("id") if isinstance(raw, dict) else None
     if isinstance(record_id, str) and not record_id.endswith(f":{path.stem}"):
         return [f"id {record_id} does not match its file name {path.name}"]
-    return check_document_as(path, context, REPOSITORY_KINDS[record_type.code])
-
-
-def config_problems(path: Path, context: Context) -> list[str]:
-    """otwd.json (ADR 0046): valid JSON that matches the otwd-config schema."""
     try:
-        document = load_document(path)
-    except json.JSONDecodeError as error:
-        return [f"not valid JSON: {error}"]
+        return check_loaded_document(
+            path, raw, without_comment(raw), context, REPOSITORY_KINDS[record_type.code]
+        )
+    except RecursionError:
+        return ["too deeply nested to check"]
+
+
+def repository_config_problems(path: Path, context: Context) -> list[str]:
+    """otwd.json (ADR 0046): valid JSON that matches the otwd-config schema."""
+    document, problems = read_repository_file(path)
+    if problems:
+        return problems
+    document = without_comment(document)
     return all_errors(list(context.validator("otwd-config.schema.json").iter_errors(document)))
+
+
+def folder_problem(kind: str, options: Iterable[str]) -> list[str]:
+    return [f"not a known {kind} (expected one of {', '.join(sorted(options))})"]
 
 
 def check_data_repository(
@@ -1309,49 +1346,41 @@ def check_data_repository(
     """Every entry in a data repository (ADR 0046): the root, its state folders and record type
     folders, and each record file against its record type's repository schema. One entry per
     checked path, relative to root, with its problems (empty when it passes). ignore_root skips
-    root entries that are not part of the repository itself, such as a fixture's expected.json."""
+    root entries that are not part of the repository itself, such as a fixture's expected.json.
+
+    The walk refuses a symlink, an unknown folder and a badly named file before anything is
+    read. Only the files that pass are read, once each, and the sites among them make up the
+    known sites for the ferry terminal cross-check."""
     ulid = re.compile(context.definition("common.schema.json", "Ulid")["pattern"])
     entries: list[tuple[str, list[str]]] = []
-    if not (root / "otwd.json").is_file():
+    candidates: list[tuple[int, Path, RecordType]] = []
+    if not os.path.lexists(root / "otwd.json"):
         entries.append(("otwd.json", ["missing: every data repository needs its otwd.json"]))
     for entry in sorted(root.iterdir()):
         if entry.name in ignore_root or entry.name == GIT_ENTRY:
             continue
+        if entry.is_symlink():
+            suffix = "/" if entry.is_dir() else ""
+            entries.append((f"{entry.name}{suffix}", [SYMLINK_PROBLEM]))
+            continue
         if entry.name == "otwd.json" and entry.is_file():
-            problems = [SYMLINK_PROBLEM] if entry.is_symlink() else config_problems(entry, context)
-            entries.append((entry.name, problems))
+            entries.append((entry.name, repository_config_problems(entry, context)))
             continue
         if entry.is_file():
             if entry.name not in ROOT_FILES:
-                entries.append(
-                    (
-                        entry.name,
-                        [
-                            f"not an allowed root file (expected one of "
-                            f"{', '.join(sorted(ROOT_FILES))}, or a state folder)"
-                        ],
-                    )
-                )
+                problems = [
+                    f"not an allowed root file (expected one of "
+                    f"{', '.join(sorted(ROOT_FILES))}, or a state folder)"
+                ]
+                entries.append((entry.name, problems))
             continue
         if entry.name in ROOT_DIRS:
-            if entry.is_symlink():
-                entries.append((f"{entry.name}/", [SYMLINK_PROBLEM]))
             continue
         if entry.name not in STATE_FOLDERS:
-            entries.append(
-                (
-                    f"{entry.name}/",
-                    [
-                        f"not a known state folder (expected one of "
-                        f"{', '.join(sorted(STATE_FOLDERS))})"
-                    ],
-                )
-            )
-            continue
-        if entry.is_symlink():
-            entries.append((f"{entry.name}/", [SYMLINK_PROBLEM]))
+            entries.append((f"{entry.name}/", folder_problem("state folder", STATE_FOLDERS)))
             continue
         for record_entry in sorted(entry.iterdir()):
+            name = f"{entry.name}/{record_entry.name}"
             if (
                 record_entry.name == KEEP_FILE
                 and not record_entry.is_symlink()
@@ -1360,25 +1389,36 @@ def check_data_repository(
                 continue
             record_type = RECORD_TYPE_FOLDERS.get(record_entry.name)
             if record_type is not None and record_entry.is_symlink():
-                entries.append((f"{entry.name}/{record_entry.name}/", [SYMLINK_PROBLEM]))
+                entries.append((f"{name}/", [SYMLINK_PROBLEM]))
                 continue
             if not record_entry.is_dir() or record_type is None:
                 suffix = "/" if record_entry.is_dir() else ""
-                entries.append(
-                    (
-                        f"{entry.name}/{record_entry.name}{suffix}",
-                        [
-                            f"not a known record type folder (expected one of "
-                            f"{', '.join(sorted(RECORD_TYPE_FOLDERS))})"
-                        ],
-                    )
-                )
+                problems = folder_problem("record type folder", RECORD_TYPE_FOLDERS)
+                entries.append((f"{name}{suffix}", problems))
                 continue
             for file_path in sorted(record_entry.iterdir()):
-                name = f"{entry.name}/{record_entry.name}/{file_path.name}"
-                entries.append(
-                    (name, repository_file_problems(file_path, record_type, context, ulid))
-                )
+                problems = repository_name_problems(file_path, ulid)
+                entries.append((f"{name}/{file_path.name}", problems))
+                if not problems:
+                    candidates.append((len(entries) - 1, file_path, record_type))
+    records: list[tuple[int, Path, RecordType, Any]] = []
+    sites: dict[str, set[str]] = {}
+    for index, file_path, record_type in candidates:
+        raw, problems = read_repository_file(file_path)
+        if problems:
+            entries[index] = (entries[index][0], problems)
+            continue
+        records.append((index, file_path, record_type, raw))
+        if record_type.code == "site" and isinstance(raw, dict):
+            types = site_types_of(raw)
+            if isinstance(raw.get("id"), str) and types is not None:
+                sites[raw["id"]] = types
+    known = context._with_known_sites(sites, complete=True)
+    for index, file_path, record_type, raw in records:
+        entries[index] = (
+            entries[index][0],
+            repository_record_problems(file_path, raw, record_type, known),
+        )
     return entries
 
 
@@ -1752,9 +1792,7 @@ def check_data_repository_examples(context: Context) -> tuple[bool, int]:
     in full, and the invalid tree's entries must each fail with their expected error."""
     print("\nData repository: valid example (must pass)")
     valid_root = EXAMPLES / "data-repository-valid"
-    valid_entries = check_data_repository(
-        valid_root, context.with_data_repository_sites(valid_root)
-    )
+    valid_entries = check_data_repository(valid_root, context)
     for name, problems in valid_entries:
         report("pass" if not problems else "FAIL", name, problems, "  ")
     valid_ok = all(not problems for _, problems in valid_entries)
@@ -1767,7 +1805,10 @@ def check_data_repository_examples(context: Context) -> tuple[bool, int]:
     )
     invalid_ok = check_against_expected(invalid_entries, expected)
     git_ok = check_git_entry_ignored(valid_root, context)
-    return valid_ok and invalid_ok and git_ok, len(valid_entries) + len(invalid_entries)
+    hostile_ok = check_hostile_inputs(valid_root, context)
+    return valid_ok and invalid_ok and git_ok and hostile_ok, len(valid_entries) + len(
+        invalid_entries
+    )
 
 
 def check_git_entry_ignored(valid_root: Path, context: Context) -> bool:
@@ -1785,7 +1826,7 @@ def check_git_entry_ignored(valid_root: Path, context: Context) -> bool:
             (".git file", lambda: git.write_text("gitdir: ../elsewhere\n")),
         ):
             make()
-            entries = check_data_repository(copy, context.with_data_repository_sites(copy))
+            entries = check_data_repository(copy, context)
             passed = all(not problems for _, problems in entries)
             report("pass" if passed else "FAIL", f"root {label}", [], "  ")
             ok = ok and passed
@@ -1794,17 +1835,113 @@ def check_git_entry_ignored(valid_root: Path, context: Context) -> bool:
             else:
                 git.unlink()
         (copy / "vic" / ".git").mkdir(parents=True)
-        entries = check_data_repository(copy, context.with_data_repository_sites(copy))
+        entries = check_data_repository(copy, context)
         failed = any(name.startswith("vic/.git") and problems for name, problems in entries)
         report("pass" if failed else "FAIL", "vic/.git", [], "  ")
         ok = ok and failed
     return ok
 
 
+def hostile_cases(valid_root: Path) -> list[tuple[str, str, str, Callable[[Path], None]]]:
+    """Hostile inputs a pull request from a fork could carry, as (label, entry, expected error,
+    change to a copy of the valid fixture). Built at check time, as git cannot commit some of
+    them and the rest would make the fixtures unwieldy."""
+    new_name = "01M330FR008NQD6VCS6A308BBK.json"
+    site = valid_root / "vic" / "sites" / "01M330FR008NQD6VCS6A308BBG.json"
+
+    def write(relative: str, content: bytes) -> Callable[[Path], None]:
+        def make(copy: Path) -> None:
+            target = copy / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(content)
+
+        return make
+
+    def link(relative: str, destination: str) -> Callable[[Path], None]:
+        def make(copy: Path) -> None:
+            target = copy / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.unlink(missing_ok=True)
+            target.symlink_to(destination)
+
+        return make
+
+    def make_directory(relative: str) -> Callable[[Path], None]:
+        return lambda copy: (copy / relative).mkdir(parents=True)
+
+    def lower_case_copy(copy: Path) -> None:
+        folder = copy / "vic" / "sites"
+        (folder / site.name.lower()).write_bytes((folder / site.name).read_bytes())
+
+    def upper_case_folder(copy: Path) -> None:
+        shutil.copytree(copy / "vic" / "sites", copy / "VIC" / "sites")
+
+    record = f"vic/sites/{new_name}"
+    return [
+        (
+            "$base in otwd.json",
+            "otwd.json",
+            "$base",
+            write("otwd.json", b'{"$base": "/etc/hostname"}'),
+        ),
+        (
+            "$base and $patch only",
+            record,
+            "$base",
+            write(
+                record,
+                b'{"$base": "' + site.name.encode() + b'", "$patch": []}',
+            ),
+        ),
+        (
+            "file over the size limit",
+            record,
+            "too large",
+            write(record, b'{"a": "' + b"a" * MAX_FILE_BYTES + b'"}'),
+        ),
+        ("deep nesting", record, "too deeply nested", write(record, b"[" * 100000 + b"]" * 100000)),
+        ("integer with 100,000 digits", record, "not valid JSON", write(record, b"1" * 100000)),
+        ("not UTF-8", record, "not valid UTF-8", write(record, b"\xff\xfe")),
+        ("directory named as a record", record, "must be a file", make_directory(record)),
+        ("dangling symlink", record, "symlink", link(record, "../../../does-not-exist.json")),
+        ("symlink to /dev/zero", record, "symlink", link(record, "/dev/zero")),
+        ("symlinked otwd.json", "otwd.json", "symlink", link("otwd.json", "/dev/zero")),
+        ("lower-case ULID", f"vic/sites/{site.name.lower()}", "own ULID", lower_case_copy),
+        ("upper-case state folder", "VIC/", "not a known state folder", upper_case_folder),
+    ]
+
+
+def check_hostile_inputs(valid_root: Path, context: Context) -> bool:
+    """Each hostile case must fail with its expected error on its own entry, through the same
+    entry point as --data-repository, and never end in a traceback."""
+    print("\nData repository: hostile inputs (each must fail with the expected error)")
+    ok = True
+    for label, entry, expected, change in hostile_cases(valid_root):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary) / "repository"
+            shutil.copytree(valid_root, copy)
+            change(copy)
+            try:
+                entries = check_data_repository(copy, context)
+            except Exception as error:
+                report("FAIL", label, [f"crashed: {type(error).__name__}: {error}"], "  ")
+                ok = False
+                continue
+        problems = [problem for name, found in entries if name == entry for problem in found]
+        passed = any(expected in problem for problem in problems)
+        report(
+            "pass" if passed else "FAIL",
+            label,
+            [] if passed else [f"expected {expected!r}, got {problems}"],
+            "  ",
+        )
+        ok = ok and passed
+    return ok
+
+
 def run_data_repository(root: Path, context: Context) -> int:
     """The --data-repository DIR mode: check every entry in a data repository and report it."""
     print(f"Data repository: {root}")
-    context = context.with_data_repository_sites(root)
     entries = check_data_repository(root, context)
     for name, problems in entries:
         report("pass" if not problems else "FAIL", name, problems, indent="  ")
