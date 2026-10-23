@@ -1254,6 +1254,28 @@ def check_document(path: Path, context: Context) -> list[str]:
     return check_document_as(path, context, kind)
 
 
+def refuse_constant(name: str) -> Any:
+    """NaN, Infinity and -Infinity are not JSON (RFC 8259), and NaN passes every bound."""
+    raise ValueError(f"{name} is not a JSON number")
+
+
+def refuse_repeated_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    """Two readers can disagree about which of two equal keys wins, so a file with both is
+    refused."""
+    seen: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in seen:
+            raise ValueError(f"an object repeats the key {ascii(key)}")
+        seen[key] = value
+    return seen
+
+
+def printable(text: str) -> str:
+    """text with control characters escaped, so a file name or id cannot add a line to the log
+    (a line starting with :: is a workflow command in GitHub Actions)."""
+    return "".join(c if c.isprintable() else c.encode("unicode_escape").decode() for c in text)
+
+
 def read_repository_file(path: Path, allow_comment: bool = False) -> tuple[Any, list[str]]:
     """A data repository file as plain JSON, or the problems that stop it being read. It must
     be a regular file and not a symlink, small enough, strict UTF-8 and JSON. $base and $patch
@@ -1281,7 +1303,9 @@ def read_repository_file(path: Path, allow_comment: bool = False) -> tuple[Any, 
     except OSError as error:
         return None, [f"cannot be read: {error.strerror}"]
     try:
-        document = json.loads(text)
+        document = json.loads(
+            text, parse_constant=refuse_constant, object_pairs_hook=refuse_repeated_keys
+        )
     except RecursionError:
         return None, ["too deeply nested to read"]
     except ValueError as error:
@@ -1325,7 +1349,7 @@ def repository_record_problems(
     is not checked here."""
     record_id = raw.get("id") if isinstance(raw, dict) else None
     if isinstance(record_id, str) and not record_id.endswith(f":{path.stem}"):
-        return [f"id {record_id} does not match its file name {path.name}"]
+        return [f"id {ascii(record_id)} does not match its file name {path.name}"]
     try:
         return check_loaded_document(path, raw, raw, context, REPOSITORY_KINDS[record_type.code])
     except RecursionError:
@@ -1361,6 +1385,14 @@ def duplicate_ids(
             if others:
                 duplicates[index] = others
     return duplicates
+
+
+def site_is_valid(raw: Any, context: Context) -> bool:
+    """Whether raw passes the site repository schema, so site_types_of can rely on its shape."""
+    try:
+        return context.validator(REPOSITORY_KINDS["site"].schema).is_valid(raw)
+    except RecursionError:
+        return False
 
 
 def check_data_repository(
@@ -1433,7 +1465,7 @@ def check_data_repository(
             entries[index] = (entries[index][0], problems)
             continue
         records.append((index, file_path, record_type, raw))
-        if record_type.code == "site" and isinstance(raw, dict):
+        if record_type.code == "site" and site_is_valid(raw, context):
             types = site_types_of(raw)
             if isinstance(raw.get("id"), str) and types is not None:
                 sites[raw["id"]] = types
@@ -1701,9 +1733,9 @@ def check_facilities(context: Context) -> list[str]:
 
 
 def report(label: str, name: str, problems: list[str], indent: str) -> None:
-    print(f"{indent}{label}  {name}")
+    print(f"{indent}{label}  {printable(name)}")
     for message in problems:
-        print(f"{indent}      {shorten(message)}")
+        print(f"{indent}      {shorten(printable(message))}")
 
 
 def check_given_files(arguments: list[str], context: Context) -> bool:
@@ -1903,6 +1935,31 @@ def hostile_cases(valid_root: Path) -> list[tuple[str, str, str, Callable[[Path]
     def upper_case_folder(copy: Path) -> None:
         shutil.copytree(copy / "vic" / "sites", copy / "VIC" / "sites")
 
+    def edit_site(key: str, value: Any) -> Callable[[Path], None]:
+        """A new site record, copied from the valid one, with one key changed."""
+
+        def make(copy: Path) -> None:
+            document = json.loads(site.read_text(encoding="utf-8"))
+            document[key] = value
+            if key != "id":
+                document["id"] = f"otwd:site:{new_name.removesuffix('.json')}"
+            else:
+                document["id"] = value
+            target = copy / "vic" / "sites" / new_name
+            target.write_text(json.dumps(document), encoding="utf-8")
+
+        return make
+
+    def nan_latitude(copy: Path) -> None:
+        target = copy / "vic" / "sites" / site.name
+        text = target.read_text(encoding="utf-8")
+        target.write_text(re.sub(r'"lat": *[-0-9.]+', '"lat": NaN', text), encoding="utf-8")
+
+    def repeat_id_key(copy: Path) -> None:
+        target = copy / "vic" / "sites" / site.name
+        text = target.read_text(encoding="utf-8")
+        target.write_text(text.replace("{", '{"id": "x", ', 1), encoding="utf-8")
+
     record = f"vic/sites/{new_name}"
     return [
         (
@@ -1935,6 +1992,27 @@ def hostile_cases(valid_root: Path) -> list[tuple[str, str, str, Callable[[Path]
         ("symlinked otwd.json", "otwd.json", "symlink", link("otwd.json", "/dev/zero")),
         ("lower-case ULID", f"vic/sites/{site.name.lower()}", "own ULID", lower_case_copy),
         ("upper-case state folder", "VIC/", "not a known state folder", upper_case_folder),
+        ("site_types is a string", record, "site_types", edit_site("site_types", "x")),
+        ("facts is a list", record, "facts", edit_site("facts", [])),
+        (
+            "site_types others holds an object",
+            record,
+            "site_types",
+            edit_site("site_types", {"primary": "a", "others": [{}]}),
+        ),
+        ("NaN in a number", f"vic/sites/{site.name}", "not valid JSON", nan_latitude),
+        (
+            "a repeated key",
+            f"vic/sites/{site.name}",
+            "repeats the key",
+            repeat_id_key,
+        ),
+        (
+            "control characters in an id",
+            record,
+            "\\n::warning::forged",
+            edit_site("id", "x:\n::warning::forged"),
+        ),
     ]
 
 
