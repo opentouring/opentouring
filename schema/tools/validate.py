@@ -1258,7 +1258,7 @@ def read_repository_file(path: Path) -> tuple[Any, list[str]]:
     """A data repository file as plain JSON, or the problems that stop it being read. It must
     be a regular file and not a symlink, small enough, strict UTF-8 and JSON. $base and $patch
     belong to the schema examples, so a file that uses one is refused rather than followed.
-    The size comes from stat() before the file is opened, and nothing here raises."""
+    So is a top-level $comment, which the repository schemas do not allow. The size comes from stat() before the file is opened, and nothing here raises."""
     try:
         status = path.lstat()
     except OSError as error:
@@ -1282,7 +1282,7 @@ def read_repository_file(path: Path) -> tuple[Any, list[str]]:
     except ValueError as error:
         return None, [f"not valid JSON: {error}"]
     if isinstance(document, dict):
-        used = [key for key in (BASE_KEY, PATCH_KEY) if key in document]
+        used = [key for key in (BASE_KEY, PATCH_KEY, COMMENT_KEY) if key in document]
         if used:
             return None, [f"must not use {' or '.join(used)}: a data repository file stands alone"]
     return document, []
@@ -1321,9 +1321,7 @@ def repository_record_problems(
     if isinstance(record_id, str) and not record_id.endswith(f":{path.stem}"):
         return [f"id {record_id} does not match its file name {path.name}"]
     try:
-        return check_loaded_document(
-            path, raw, without_comment(raw), context, REPOSITORY_KINDS[record_type.code]
-        )
+        return check_loaded_document(path, raw, raw, context, REPOSITORY_KINDS[record_type.code])
     except RecursionError:
         return ["too deeply nested to check"]
 
@@ -1333,13 +1331,31 @@ def repository_config_problems(path: Path, context: Context) -> list[str]:
     document, problems = read_repository_file(path)
     if problems:
         return problems
-    document = without_comment(document)
     return all_errors(list(context.validator("otwd-config.schema.json").iter_errors(document)))
 
 
 def folder_problem(kind: str, options: Iterable[str]) -> list[str]:
     """The problem for a folder whose name is not one of options."""
     return [f"not a known {kind} (expected one of {', '.join(sorted(options))})"]
+
+
+def duplicate_ids(
+    entries: list[tuple[str, list[str]]], candidates: list[tuple[int, Path, RecordType]]
+) -> dict[int, list[str]]:
+    """For each entry whose file name (a record's public id) also appears under another state
+    folder, the other paths. ADR 0046 moves a record's file when its state changes, so one id
+    is one file."""
+    by_name: dict[str, list[int]] = {}
+    for index, file_path, _ in candidates:
+        by_name.setdefault(file_path.name, []).append(index)
+    duplicates: dict[int, list[str]] = {}
+    for indexes in by_name.values():
+        for index in indexes:
+            state = entries[index][0].split("/")[0]
+            others = [entries[i][0] for i in indexes if entries[i][0].split("/")[0] != state]
+            if others:
+                duplicates[index] = others
+    return duplicates
 
 
 def check_data_repository(
@@ -1403,6 +1419,7 @@ def check_data_repository(
                 entries.append((f"{name}/{file_path.name}", problems))
                 if not problems:
                     candidates.append((len(entries) - 1, file_path, record_type))
+    repeated = duplicate_ids(entries, candidates)
     records: list[tuple[int, Path, RecordType, Any]] = []
     sites: dict[str, set[str]] = {}
     for index, file_path, record_type in candidates:
@@ -1421,6 +1438,9 @@ def check_data_repository(
             entries[index][0],
             repository_record_problems(file_path, raw, record_type, known),
         )
+    for index, others in repeated.items():
+        problem = f"same id as {', '.join(others)}: a record lives in one state folder"
+        entries[index] = (entries[index][0], [*entries[index][1], problem])
     return entries
 
 
