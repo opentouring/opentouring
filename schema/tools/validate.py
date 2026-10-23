@@ -187,9 +187,9 @@ ROOT_DIRS = frozenset({".github"})
 GIT_ENTRY = ".git"
 # Lets an empty state folder exist in git. Allowed directly inside a state folder only.
 KEEP_FILE = ".gitkeep"
-# A pull request can add a symlink, so the validator never follows one out of the checkout.
 # A record or otwd.json is read whole, so a pull request must not be able to make that large.
 MAX_FILE_BYTES = 1024 * 1024
+# A pull request can add a symlink, so the validator never follows one out of the checkout.
 SYMLINK_PROBLEM = "is a symlink, which a data repository must not contain"
 
 
@@ -488,9 +488,9 @@ class Context:
                 types = site_types_of(document)
                 if types is not None:
                     sites[document["id"]] = types
-        return self._with_known_sites(sites, complete)
+        return self.with_known_sites(sites, complete)
 
-    def _with_known_sites(self, sites: dict[str, set[str]], complete: bool) -> Context:
+    def with_known_sites(self, sites: dict[str, set[str]], complete: bool) -> Context:
         return Context(
             self.registry,
             self.schemas,
@@ -1291,6 +1291,7 @@ def read_repository_file(path: Path) -> tuple[Any, list[str]]:
 def check_loaded_document(
     path: Path, raw: Any, document: Any, context: Context, kind: DocumentKind
 ) -> list[str]:
+    """The problems in a parsed document: raw as read, document as validated."""
     schema_errors = list(context.validator(kind.schema).iter_errors(document))
     if schema_errors:
         return all_errors(schema_errors)
@@ -1337,6 +1338,7 @@ def repository_config_problems(path: Path, context: Context) -> list[str]:
 
 
 def folder_problem(kind: str, options: Iterable[str]) -> list[str]:
+    """The problem for a folder whose name is not one of options."""
     return [f"not a known {kind} (expected one of {', '.join(sorted(options))})"]
 
 
@@ -1413,7 +1415,7 @@ def check_data_repository(
             types = site_types_of(raw)
             if isinstance(raw.get("id"), str) and types is not None:
                 sites[raw["id"]] = types
-    known = context._with_known_sites(sites, complete=True)
+    known = context.with_known_sites(sites, complete=True)
     for index, file_path, record_type, raw in records:
         entries[index] = (
             entries[index][0],
