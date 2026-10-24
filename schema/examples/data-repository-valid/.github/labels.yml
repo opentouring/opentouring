@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Fixture labels file. A data repository keeps its labels here, so the validator must accept
+# a file under .github/.
+- name: submission
+  description: A contributor submission awaiting moderation

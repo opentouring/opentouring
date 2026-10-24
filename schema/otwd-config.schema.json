@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.opentouring.org/otwd/v1/otwd-config.schema.json",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "OTWD data repository configuration",
+  "description": "The format of otwd.json, at the root of a data repository (ADR 0046): the country the repository holds data for, and the schema tag its records conform to. CI validates every pull request against that tag.",
+  "type": "object",
+  "required": ["country", "schema"],
+  "unevaluatedProperties": false,
+  "properties": {
+    "$comment": {
+      "type": "string"
+    },
+    "country": {
+      "description": "The country this data repository holds data for, such as AU for opentouring/otwd-au.",
+      "$ref": "common.schema.json#/$defs/CountryCode"
+    },
+    "schema": {
+      "description": "The tag on opentouring/opentouring that this repository's records conform to, such as v1.0.0-draft.1. A schema change that needs data changed lands as its own migration pull request that updates this tag.",
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(-draft\\.[0-9]+)?$",
+      "examples": ["v1.0.0-draft.1", "v1.0.0"]
+    }
+  }
+}

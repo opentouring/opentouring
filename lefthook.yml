@@ -13,7 +13,10 @@ pre-commit:
       run: npx --no-install redocly lint api/openapi.yaml
     format:
       glob: "*.{md,json,yaml,yml}"
-      exclude: "LICENSES/**"
+      # Prettier refuses a symlink, and one data repository fixture is a symlink on purpose.
+      exclude:
+        - "LICENSES/**"
+        - "schema/examples/data-repository-invalid/sa/sites/*.json"
       run: npx --no-install prettier --check {staged_files}
 commit-msg:
   commands:

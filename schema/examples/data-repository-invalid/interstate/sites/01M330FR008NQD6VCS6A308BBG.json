@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "id": "otwd:site:01M330FR008NQD6VCS6A308BBG",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-10-01",
+      "recorded_at": "2026-10-06T06:00:00Z"
+    }
+  },
+  "created_at": "2026-10-06T06:00:00Z",
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Saltbush Point Ferry Terminal",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -38.72094,
+        "lng": 146.55317,
+        "accuracy_m": 15
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "ferry_terminal"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    }
+  }
+}

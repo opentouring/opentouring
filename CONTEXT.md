@@ -492,6 +492,10 @@ _Avoid_: training data, ground truth
 The public git repository on GitHub that holds a supported country's live data, one JSON file per record, such as `opentouring/otwd-au`. Its `main` branch is the source of truth, and anyone can clone it without an API key.
 _Avoid_: data repo (in docs), dump, mirror
 
+**GitHub App**:
+The Open Touring GitHub App that turns each screened submission into a pull request on a data repository, in scheduled batches so a pull request's timing never reveals when a contributor submitted. It authors every pull request and commit itself, posts the AI verdict, sets routing labels, relays moderators' questions and contributors' answers, and opens appeal and revert pull requests.
+_Avoid_: the bot, the integration
+
 **Repository form**:
 The representation of a record in its data repository file: the full form without the values OTWD computes on load, which are `change_seq`, derived values, confidence and `updated_at`.
 _Avoid_: raw form, source form
@@ -499,6 +503,10 @@ _Avoid_: raw form, source form
 **Read model**:
 The copy of live data in Postgres with PostGIS that the loader builds from a data repository, adding sequence numbers and computed values, and that the API, change feed and bulk downloads serve. It can be rebuilt from the data repository at any time.
 _Avoid_: database (when the dataset is meant), cache
+
+**Loader**:
+The service that keeps the commit SHA it last applied to a data repository and, on each push webhook and on a 5-minute timer as a backstop, applies the commits since then to the read model in order: assigning each change its sequence number, computing derived values and confidence, publishing merged photos from quarantine, and driving the bulk download builder, the cache purger and the webhook sender.
+_Avoid_: ingester, importer, ETL
 
 **Live data**:
 The current state of every record, as the `main` branch of its data repository holds it, built from approved changes.

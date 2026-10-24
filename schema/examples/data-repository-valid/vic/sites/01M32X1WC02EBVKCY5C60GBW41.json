@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0",
+  "id": "otwd:site:01M32X1WC02EBVKCY5C60GBW41",
+  "status": {
+    "value": "active",
+    "provenance": {
+      "source_kind": "partner_app",
+      "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+      "observed_on": "2026-10-01",
+      "recorded_at": "2026-10-06T06:00:00Z"
+    }
+  },
+  "created_at": "2026-10-06T06:00:00Z",
+  "facts": {
+    "names": {
+      "value": [
+        {
+          "text": "Port Wattle Ferry Terminal",
+          "lang": "en",
+          "kind": "primary"
+        }
+      ],
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    },
+    "location": {
+      "value": {
+        "lat": -38.69851,
+        "lng": 146.45212,
+        "accuracy_m": 15
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    },
+    "site_types": {
+      "value": {
+        "primary": "ferry_terminal"
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    },
+    "opening_hours": {
+      "value": {
+        "weekly": [
+          {
+            "days": ["mo", "tu", "we", "th", "fr", "sa", "su"],
+            "opens": "05:30",
+            "closes": "21:30"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    },
+    "rig_limits": {
+      "value": {
+        "max_length_m": 19,
+        "big_rig_suitable": "yes",
+        "notes": [
+          {
+            "text": "Marked lanes for caravans in the holding area.",
+            "lang": "en-AU"
+          }
+        ]
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    }
+  },
+  "facilities": {
+    "toilets": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "kind": "flush",
+          "count": 4
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    },
+    "drinking_water": {
+      "value": {
+        "available": true,
+        "attributes": {
+          "potable": true,
+          "treated": true,
+          "source": "town_supply",
+          "tank_fill": false
+        }
+      },
+      "provenance": {
+        "source_kind": "partner_app",
+        "partner_app_id": "otwd:partner_app:01KJK8W2CAWJC5J54FT58K4JGM",
+        "observed_on": "2026-10-01",
+        "recorded_at": "2026-10-06T06:00:00Z"
+      }
+    }
+  }
+}
