@@ -20,7 +20,7 @@ Open Touring uses three licences: one for the data, one for the server code and 
 | Documentation (`*.md` at the root, `docs/`)                     | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
 | OTWD data (data repositories, bulk downloads and API responses) | Creative Commons Attribution 4.0 International | `CC-BY-4.0`     |
 
-Sample clients live under `sdks/` and are Apache-2.0. A directory not listed here takes the licence of its nearest listed parent.
+Sample clients live under `sdks/` and are Apache-2.0. The records in a data repository stay CC-BY-4.0, while its CI workflows and scripts are Apache-2.0 with an SPDX header, and each data repository's README says so ([ADR 0048](docs/adr/0048-data-repository-layout-and-ci-file-licence.md)). A directory not listed here takes the licence of its nearest listed parent.
 
 ## Source files
 
